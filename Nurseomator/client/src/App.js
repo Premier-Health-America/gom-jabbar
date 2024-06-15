@@ -2,16 +2,8 @@ import React, { useEffect, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import io from "socket.io-client";
-
-import L from "leaflet";
-
-delete L.Icon.Default.prototype._getIconUrl;
-
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png").default,
-  iconUrl: require("leaflet/dist/images/marker-icon.png").default,
-  shadowUrl: require("leaflet/dist/images/marker-shadow.png").default,
-});
+import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css"; // Re-uses images from ~leaflet package
+import "leaflet-defaulticon-compatibility";
 
 const socket = io("http://localhost:8888");
 
@@ -25,64 +17,31 @@ const landBoundaries = {
 function App() {
   const [locations, setLocations] = useState({});
   const [alerts, setAlerts] = useState([]);
-  const nurseId = "nurse1";
-  const initialLat = 64; // Initial latitude
-  const initialLon = -114; // Initial longitude
 
   useEffect(() => {
     socket.on("locationUpdate", (data) => {
-      setLocations(data);
+      console.log("Received location update:", data);
+      setLocations((prevLocations) => ({
+        ...prevLocations,
+        [data.nurseId]: { lat: data.lat, lon: data.lon },
+      }));
     });
 
     socket.on("alert", (alert) => {
+      console.log("Received alert:", alert);
       setAlerts((prevAlerts) => [...prevAlerts, alert]);
     });
-
-    // Simulate nurse moving around randomly
-    let currentLat = initialLat;
-    let currentLon = initialLon;
-
-    const interval = setInterval(() => {
-      // Small random movement within a small range
-      const movementRange = 0.05; // Larger range for more noticeable movement
-      currentLat += (Math.random() - 0.8) * movementRange;
-      currentLon += (Math.random() - 0.8) * movementRange;
-
-      // Ensure new location is within land boundaries
-      currentLat = Math.max(
-        landBoundaries.latMin,
-        Math.min(landBoundaries.latMax, currentLat)
-      );
-      currentLon = Math.max(
-        landBoundaries.lonMin,
-        Math.min(landBoundaries.lonMax, currentLon)
-      );
-
-      fetch("http://localhost:8888/api/location/report", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nurseId, lat: currentLat, lon: currentLon }),
-      });
-    }, 300); // Adjust the interval for smoother movement
 
     return () => {
       socket.off("locationUpdate");
       socket.off("alert");
-      clearInterval(interval);
     };
   }, []);
 
-  //Commented it out, used to check location refreshes
-
-  // useEffect(() => {
-  //   console.log(locations);
-  // }, [locations]);
-
   return (
     <div className="App">
-      {/* <h1>Nurse Tracker</h1> */}
       <MapContainer
-        center={[initialLat, initialLon]}
+        center={[64, -114]}
         zoom={5}
         style={{ height: "600px", width: "100%" }}
       >
