@@ -41,7 +41,7 @@ io.on("connection", (socket) => {
 // Generate nurse IDs
 const nurseIds = Array.from({ length: 20 }, (_, i) => `Nurse ${i + 1}`);
 
-// THis is the nurses initial location placement
+// This is the nurses initial location placement
 const nurseStates = nurseIds.reduce((acc, nurseId) => {
   acc[nurseId] = {
     lat: 60 + Math.random() * 10, // Initial random starting position within [60, 70]
@@ -49,46 +49,73 @@ const nurseStates = nurseIds.reduce((acc, nurseId) => {
     latSpeed: (Math.random() - 0.5) * 0.001, // Initial random speed
     lonSpeed: (Math.random() - 0.5) * 0.001, // Initial random speed
     lastAlertTime: 0, // Track last alert time for cooldown
+    alive: true, // Track if the nurse is alive
+    countdown: 20000, // Initialize countdown for 20 seconds
   };
   return acc;
 }, {});
 
-// Trhis is the nurses movements
+// This is the nurses movements
 nurseIds.forEach((nurseId) => {
   setInterval(() => {
     const currentState = nurseStates[nurseId];
 
-    // Calculate new positions with smaller speed increments
-    let newLat = currentState.lat + currentState.latSpeed;
-    let newLon = currentState.lon + currentState.lonSpeed;
+    // Only update position if the nurse is alive
+    if (currentState.alive) {
+      // Calculate new positions with smaller speed increments
+      let newLat = currentState.lat + currentState.latSpeed;
+      let newLon = currentState.lon + currentState.lonSpeed;
 
-    // Check boundaries and reverse direction when hit the boundary
-    if (newLat <= 60 || newLat >= 70) {
-      currentState.latSpeed *= -1; // Reverse latitude direction
-      newLat = currentState.lat + currentState.latSpeed; // Recalculate new latitude
-    }
-    if (newLon <= -130 || newLon >= -100) {
-      currentState.lonSpeed *= -1; // Reverse longitude direction
-      newLon = currentState.lon + currentState.lonSpeed; // Recalculate new longitude
-    }
-
-    // Update nurse state
-    nurseStates[nurseId] = {
-      ...currentState,
-      lat: newLat,
-      lon: newLon,
-    };
-
-    // Report new position to clients via socket.io
-    io.emit("locationUpdate", { nurseId, lat: newLat, lon: newLon });
-
-    // Check proximity to hospitals
-    hospitals.forEach((hospital) => {
-      if (isClose({ lat: newLat, lon: newLon }, hospital.location, nurseId)) {
-        io.emit("alert", { nurseId, hospital });
+      // Check boundaries and reverse direction when hit the boundary
+      if (newLat <= 60 || newLat >= 70) {
+        currentState.latSpeed *= -1; // Reverse latitude direction
+        newLat = currentState.lat + currentState.latSpeed; // Recalculate new latitude
       }
+      if (newLon <= -133 || newLon >= -93) {
+        currentState.lonSpeed *= -1; // Reverse longitude direction
+        newLon = currentState.lon + currentState.lonSpeed; // Recalculate new longitude
+      }
+
+      // Update nurse state
+      nurseStates[nurseId] = {
+        ...currentState,
+        lat: newLat,
+        lon: newLon,
+      };
+
+      // Report new position to clients via socket.io
+      io.emit("locationUpdate", {
+        nurseId,
+        lat: newLat,
+        lon: newLon,
+        countdown: currentState.countdown,
+        alive: currentState.alive,
+      });
+
+      // Check proximity to hospitals
+      hospitals.forEach((hospital) => {
+        if (isClose({ lat: newLat, lon: newLon }, hospital.location, nurseId)) {
+          io.emit("alert", { nurseId, hospital });
+        }
+      });
+    }
+  }, 10); // Adjust interval to 10 milliseconds for smoother simulation
+
+  // Decrement countdown and update alive status
+  setInterval(() => {
+    if (nurseStates[nurseId].countdown > 0) {
+      nurseStates[nurseId].countdown -= 1;
+    } else {
+      nurseStates[nurseId].alive = false;
+    }
+    io.emit("locationUpdate", {
+      nurseId,
+      lat: nurseStates[nurseId].lat,
+      lon: nurseStates[nurseId].lon,
+      countdown: nurseStates[nurseId].countdown,
+      alive: nurseStates[nurseId].alive,
     });
-  }, 10); // Adjust interval to 3 milliseconds for smoother simulation
+  }, 1000); // Decrement countdown every second
 });
 
 // Middleware
@@ -121,30 +148,81 @@ app.post("/api/location/report", (req, res) => {
 
 // Function to check proximity between nurse and hospital dynamically
 function isClose(nurse, hospital, nurseId) {
-  // console.log("isClose Testing");
-
-  // Define proximity threshold from hospitals, can make huge and make all hospitals detectable if too big, be careful (adjust as needed)
-  const proximityThreshold = 0.1;
+  // Define proximity threshold from hospitals
+  const proximityThreshold = 0.7;
 
   const distance = Math.sqrt(
     Math.pow(nurse.lat - hospital.lat, 2) +
       Math.pow(nurse.lon - hospital.lon, 2)
   );
 
-  // Check if nruse is within the proximity threshold of the hospital
+  // Check if nurse is within the proximity threshold of the hospital
   if (distance <= proximityThreshold) {
     const now = Date.now();
     const lastAlertTime = nurseStates[nurseId].lastAlertTime || 0;
-    const cooldownPeriod = 3 * 60 * 1000; // 3 minutes rest
+    const cooldownPeriod = 20 * 1000; // 20 seconds cooldown
 
+    // Check if enough time has passed since the last alert
     if (now - lastAlertTime >= cooldownPeriod) {
-      nurseStates[nurseId].lastAlertTime = now;
+      nurseStates[nurseId].lastAlertTime = now; // Update last alert time
+      console.log(
+        `Alert triggered for Nurse ${nurseId} and Hospital ${hospital.name}`
+      );
       return true;
     }
   }
 
   return false;
 }
+
+// Function to check proximity between nurse and hospital dynamically
+// function isClose(nurse, hospital, nurseId) {
+//   // Define proximity threshold from hospitals
+//   const proximityThreshold = 0.5;
+
+//   const distance = Math.sqrt(
+//     Math.pow(nurse.lat - hospital.lat, 2) +
+//       Math.pow(nurse.lon - hospital.lon, 2)
+//   );
+
+//   // Check if nurse is within the proximity threshold of the hospital
+//   if (distance <= proximityThreshold) {
+//     console.log(
+//       `Alert triggered for Nurse ${nurseId} and Hospital ${hospital.name}`
+//     );
+//     return true;
+//   }
+
+//   return false;
+// }
+
+// // Function to check proximity between nurse and hospital dynamically
+// function isClose(nurse, hospital, nurseId) {
+//   // Define proximity threshold from hospitals, can make huge and make all hospitals detectable if too big, be careful (adjust as needed)
+//   const proximityThreshold = 0.1;
+
+//   const distance = Math.sqrt(
+//     Math.pow(nurse.lat - hospital.lat, 2) +
+//       Math.pow(nurse.lon - hospital.lon, 2)
+//   );
+
+//   // Check if nurse is within the proximity threshold of the hospital
+//   if (distance <= proximityThreshold) {
+//     const now = Date.now();
+//     const lastAlertTime = nurseStates[nurseId].lastAlertTime || 0;
+//     const cooldownPeriod = 3 * 60 * 1000; // 3 minutes rest
+
+//     if (now - lastAlertTime >= cooldownPeriod) {
+//       nurseStates[nurseId].lastAlertTime = now;
+//       console.log(
+//         `Alert triggered for Nurse ${nurseId} and Hospital ${hospital.id}`
+//       );
+//       return true;
+//     }
+//   }
+
+//   return false;
+// }
 
 // Start server
 const port = process.env.PORT || 8888;

@@ -6,8 +6,22 @@ import io from "socket.io-client";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css";
 import "leaflet-defaulticon-compatibility";
 
+const nurseIcon = new L.Icon({
+  iconUrl: "/nurse.png", // Ensure this path is correct
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+});
+
 const hospitalIcon = new L.Icon({
-  iconUrl: "/hospital-icon.png",
+  iconUrl: "/hospital.png", // Ensure this path is correct
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+});
+
+const deadNurseIcon = new L.Icon({
+  iconUrl: "/memorial.png", // Ensure this path is correct
   iconSize: [32, 32],
   iconAnchor: [16, 32],
   popupAnchor: [0, -32],
@@ -19,33 +33,36 @@ function App() {
   const [locations, setLocations] = useState({});
   const [alerts, setAlerts] = useState([]);
   const [hospitals, setHospitals] = useState([]);
+  const [nursesStatus, setNursesStatus] = useState({});
 
+  // Listen for updates from the server
   useEffect(() => {
-    // Listen for location updates from the server
     socket.on("locationUpdate", (data) => {
       setLocations((prevLocations) => ({
         ...prevLocations,
         [data.nurseId]: { lat: data.lat, lon: data.lon },
       }));
+
+      setNursesStatus((prevStatus) => ({
+        ...prevStatus,
+        [data.nurseId]: { alive: data.alive, countdown: data.countdown },
+      }));
     });
 
-    // Listen for alerts from the server
     socket.on("alert", (alert) => {
       setAlerts((prevAlerts) => [...prevAlerts, alert]);
     });
 
-    // Listen for initial list of hospitals from the server
     socket.on("hospitals", (hospitals) => {
       setHospitals(hospitals);
     });
 
-    // Clean up event listeners
     return () => {
       socket.off("locationUpdate");
       socket.off("alert");
       socket.off("hospitals");
     };
-  }, []); // Empty dependency array ensures this effect runs only once
+  }, []);
 
   return (
     <div className="App">
@@ -73,8 +90,20 @@ function App() {
           <Marker
             key={nurseId}
             position={[locations[nurseId].lat, locations[nurseId].lon]}
+            icon={nursesStatus[nurseId]?.alive ? nurseIcon : deadNurseIcon}
           >
-            <Popup>{nurseId}</Popup>
+            <Popup>
+              <div>
+                <p>Nurse ID: {nurseId}</p>
+                <p>
+                  Coordinates: [{locations[nurseId].lat.toFixed(2)},{" "}
+                  {locations[nurseId].lon.toFixed(2)}]
+                </p>
+                <p>Status: {nursesStatus[nurseId]?.alive ? "Alive" : "Dead"}</p>
+                <p>Time Left: {nursesStatus[nurseId]?.countdown} seconds</p>
+                <p>Inventory: (to be filled later)</p>
+              </div>
+            </Popup>
           </Marker>
         ))}
       </MapContainer>
