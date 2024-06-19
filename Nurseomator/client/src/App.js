@@ -7,21 +7,28 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import "leaflet-defaulticon-compatibility";
 
 const nurseIcon = new L.Icon({
-  iconUrl: "/nurse.png", // Ensure this path is correct
+  iconUrl: "/nurse.png", // Example: Replace with your nurse icon URL
   iconSize: [32, 32],
   iconAnchor: [16, 32],
   popupAnchor: [0, -32],
 });
 
 const hospitalIcon = new L.Icon({
-  iconUrl: "/hospital.png", // Ensure this path is correct
+  iconUrl: "/hospital.png",
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+});
+
+const houseIcon = new L.Icon({
+  iconUrl: "/house.png", // Example: Replace with your house icon URL
   iconSize: [32, 32],
   iconAnchor: [16, 32],
   popupAnchor: [0, -32],
 });
 
 const deadNurseIcon = new L.Icon({
-  iconUrl: "/memorial.png", // Ensure this path is correct
+  iconUrl: "/memorial.png", // Example: Replace with your dead nurse icon URL
   iconSize: [32, 32],
   iconAnchor: [16, 32],
   popupAnchor: [0, -32],
@@ -33,6 +40,7 @@ function App() {
   const [locations, setLocations] = useState({});
   const [alerts, setAlerts] = useState([]);
   const [hospitals, setHospitals] = useState([]);
+  const [houses, setHouses] = useState([]);
   const [nursesStatus, setNursesStatus] = useState({});
 
   // Listen for updates from the server
@@ -45,7 +53,11 @@ function App() {
 
       setNursesStatus((prevStatus) => ({
         ...prevStatus,
-        [data.nurseId]: { alive: data.alive, countdown: data.countdown },
+        [data.nurseId]: {
+          alive: data.alive,
+          countdown: data.countdown,
+          hotChocolates: data.hotChocolates,
+        },
       }));
     });
 
@@ -57,10 +69,26 @@ function App() {
       setHospitals(hospitals);
     });
 
+    socket.on("houses", (houses) => {
+      setHouses(houses);
+    });
+
+    socket.on("hotChocolateUpdate", (data) => {
+      setNursesStatus((prevStatus) => ({
+        ...prevStatus,
+        [data.nurseId]: {
+          ...prevStatus[data.nurseId],
+          hotChocolates: data.hotChocolates,
+        },
+      }));
+    });
+
     return () => {
       socket.off("locationUpdate");
       socket.off("alert");
       socket.off("hospitals");
+      socket.off("houses");
+      socket.off("hotChocolateUpdate");
     };
   }, []);
 
@@ -69,6 +97,8 @@ function App() {
       <MapContainer
         center={[65.5, -114]}
         zoom={5}
+        zoomControl={false}
+        scrollWheelZoom={false}
         style={{ height: "600px", width: "100%" }}
       >
         <TileLayer
@@ -83,6 +113,16 @@ function App() {
             icon={hospitalIcon}
           >
             <Popup>{hospital.name}</Popup>
+          </Marker>
+        ))}
+        {/* Render houses as markers on the map */}
+        {houses.map((house) => (
+          <Marker
+            key={house.id}
+            position={[house.location.lat, house.location.lon]}
+            icon={houseIcon}
+          >
+            <Popup>{house.name}</Popup>
           </Marker>
         ))}
         {/* Render nurse locations as markers on the map */}
@@ -101,6 +141,7 @@ function App() {
                 </p>
                 <p>Status: {nursesStatus[nurseId]?.alive ? "Alive" : "Dead"}</p>
                 <p>Time Left: {nursesStatus[nurseId]?.countdown} seconds</p>
+                <p>Hot Chocolates: {nursesStatus[nurseId]?.hotChocolates}</p>
                 <p>Inventory: (to be filled later)</p>
               </div>
             </Popup>
