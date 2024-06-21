@@ -7,7 +7,14 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import "leaflet-defaulticon-compatibility";
 
 const nurseIcon = new L.Icon({
-  iconUrl: "/nurse.png", // Example: Replace with your nurse icon URL
+  iconUrl: "/nurse.png",
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+});
+
+const nurseColdIcon = new L.Icon({
+  iconUrl: "/coldNurse.png",
   iconSize: [32, 32],
   iconAnchor: [16, 32],
   popupAnchor: [0, -32],
@@ -21,14 +28,21 @@ const hospitalIcon = new L.Icon({
 });
 
 const houseIcon = new L.Icon({
-  iconUrl: "/house.png", // Example: Replace with your house icon URL
+  iconUrl: "/house.png",
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+});
+
+const houseIllIcon = new L.Icon({
+  iconUrl: "/houseIll.png",
   iconSize: [32, 32],
   iconAnchor: [16, 32],
   popupAnchor: [0, -32],
 });
 
 const deadNurseIcon = new L.Icon({
-  iconUrl: "/memorial.png", // Example: Replace with your dead nurse icon URL
+  iconUrl: "/memorial.png",
   iconSize: [32, 32],
   iconAnchor: [16, 32],
   popupAnchor: [0, -32],
@@ -57,6 +71,7 @@ function App() {
           alive: data.alive,
           countdown: data.countdown,
           hotChocolates: data.hotChocolates,
+          carryingCure: data.carryingCure,
         },
       }));
     });
@@ -73,14 +88,17 @@ function App() {
       setHouses(houses);
     });
 
-    socket.on("hotChocolateUpdate", (data) => {
-      setNursesStatus((prevStatus) => ({
-        ...prevStatus,
-        [data.nurseId]: {
-          ...prevStatus[data.nurseId],
-          hotChocolates: data.hotChocolates,
-        },
-      }));
+    socket.on("cureDelivered", (data) => {
+      console.log(`${data.nurseId} delivered cure to ${data.house.name}`);
+      setHouses((prevHouses) =>
+        prevHouses.map((house) =>
+          house.id === data.house.id ? { ...house, cured: true } : house
+        )
+      );
+    });
+
+    socket.on("allHousesCured", () => {
+      alert("All houses are cured!");
     });
 
     return () => {
@@ -88,7 +106,8 @@ function App() {
       socket.off("alert");
       socket.off("hospitals");
       socket.off("houses");
-      socket.off("hotChocolateUpdate");
+      socket.off("cureDelivered");
+      socket.off("allHousesCured");
     };
   }, []);
 
@@ -97,9 +116,11 @@ function App() {
       <MapContainer
         center={[65.5, -114]}
         zoom={5}
-        zoomControl={false}
-        scrollWheelZoom={false}
         style={{ height: "600px", width: "100%" }}
+        zoomControl={false} // Disable zoom control
+        scrollWheelZoom={false} // Disable scroll wheel zoom
+        doubleClickZoom={false} // Disable double click zoom
+        // dragging={false} // Disable dragging
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -120,9 +141,17 @@ function App() {
           <Marker
             key={house.id}
             position={[house.location.lat, house.location.lon]}
-            icon={houseIcon}
+            icon={house.illness && !house.cured ? houseIllIcon : houseIcon}
           >
-            <Popup>{house.name}</Popup>
+            <Popup>
+              <div>
+                <p>{house.name}</p>
+                {house.illness && !house.cured && (
+                  <p>Illness: {house.illness}</p>
+                )}
+                {house.cured && <p>Status: Cured</p>}
+              </div>
+            </Popup>
           </Marker>
         ))}
         {/* Render nurse locations as markers on the map */}
@@ -130,7 +159,13 @@ function App() {
           <Marker
             key={nurseId}
             position={[locations[nurseId].lat, locations[nurseId].lon]}
-            icon={nursesStatus[nurseId]?.alive ? nurseIcon : deadNurseIcon}
+            icon={
+              !nursesStatus[nurseId]?.alive
+                ? deadNurseIcon
+                : nursesStatus[nurseId]?.hotChocolates < 1
+                ? nurseColdIcon
+                : nurseIcon
+            }
           >
             <Popup>
               <div>
@@ -142,7 +177,9 @@ function App() {
                 <p>Status: {nursesStatus[nurseId]?.alive ? "Alive" : "Dead"}</p>
                 <p>Time Left: {nursesStatus[nurseId]?.countdown} seconds</p>
                 <p>Hot Chocolates: {nursesStatus[nurseId]?.hotChocolates}</p>
-                <p>Inventory: (to be filled later)</p>
+                <p>
+                  Inventory: {nursesStatus[nurseId]?.carryingCure || "None"}
+                </p>
               </div>
             </Popup>
           </Marker>
@@ -153,7 +190,7 @@ function App() {
       <div>
         {alerts.map((alert, index) => (
           <div key={index}>
-            {alert.nurseId} is close to {alert.hospital.name}
+            {alert.nurseId} {alert.message}
           </div>
         ))}
       </div>

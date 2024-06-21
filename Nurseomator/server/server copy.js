@@ -109,20 +109,6 @@ const moveTowards = (current, target, speed) => {
   }
 };
 
-// Function to check proximity between nurse and target dynamically
-const isClose = (nurse, target) => {
-  const proximityThreshold = 1;
-  const distance = Math.sqrt(
-    Math.pow(nurse.lat - target.lat, 2) + Math.pow(nurse.lon - target.lon, 2)
-  );
-  return distance <= proximityThreshold;
-};
-
-// Function to emit an alert
-const emitAlert = (nurseId, message) => {
-  io.emit("alert", { nurseId, message });
-};
-
 // This is the nurses movements
 nurseIds.forEach((nurseId) => {
   setInterval(() => {
@@ -153,7 +139,6 @@ nurseIds.forEach((nurseId) => {
             nurseStates[nurseId].hotChocolates += 1; // Get a hot chocolate back from the house
             nurseStates[nurseId].countdown = 40; // Reset countdown
             io.emit("cureDelivered", { nurseId, house: targetHouse });
-            emitAlert(nurseId, `Cured illness at ${targetHouse.name}`);
           }
         }
       } else if (currentState.headingToHospital && currentState.targetHouse) {
@@ -274,7 +259,6 @@ nurseIds.forEach((nurseId) => {
             nurseStates[nurseId].hotChocolates += 1; // Get a hot chocolate back from the house
             nurseStates[nurseId].countdown = 40; // Reset countdown
             io.emit("cureDelivered", { nurseId, house });
-            emitAlert(nurseId, `Cured illness at ${house.name}`);
           }
         }
       });
@@ -300,7 +284,6 @@ nurseIds.forEach((nurseId) => {
         hotChocolates: nurseStates[nurseId].hotChocolates,
         carryingCure: nurseStates[nurseId].carryingCure,
       });
-      emitAlert(nurseId, "died");
     }
   }, 1000); // Decrement countdown every second
 });
@@ -332,6 +315,25 @@ app.post("/api/location/report", (req, res) => {
   io.emit("locationUpdate", { nurseId, lat, lon });
   res.status(200).send("Location reported");
 });
+
+function emitAlert(nurseId, target) {
+  io.emit("alert", { nurseId, hospital: target.hospital, house: target.house });
+}
+
+// Function to check proximity between nurse and target dynamically
+function isClose(nurse, target) {
+  const proximityThreshold = 1;
+
+  const distance = Math.sqrt(
+    Math.pow(nurse.lat - target.lat, 2) + Math.pow(nurse.lon - target.lon, 2)
+  );
+
+  if (distance <= proximityThreshold) {
+    return true;
+  }
+
+  return false;
+}
 
 // Start server
 const port = process.env.PORT || 8888;
