@@ -1,6 +1,3 @@
-//Please note, I did this in React having in my mind that I would have multiple components rendering and propping
-//everything I needed but I didn't have enough time and figured that 1 week was somewhat the limit.
-
 import React, { useEffect, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
@@ -9,7 +6,6 @@ import io from "socket.io-client";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css";
 import "leaflet-defaulticon-compatibility";
 
-// Icons declaration here
 const nurseIcon = new L.Icon({
   iconUrl: "/nurse.png",
   iconSize: [32, 32],
@@ -52,11 +48,9 @@ const deadNurseIcon = new L.Icon({
   popupAnchor: [0, -32],
 });
 
-// Socket connection
 const socket = io("http://localhost:8888");
 
 function App() {
-  // State management sections, scoping is important
   const [locations, setLocations] = useState({});
   const [alerts, setAlerts] = useState([]);
   const [hospitals, setHospitals] = useState([]);
@@ -84,7 +78,6 @@ function App() {
       }));
     });
 
-    // Socket alert with a 2 second interval, having a list was way too ugly and annoying
     socket.on("alert", (alert) => {
       setAlerts((prevAlerts) => [...prevAlerts, alert]);
       setTimeout(() => {
@@ -101,7 +94,7 @@ function App() {
     });
 
     socket.on("cureDelivered", (data) => {
-      // console.log(`${data.nurseId} delivered cure to ${data.house.name}`);
+      console.log(`${data.nurseId} delivered cure to ${data.house.name}`);
       setHouses((prevHouses) =>
         prevHouses.map((house) =>
           house.id === data.house.id ? { ...house, cured: true } : house
@@ -109,13 +102,11 @@ function App() {
       );
     });
 
-    // Sockets for the scoreboard
     socket.on("updateCounts", (counts) => {
       setDeadNursesCount(counts.deadNursesCount);
       setCuredHousesCount(counts.curedHousesCount);
     });
 
-    // Final alert for when all houses are cured, pretty much game over
     socket.on("allHousesCured", () => {
       alert("All houses are cured!");
     });

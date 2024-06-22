@@ -1,3 +1,5 @@
+//Ended up NOT using dotenv for this because there was no databases used or web api used needing a key.
+
 const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
@@ -17,6 +19,8 @@ const io = socketIo(server, {
 let nurses = {};
 let hospitals = [];
 let houses = [];
+let deadNursesCount = 0;
+let curedHousesCount = 0;
 
 // Illnesses and their cures
 const illnesses = {
@@ -28,7 +32,7 @@ const illnesses = {
   Loneliness: "Tickle-Me-Elmo",
 };
 
-// Generate hospitals with random locations within specified Lat and Long
+// Generate hospitals with random location
 const generateRandomHospital = () => {
   const lat = 60 + Math.random() * 10; // Random latitude near -60
   const lon = -133 + Math.random() * 40; // Random longitude near -133
@@ -41,9 +45,9 @@ const generateRandomHospital = () => {
 
 // Generate houses with random locations within specified Lat and Long
 const generateRandomHouse = () => {
-  const lat = 60 + Math.random() * 10; // Random latitude near -60
-  const lon = -133 + Math.random() * 40; // Random longitude near -133
-  const hasIllness = Math.random() < 1; // 1/3 chance of having an illness
+  const lat = 60 + Math.random() * 9; // Random latitude near -60
+  const lon = -133 + Math.random() * 39; // Random longitude near -133
+  const hasIllness = Math.random() < 1; // This was randomized at first but decided to make them all have illnesses
   const illness = hasIllness
     ? Object.keys(illnesses)[
         Math.floor(Math.random() * Object.keys(illnesses).length)
@@ -54,36 +58,37 @@ const generateRandomHouse = () => {
     name: `House ${houses.length + 1}`,
     location: { lat, lon },
     illness,
-    cured: false, // Track if the house is cured
+    cured: false,
   };
 };
 
-// Generate multiple hospitals
-for (let i = 0; i < 15; i++) {
+// For Loop to push 20 hospitals
+for (let i = 0; i < 19; i++) {
   hospitals.push(generateRandomHospital());
 }
 
-// Generate multiple houses
-for (let i = 0; i < 40; i++) {
+// For loop to push 25 houses
+for (let i = 0; i < 24; i++) {
   houses.push(generateRandomHouse());
 }
 
-// Emit hospitals and houses data to clients
+// Emit hospitals, houses, and counts data to clients
 io.on("connection", (socket) => {
   socket.emit("hospitals", hospitals); // Emit hospitals data on initial connection
   socket.emit("houses", houses); // Emit houses data on initial connection
+  socket.emit("updateCounts", { deadNursesCount, curedHousesCount }); // Emit counts data on initial connection
 });
 
 // Generate nurse IDs
-const nurseIds = Array.from({ length: 20 }, (_, i) => `Nurse ${i + 1}`);
+const nurseIds = Array.from({ length: 30 }, (_, i) => `Nurse ${i + 1}`);
 
-// This is the nurses initial location placement
+// This is the nurses initial location placement //GPT helped me here ALOT... probably why it used .reduce
 const nurseStates = nurseIds.reduce((acc, nurseId) => {
   acc[nurseId] = {
     lat: 60 + Math.random() * 10, // Initial random starting position within [60, 70]
     lon: -133 + Math.random() * 40,
-    latSpeed: (Math.random() - 0.5) * 0.001, // Initial random speed
-    lonSpeed: (Math.random() - 0.5) * 0.001, // Initial random speed
+    latSpeed: (Math.random() - 0.5) * 0.003, // Initial random speed
+    lonSpeed: (Math.random() - 0.5) * 0.003, // Initial random speed
     lastAlertTime: 0, // Track last alert time for cooldown
     alive: true, // Track if the nurse is alive
     countdown: 40, // Initialize countdown for 40 seconds
@@ -92,6 +97,7 @@ const nurseStates = nurseIds.reduce((acc, nurseId) => {
     headingToHospital: false, // Track if the nurse is heading to a hospital
     carryingCure: null, // The cure the nurse is carrying
     targetHouse: null, // The house the nurse is targeting to deliver the cure
+    alertSent: false, // Flag to check if alert was already sent for death
   };
   return acc;
 }, {});
@@ -109,7 +115,21 @@ const moveTowards = (current, target, speed) => {
   }
 };
 
-// This is the nurses movements
+// Function to check proximity between nurse and target dynamically
+const isClose = (nurse, target) => {
+  const proximityThreshold = 1;
+  const distance = Math.sqrt(
+    Math.pow(nurse.lat - target.lat, 2) + Math.pow(nurse.lon - target.lon, 2)
+  );
+  return distance <= proximityThreshold;
+};
+
+// Function to emit an alert
+const emitAlert = (nurseId, message) => {
+  io.emit("alert", { nurseId, message });
+};
+
+// This is the nurses movements.. lord have mercy on us all there is so many bugs here. GPT helped out alot here
 nurseIds.forEach((nurseId) => {
   setInterval(() => {
     const currentState = nurseStates[nurseId];
@@ -136,9 +156,12 @@ nurseIds.forEach((nurseId) => {
             nurseStates[nurseId].carryingCure = null;
             nurseStates[nurseId].targetHouse = null;
             targetHouse.cured = true; // Mark the house as cured
-            nurseStates[nurseId].hotChocolates += 1; // Get a hot chocolate back from the house
+            nurseStates[nurseId].hotChocolates += 2; // Get a hot chocolate back from the house
             nurseStates[nurseId].countdown = 40; // Reset countdown
             io.emit("cureDelivered", { nurseId, house: targetHouse });
+            curedHousesCount += 1;
+            emitAlert(nurseId, `Cured illness at ${targetHouse.name}`);
+            io.emit("updateCounts", { deadNursesCount, curedHousesCount });
           }
         }
       } else if (currentState.headingToHospital && currentState.targetHouse) {
@@ -170,7 +193,7 @@ nurseIds.forEach((nurseId) => {
             // Pick up the cure and hot chocolate
             nurseStates[nurseId].carryingCure =
               illnesses[currentState.targetHouse.illness];
-            nurseStates[nurseId].hotChocolates += 1; // Always get a hot chocolate
+            nurseStates[nurseId].hotChocolates += 2; // Always get 2 hot chocolate
             nurseStates[nurseId].countdown = 40; // Reset countdown
             nurseStates[nurseId].headingToHospital = false;
           }
@@ -202,7 +225,7 @@ nurseIds.forEach((nurseId) => {
             )
           ) {
             // Pick up hot chocolate
-            nurseStates[nurseId].hotChocolates += 1; // Always get a hot chocolate
+            nurseStates[nurseId].hotChocolates += 2; // Always get a hot chocolate
             nurseStates[nurseId].countdown = 40; // Reset countdown
           }
         }
@@ -259,11 +282,14 @@ nurseIds.forEach((nurseId) => {
             nurseStates[nurseId].hotChocolates += 1; // Get a hot chocolate back from the house
             nurseStates[nurseId].countdown = 40; // Reset countdown
             io.emit("cureDelivered", { nurseId, house });
+            curedHousesCount += 1;
+            emitAlert(nurseId, `Cured illness at ${house.name}`);
+            io.emit("updateCounts", { deadNursesCount, curedHousesCount });
           }
         }
       });
     }
-  }, 10); // Adjust interval to 10 milliseconds for smoother simulation
+  }, 10); // Adjusted interval to 10 milliseconds for smoother simulation
 
   // Decrement countdown and update alive status
   setInterval(() => {
@@ -275,6 +301,12 @@ nurseIds.forEach((nurseId) => {
       nurseStates[nurseId].countdown = 40; // Reset countdown
     } else {
       nurseStates[nurseId].alive = false;
+      if (!nurseStates[nurseId].alertSent) {
+        emitAlert(nurseId, "has died");
+        nurseStates[nurseId].alertSent = true;
+        deadNursesCount += 1;
+        io.emit("updateCounts", { deadNursesCount, curedHousesCount });
+      }
       io.emit("locationUpdate", {
         nurseId,
         lat: nurseStates[nurseId].lat,
@@ -315,25 +347,6 @@ app.post("/api/location/report", (req, res) => {
   io.emit("locationUpdate", { nurseId, lat, lon });
   res.status(200).send("Location reported");
 });
-
-function emitAlert(nurseId, target) {
-  io.emit("alert", { nurseId, hospital: target.hospital, house: target.house });
-}
-
-// Function to check proximity between nurse and target dynamically
-function isClose(nurse, target) {
-  const proximityThreshold = 1;
-
-  const distance = Math.sqrt(
-    Math.pow(nurse.lat - target.lat, 2) + Math.pow(nurse.lon - target.lon, 2)
-  );
-
-  if (distance <= proximityThreshold) {
-    return true;
-  }
-
-  return false;
-}
 
 // Start server
 const port = process.env.PORT || 8888;

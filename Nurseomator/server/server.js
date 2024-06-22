@@ -1,3 +1,5 @@
+//Ended up NOT using dotenv for this because there was no databases used or web api used needing a key.
+
 const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
@@ -17,6 +19,9 @@ const io = socketIo(server, {
 let nurses = {};
 let hospitals = [];
 let houses = [];
+let deadNursesCount = 0;
+let curedHousesCount = 0;
+let intervals = []; // Add interval storage
 
 // Illnesses and their cures
 const illnesses = {
@@ -28,7 +33,7 @@ const illnesses = {
   Loneliness: "Tickle-Me-Elmo",
 };
 
-// Generate hospitals with random locations within specified Lat and Long
+// Generate hospitals with random location
 const generateRandomHospital = () => {
   const lat = 60 + Math.random() * 10; // Random latitude near -60
   const lon = -133 + Math.random() * 40; // Random longitude near -133
@@ -41,9 +46,9 @@ const generateRandomHospital = () => {
 
 // Generate houses with random locations within specified Lat and Long
 const generateRandomHouse = () => {
-  const lat = 60 + Math.random() * 10; // Random latitude near -60
-  const lon = -133 + Math.random() * 40; // Random longitude near -133
-  const hasIllness = Math.random() < 1; // 1/3 chance of having an illness
+  const lat = 60 + Math.random() * 9; // Random latitude near -60
+  const lon = -133 + Math.random() * 39; // Random longitude near -133
+  const hasIllness = Math.random() < 1; // This was randomized at first but decided to make them all have illnesses
   const illness = hasIllness
     ? Object.keys(illnesses)[
         Math.floor(Math.random() * Object.keys(illnesses).length)
@@ -54,36 +59,37 @@ const generateRandomHouse = () => {
     name: `House ${houses.length + 1}`,
     location: { lat, lon },
     illness,
-    cured: false, // Track if the house is cured
+    cured: false,
   };
 };
 
-// Generate multiple hospitals
-for (let i = 0; i < 15; i++) {
+// For Loop to push 20 hospitals
+for (let i = 0; i < 20; i++) {
   hospitals.push(generateRandomHospital());
 }
 
-// Generate multiple houses
-for (let i = 0; i < 40; i++) {
+// For loop to push 25 houses
+for (let i = 0; i < 25; i++) {
   houses.push(generateRandomHouse());
 }
 
-// Emit hospitals and houses data to clients
+// Emit hospitals, houses, and counts data to clients
 io.on("connection", (socket) => {
   socket.emit("hospitals", hospitals); // Emit hospitals data on initial connection
   socket.emit("houses", houses); // Emit houses data on initial connection
+  socket.emit("updateCounts", { deadNursesCount, curedHousesCount }); // Emit counts data on initial connection
 });
 
 // Generate nurse IDs
-const nurseIds = Array.from({ length: 20 }, (_, i) => `Nurse ${i + 1}`);
+const nurseIds = Array.from({ length: 30 }, (_, i) => `Nurse ${i + 1}`);
 
 // This is the nurses initial location placement
 const nurseStates = nurseIds.reduce((acc, nurseId) => {
   acc[nurseId] = {
     lat: 60 + Math.random() * 10, // Initial random starting position within [60, 70]
     lon: -133 + Math.random() * 40,
-    latSpeed: (Math.random() - 0.5) * 0.001, // Initial random speed
-    lonSpeed: (Math.random() - 0.5) * 0.001, // Initial random speed
+    latSpeed: (Math.random() - 0.5) * 0.003, // Initial random speed
+    lonSpeed: (Math.random() - 0.5) * 0.003, // Initial random speed
     lastAlertTime: 0, // Track last alert time for cooldown
     alive: true, // Track if the nurse is alive
     countdown: 40, // Initialize countdown for 40 seconds
@@ -92,6 +98,7 @@ const nurseStates = nurseIds.reduce((acc, nurseId) => {
     headingToHospital: false, // Track if the nurse is heading to a hospital
     carryingCure: null, // The cure the nurse is carrying
     targetHouse: null, // The house the nurse is targeting to deliver the cure
+    alertSent: false, // Flag to check if alert was already sent for death
   };
   return acc;
 }, {});
@@ -123,9 +130,15 @@ const emitAlert = (nurseId, message) => {
   io.emit("alert", { nurseId, message });
 };
 
+// Function to clear all intervals and stop activities
+const clearAllIntervals = () => {
+  intervals.forEach(clearInterval);
+  intervals = [];
+};
+
 // This is the nurses movements
 nurseIds.forEach((nurseId) => {
-  setInterval(() => {
+  const movementInterval = setInterval(() => {
     const currentState = nurseStates[nurseId];
 
     // Only update position if the nurse is alive
@@ -150,10 +163,17 @@ nurseIds.forEach((nurseId) => {
             nurseStates[nurseId].carryingCure = null;
             nurseStates[nurseId].targetHouse = null;
             targetHouse.cured = true; // Mark the house as cured
-            nurseStates[nurseId].hotChocolates += 1; // Get a hot chocolate back from the house
+            nurseStates[nurseId].hotChocolates += 2; // Get a hot chocolate back from the house
             nurseStates[nurseId].countdown = 40; // Reset countdown
             io.emit("cureDelivered", { nurseId, house: targetHouse });
+            curedHousesCount += 1;
             emitAlert(nurseId, `Cured illness at ${targetHouse.name}`);
+            io.emit("updateCounts", { deadNursesCount, curedHousesCount });
+
+            if (houses.every((house) => house.cured)) {
+              io.emit("allHousesCured");
+              clearAllIntervals();
+            }
           }
         }
       } else if (currentState.headingToHospital && currentState.targetHouse) {
@@ -185,7 +205,7 @@ nurseIds.forEach((nurseId) => {
             // Pick up the cure and hot chocolate
             nurseStates[nurseId].carryingCure =
               illnesses[currentState.targetHouse.illness];
-            nurseStates[nurseId].hotChocolates += 1; // Always get a hot chocolate
+            nurseStates[nurseId].hotChocolates += 2; // Always get 2 hot chocolates
             nurseStates[nurseId].countdown = 40; // Reset countdown
             nurseStates[nurseId].headingToHospital = false;
           }
@@ -217,7 +237,7 @@ nurseIds.forEach((nurseId) => {
             )
           ) {
             // Pick up hot chocolate
-            nurseStates[nurseId].hotChocolates += 1; // Always get a hot chocolate
+            nurseStates[nurseId].hotChocolates += 2; // Always get hot chocolates
             nurseStates[nurseId].countdown = 40; // Reset countdown
           }
         }
@@ -226,7 +246,7 @@ nurseIds.forEach((nurseId) => {
         newLat += currentState.latSpeed;
         newLon += currentState.lonSpeed;
 
-        // Check boundaries and reverse direction when hit the boundary
+        // Check boundaries and reverse direction when hitting the boundary
         if (newLat <= 60 || newLat >= 70) {
           currentState.latSpeed *= -1; // Reverse latitude direction
           newLat = currentState.lat + currentState.latSpeed; // Recalculate new latitude
@@ -274,15 +294,24 @@ nurseIds.forEach((nurseId) => {
             nurseStates[nurseId].hotChocolates += 1; // Get a hot chocolate back from the house
             nurseStates[nurseId].countdown = 40; // Reset countdown
             io.emit("cureDelivered", { nurseId, house });
+            curedHousesCount += 1;
             emitAlert(nurseId, `Cured illness at ${house.name}`);
+            io.emit("updateCounts", { deadNursesCount, curedHousesCount });
+
+            if (houses.every((house) => house.cured)) {
+              io.emit("allHousesCured");
+              clearAllIntervals();
+            }
           }
         }
       });
     }
-  }, 10); // Adjust interval to 10 milliseconds for smoother simulation
+  }, 10); // Adjusted interval to 10 milliseconds for smoother simulation
+
+  intervals.push(movementInterval);
 
   // Decrement countdown and update alive status
-  setInterval(() => {
+  const countdownInterval = setInterval(() => {
     if (nurseStates[nurseId].countdown > 0) {
       nurseStates[nurseId].countdown -= 1;
     } else if (nurseStates[nurseId].hotChocolates > 0) {
@@ -291,6 +320,12 @@ nurseIds.forEach((nurseId) => {
       nurseStates[nurseId].countdown = 40; // Reset countdown
     } else {
       nurseStates[nurseId].alive = false;
+      if (!nurseStates[nurseId].alertSent) {
+        emitAlert(nurseId, "has died");
+        nurseStates[nurseId].alertSent = true;
+        deadNursesCount += 1;
+        io.emit("updateCounts", { deadNursesCount, curedHousesCount });
+      }
       io.emit("locationUpdate", {
         nurseId,
         lat: nurseStates[nurseId].lat,
@@ -300,9 +335,10 @@ nurseIds.forEach((nurseId) => {
         hotChocolates: nurseStates[nurseId].hotChocolates,
         carryingCure: nurseStates[nurseId].carryingCure,
       });
-      emitAlert(nurseId, "died");
     }
   }, 1000); // Decrement countdown every second
+
+  intervals.push(countdownInterval);
 });
 
 // Middleware
