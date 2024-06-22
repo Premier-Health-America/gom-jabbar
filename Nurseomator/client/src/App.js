@@ -1,5 +1,5 @@
-//Please note, I did this in React having in my mind that I would have multiple components rendering and propping
-//everything I needed but I didn't have enough time and figured that 1 week was somewhat the limit.
+// Please note, I did this in React having in my mind that I would have multiple components rendering and propping
+// everything I needed but I didn't have enough time and figured that 1 week was somewhat the limit.
 
 import React, { useEffect, useState } from "react";
 import "leaflet/dist/leaflet.css";
@@ -19,6 +19,13 @@ const nurseIcon = new L.Icon({
 
 const nurseColdIcon = new L.Icon({
   iconUrl: "/coldNurse.png",
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+});
+
+const nurseHoldIcon = new L.Icon({
+  iconUrl: "/nurseHold.png",
   iconSize: [32, 32],
   iconAnchor: [16, 32],
   popupAnchor: [0, -32],
@@ -207,6 +214,8 @@ function App() {
                   ? deadNurseIcon
                   : nursesStatus[nurseId]?.hotChocolates < 1
                   ? nurseColdIcon
+                  : nursesStatus[nurseId]?.carryingCure
+                  ? nurseHoldIcon
                   : nurseIcon
               }
             >

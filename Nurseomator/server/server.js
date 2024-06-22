@@ -63,12 +63,12 @@ const generateRandomHouse = () => {
   };
 };
 
-// For Loop to push 20 hospitals
+// For Loop to push hospitals
 for (let i = 0; i < 20; i++) {
   hospitals.push(generateRandomHospital());
 }
 
-// For loop to push 25 houses
+// For loop to push houses
 for (let i = 0; i < 25; i++) {
   houses.push(generateRandomHouse());
 }
