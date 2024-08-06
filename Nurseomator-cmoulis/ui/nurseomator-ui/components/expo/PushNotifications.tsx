@@ -89,7 +89,7 @@ async function schedulePushNotificationEmergency() {
       body: "Les secours sont en chemin et arriveront le plus vite possible",
       data: { data: "goes here", test: { test1: "more data" } },
     },
-    trigger: { seconds: 0 },
+    trigger: { seconds: 1 },
   });
 }
 

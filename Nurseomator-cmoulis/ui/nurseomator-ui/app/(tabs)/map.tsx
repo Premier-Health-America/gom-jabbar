@@ -1,4 +1,4 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
+
 import { StyleSheet} from "react-native";
 
 import MapView, { Marker } from "react-native-maps";
