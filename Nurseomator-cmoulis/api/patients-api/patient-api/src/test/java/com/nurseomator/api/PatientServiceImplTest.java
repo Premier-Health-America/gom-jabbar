@@ -2,7 +2,6 @@ package com.nurseomator.api;
 
 import static org.mockito.Mockito.when;
 
-import java.io.File;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
