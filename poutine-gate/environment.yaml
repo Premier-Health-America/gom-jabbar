@@ -1,0 +1,7 @@
+name: poutine_gate
+channels:
+  - defaults
+dependencies:
+  - fastapi=0.112.0
+  - uvicorn[standard]
+  - lyrics-extractor=3.0.1
