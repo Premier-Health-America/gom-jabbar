@@ -1,0 +1,28 @@
+openapi: 3.0.0
+info:
+  title: Orchestator's API
+  description: This is the API of the restaurant's orchestrator
+  version: 1.0.0
+paths:
+  /cook-poutine:
+    get:
+      summary: "Returns"
+      responses:
+        '200':
+          description: "Start preparation of the poutine"
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Preparation ended"
+  /detect-drunk:
+    get:
+      summary: "Returns"
+      responses:
+        '200':
+          description: "Detect drunk people that want to eat"
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Send poutine"
