@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+import "./common.proto";
+
+package outremona;
+
+service OutremonaService {
+  rpc SqueezeCheese (common.TaskRequest) returns (common.TaskResponse);
+}

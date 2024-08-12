@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package common;
+
+message TaskRequest {
+  string task_id = 1;
+  string data = 2;
+}
+
+message TaskResponse {
+  string result = 1;
+}
