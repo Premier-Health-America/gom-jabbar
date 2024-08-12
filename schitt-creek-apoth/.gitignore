@@ -1,2 +1,3 @@
 roseapothecary/db.sqlite3
 roseapothecary/api/migrations
+*/__pycache__/
