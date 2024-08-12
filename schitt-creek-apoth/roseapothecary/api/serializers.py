@@ -1,6 +1,10 @@
 from rest_framework import serializers
 from .models import (CustomerInfo, CustomerOrders, Products)
 
+'''
+Create a serializer for each model to convert these models to Python data types
+to be rendered into JSON file(s).
+'''
 class CustomerInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomerInfo
