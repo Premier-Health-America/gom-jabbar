@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 
@@ -5,7 +7,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 This file contains the models to create the tables and fields for the relevant data storage
 '''
 class CustomerInfo(models.Model):
-    customer_id = models.AutoField(db_column='customer_id', primary_key=True)
+    customer_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=128)
 
     class CustomerType(models.TextChoices):
@@ -19,15 +21,17 @@ class CustomerInfo(models.Model):
     favourite_scent = models.TextField(max_length=100)
 
     def __str__(self):
+        # return self.name
         # this is a string representation of the an instance of the CustomerInfo model
-        return self.name
+        return str(self.customer_id)
 
 class CustomerOrders(models.Model):
-    customer_id = models.AutoField(db_column='customer_id', primary_key=True)
-    order_time = models.DateTimeField(auto_now_add=True)
+    order_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    customer_id = models.ManyToManyField(CustomerInfo)
+    order_time = models.DateTimeField()
     product_ordered = models.CharField(max_length=128)
-    customer_mood = models.TextField(max_length=100)
-    number_customers = models.PositiveIntegerField()
+    customer_mood = models.TextField(max_length=128)
+    number_customers = models.PositiveIntegerField(default=0, null=False)
 
     class TypeOfBillSplit(models.TextChoices):
         # to enforce unique choice for the makeup of the bill split
@@ -39,11 +43,12 @@ class CustomerOrders(models.Model):
     customer_feedback = models.TextField(max_length=500, blank=True)
 
     def __str__(self):
-        return self.product_ordered
+        # return self.product_ordered
+        return str(self.order_id)
 
 class Products(models.Model):
     product_id = models.AutoField(db_column='product_id',primary_key=True)
-    product_name = models.CharField(max_length=120)
+    product_name = models.CharField(max_length=256)
     price = models.FloatField()
     artisanal_flair = models.IntegerField(
         validators=[
@@ -51,10 +56,11 @@ class Products(models.Model):
             MinValueValidator(1)
         ]
      ) # this rates from 1 to 10
-    date_last_stocked = models.DateField(auto_now_add=True)
+    date_last_stocked = models.DateField()
     shelf_life = models.DateField()
 
     def __str__(self):
         return self.product_name
+
 
 

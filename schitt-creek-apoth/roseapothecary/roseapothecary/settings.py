@@ -31,7 +31,7 @@ CORS_ALLOW_ALL_ORIGINS = False
 
 # this points to the local host of the vue js frontend
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173/',
+    'http://localhost:8080',
 ]
 
 

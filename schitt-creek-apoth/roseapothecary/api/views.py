@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics
+from django.db.models import Count
+
 from .models import CustomerOrders, CustomerInfo, Products
 from .serializers import (CustomerInfoSerializer, CustomerOrdersSerializer, ProductsSerializer)
 
