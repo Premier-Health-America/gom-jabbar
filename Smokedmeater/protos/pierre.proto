@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package pierre;
+
+message MixRequest {
+  string potatoSize = 1;
+  string potatoSoftnessLevel = 2;
+  string oilType = 3;
+  string specificTemperature = 4;
+}
+
+message MixResponse {
+  string result = 1;  // Result of mixing the ingredients
+}
+
+message SendRequest {
+    bool drunkIsDetected = 1;
+}
+  
+message SendResponse {
+    string result = 1;  // Result of sending approval
+}
+
+service PierreService {
+    // Mixes all the ingredients in the box and prepares the poutine
+    rpc MixPoutine (MixRequest) returns (MixResponse);
+    rpc SendPoutine (SendRequest) returns (SendResponse);
+  }

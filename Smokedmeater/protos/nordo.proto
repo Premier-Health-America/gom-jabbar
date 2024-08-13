@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package nordo;
+
+message BoilPotatoesRequest {
+  int32 boilTime = 1;  // Time in seconds to boil the potatoes
+}
+
+message BoilPotatoesResponse {
+  string result = 1;
+}
+
+service NordoService {
+    // Boils the potatoes and returns their softness level
+    rpc BoilPotatoes (BoilPotatoesRequest) returns (BoilPotatoesResponse);
+  }

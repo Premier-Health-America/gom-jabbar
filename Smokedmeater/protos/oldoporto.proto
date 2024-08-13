@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package oldoporto;
+
+message KeepWarmRequest {
+  float temperature = 1;  // Temperature to maintain in Celsius
+}
+
+message KeepWarmResponse {
+  string result = 1;  // Confirmation that the temperature was maintained
+}
+
+service OldoportoService {
+    // Keeps the gravy at the specified temperature and returns a confirmation
+    rpc KeepWarm (KeepWarmRequest) returns (KeepWarmResponse);
+  }

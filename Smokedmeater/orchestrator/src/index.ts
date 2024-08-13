@@ -1,8 +1,13 @@
 // src/index.ts
 import { Application } from './app';
 import { PoutineController } from './controllers/poutine.controller';
+import { PoutineCreationService } from './services/poutine-creation.service';
+import { PoutineDeliveryService } from './services/poutine-delivery.service';
 
-const poutineController = new PoutineController();
+// Create instances of the services
+const poutineCreationService = new PoutineCreationService();
+const poutineDeliveryService = new PoutineDeliveryService();
+const poutineController = new PoutineController(poutineCreationService, poutineDeliveryService);
 
 const appInstance = new Application(poutineController);
 

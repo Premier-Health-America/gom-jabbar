@@ -23,7 +23,7 @@ export class Application {
     }
 
     private bindRoutes(): void {
-        this.app.use('/cook-poutine', this.poutineController.router);
+        this.app.use('/', this.poutineController.router);
     }
 
     public start(port: number): void {

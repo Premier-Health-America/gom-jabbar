@@ -1,25 +1,34 @@
-import express from 'express';
 import { Router } from 'express';
-import OutremonaCommunicationService from '../services/outremona-communication.service';
-
-const app = express();
+import { PoutineCreationService } from '../services/poutine-creation.service';
+import { PoutineDeliveryService } from '../services/poutine-delivery.service';
 
 export class PoutineController {
     router!: Router;
-
-    constructor() {
-        this.configureRouter();
+    private poutineCreationService: PoutineCreationService;
+    private poutineDeliveryService: PoutineDeliveryService;
+    
+    constructor(poutineCreationService: PoutineCreationService, poutineDeliveryService: PoutineDeliveryService) {
+        this.poutineCreationService = poutineCreationService 
+        this.poutineDeliveryService = poutineDeliveryService 
+        this.configureRouter();  
     }
 
     private configureRouter(): void {
         this.router = Router();
-        const outremonaService = OutremonaCommunicationService.getInstance();
 
-        this.router.get('/', (req,res) => {
-            res.send('Hello  !');
-            outremonaService.squeezeCheese()
-            .then(response => console.log(response))
-            .catch(err => console.error(err));
+        this.router.get('/cook-poutine/:potatoSize/:boilTime/:oilType/:temperature', async (req,res) => {
+            const potatoSize = parseInt(req.params.potatoSize);
+            const boilTime = parseInt(req.params.boilTime);
+            const oilType = req.params.oilType;
+            const temperature = parseInt(req.params.temperature);
+            const response = await this.poutineCreationService.createPoutine(potatoSize, boilTime, oilType, temperature);
+            res.send(response)
+        });
+
+        this.router.get('/send-poutine/:drunkIsDetected', async (req,res) => {
+            const drunkIsDetected = req.params.drunkIsDetected === 'true';
+            const response = await this.poutineDeliveryService.sendPoutine(drunkIsDetected);
+            res.send(response)
         });
     }
 }

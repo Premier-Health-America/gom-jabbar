@@ -1,28 +1,54 @@
 openapi: 3.0.0
 info:
-  title: Orchestrator's API
-  description: This is the API of the restaurant's orchestrator
+  title: Poutine API
   version: 1.0.0
 paths:
-  /cook-poutine:
+  /cook-poutine/{potatoSize}/{boilTime}/{oilType}/{temperature}:
     get:
-      summary: "Returns"
+      summary: Cook poutine
+      parameters:
+        - name: potatoSize
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Size (inch per inch) of the potato cubes
+        - name: boilTime
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Time to boil the potatoes
+        - name: oilType
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Type of oil to use
+        - name: temperature
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Specific temperature to keep the things warm
       responses:
         '200':
-          description: "Start preparation of the poutine"
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: "Preparation ended"
-  /detect-drunk:
+          description: Poutine cooked successfully
+        '500':
+          description: Error occurred
+
+  /send-poutine/{drunkIsDetected}:
     get:
-      summary: "Returns"
+      summary: Send poutine
+      parameters:
+        - name: drunkIsDetected
+          in: path
+          required: true
+          schema:
+            type: boolean
+          description: Send poutine if drunk clients are detected
       responses:
         '200':
-          description: "Detect drunk people that want to eat"
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: "Send poutine"
+          description: Poutine sent successfully
+        '500':
+          description: Error occurred

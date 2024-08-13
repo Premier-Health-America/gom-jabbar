@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package verduny;
+
+// The request message containing the size of potato cubes and the syrup dip time.
+message CutAndDipRequest {
+  int32 cubeSize = 1; // Size of the potato cubes in inches
+}
+
+// The response message containing the result of the cutting and dipping process.
+message CutAndDipResponse {
+  string result = 1; // Description of the result of the operation
+}
+
+// The Verduny service definition.
+service VerdunyService {
+  // RPC method to cut potatoes into cubes and dip them in maple syrup.
+  rpc CutAndDip (CutAndDipRequest) returns (CutAndDipResponse);
+}

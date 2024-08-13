@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package bizar;
+
+message FryPotatoesRequest {
+  string oilType = 1;  // Type of oil to use for frying
+}
+
+message FryPotatoesResponse {
+  string result = 1;  // Result of frying the potatoes
+}
+
+service BizarService {
+    // Fries the potatoes with specified oil and returns the result
+    rpc FryPotatoes (FryPotatoesRequest) returns (FryPotatoesResponse);
+  }
