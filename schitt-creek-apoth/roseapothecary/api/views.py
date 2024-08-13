@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from rest_framework import generics
+from rest_framework import generics, status
+from rest_framework.response import Response
 from django.db.models import Count
 
 from .models import CustomerOrders, CustomerInfo, Products
@@ -14,10 +15,15 @@ class CustomerInfoListCreate(generics.ListCreateAPIView):
 class CustomerOrdersListCreate(generics.ListCreateAPIView):
     queryset = CustomerOrders.objects.all()
     serializer_class = CustomerOrdersSerializer
+    # CustomerOrders.objects.values('customer_id').annotate(number_customers=Count('customer_id')).order_by()
 
 class ProductsListCreate(generics.ListCreateAPIView):
     queryset = Products.objects.all()
     serializer_class = ProductsSerializer
+    def delete(self, request, *args, **kwargs):
+        # this deletes all the contents of the Products Table
+        Products.objects.all().delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class CustomerInfoRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     # access a single customer's info to update and/or delete the customer info

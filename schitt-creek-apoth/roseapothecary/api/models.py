@@ -42,6 +42,10 @@ class CustomerOrders(models.Model):
     bill_split = models.CharField(max_length=2, choices=TypeOfBillSplit.choices)
     customer_feedback = models.TextField(max_length=500, blank=True)
 
+    # def save(self, *args, **kwargs):
+    #     self.number_customers = len(self.customer_id)
+    #     return super(CustomerOrders, self).save(*args, **kwargs)
+
     def __str__(self):
         # return self.product_ordered
         return str(self.order_id)
