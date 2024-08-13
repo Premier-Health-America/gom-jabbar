@@ -9,8 +9,26 @@ This file contains the models to create the tables and fields for the relevant d
 
 class Products(models.Model):
     product_id = models.AutoField(db_column='product_id',primary_key=True)
-    product_name = models.CharField(max_length=256)
+    product_name = models.CharField(max_length=256, unique=True)
     price = models.FloatField()
+
+    class ProductType(models.TextChoices):
+        # to enforce unique choice for a category
+        MOCKTAILS = 'MOCKTAILS'
+        WINES = 'WINES'
+        SPIRITS = 'SPIRITS'
+        CRAFT_BEERS = 'BEERS'
+        GOURMET_SNACKS = 'SNACKS'
+        LUXURY_CHOCOLATES = 'CHOCOLATES'
+        ESSENTIAL_OILS_AND_AROMATHERAPY = 'ESSENTIAL OILS'
+        BEAUTY_AND_SKINCARE_PRODUCTS = 'BEAUTY AND SKINCARE'
+        GOURMET_COOKING_INGREDIENTS = 'COOKING'
+        HANDCRAFTED_HOME_DECOR = 'HOME_DECOR'
+        CUSTOMIZABLE_GIFT_SETS = 'GIFT_SETS'
+        VINTAGE_FINDS = 'VINTAGE'
+        SCENTS = 'SCENTS'
+
+    category = models.CharField(max_length=20, choices=ProductType.choices, db_index=True)
     artisanal_flair = models.IntegerField(
         validators=[
             MaxValueValidator(10),

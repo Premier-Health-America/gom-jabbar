@@ -19,5 +19,5 @@ class CustomerOrdersSerializer(serializers.ModelSerializer):
 class ProductsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Products
-        fields = ["product_id", "product_name", "price", "artisanal_flair", "date_last_stocked",
+        fields = ["product_id", "product_name", "price", "category","artisanal_flair", "date_last_stocked",
                   "shelf_life"]

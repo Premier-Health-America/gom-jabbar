@@ -12,12 +12,20 @@ class CustomerInfoListCreate(generics.ListCreateAPIView):
     queryset = CustomerInfo.objects.all()
     serializer_class = CustomerInfoSerializer
     pagination_class = MyLimitOffsetPagination # to enable pagination
+    def delete(self, request, *args, **kwargs):
+        # this deletes all the contents of the Products Table
+        CustomerInfo.objects.all().delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class CustomerOrdersListCreate(generics.ListCreateAPIView):
     queryset = CustomerOrders.objects.all()
     serializer_class = CustomerOrdersSerializer
     pagination_class = MyLimitOffsetPagination  # to enable pagination
     # CustomerOrders.objects.values('customer_id').annotate(number_customers=Count('customer_id')).order_by()
+    def delete(self, request, *args, **kwargs):
+        # this deletes all the contents of the Products Table
+        CustomerOrders.objects.all().delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class ProductsListCreate(generics.ListCreateAPIView):
     queryset = Products.objects.all()
@@ -33,6 +41,7 @@ class CustomerInfoRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = CustomerInfo.objects.all()
     serializer_class = CustomerInfoSerializer
     lookup_field = "pk" # this represents a primary key lookup
+
 
 class CustomerOrdersRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = CustomerOrders.objects.all()

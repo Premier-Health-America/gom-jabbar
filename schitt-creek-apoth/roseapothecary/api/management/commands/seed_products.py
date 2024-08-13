@@ -19,16 +19,16 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR(f'File {file_path} does not exist'))
             return
 
-        product_names = []
-        with open(file_path, 'r') as file:
-            reader = csv.reader(file)
-            for row in reader:
-                product_names.extend(row)
+        product_names = {}
+        reader = csv.DictReader(open(file_path))
+        for row in reader:
+            product_names = dict(row)
 
-        for name in product_names:
+        for name, category in product_names.items():
             Products.objects.create(
                 product_name=name,
                 price=fake.random_number(digits=2),
+                category=category,
                 artisanal_flair=fake.random_int(min=1, max=10),
                 date_last_stocked=fake.date_between(start_date='-2y', end_date='today'),
                 shelf_life=fake.date_between(start_date='today', end_date='+2y')

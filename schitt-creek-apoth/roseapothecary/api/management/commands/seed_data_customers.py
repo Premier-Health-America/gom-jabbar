@@ -32,23 +32,25 @@ class Command(BaseCommand):
         # Generate orders
         order_count = 0  # Counter for total orders created
         for customer in customers:
+            order_count += 1
             num_orders = random.randint(2, 14)  # Random number of orders per customer between 2 and 14
             for _ in range(num_orders):
                 order_time = fake.date_time_between(start_date=two_years_ago, end_date=now)
 
+                # Assign a random number of customers to this order
+                num_customers_in_order = random.randint(1, 5)
                 # Create the order
                 order = CustomerOrders.objects.create(
                     order_time=order_time,
                     customer_mood=fake.sentence(),
-                    number_customers=random.randint(1, 5),  # Number of customers in the order
+                    number_customers=num_customers_in_order,  # Number of customers in the order
                     bill_split=random.choice([CustomerOrders.TypeOfBillSplit.PER_GROUP,
                                               CustomerOrders.TypeOfBillSplit.PER_PERSON,
                                               CustomerOrders.TypeOfBillSplit.PER_RATIO]),
                     customer_feedback=fake.text(max_nb_chars=500)
                 )
 
-                # Assign a random number of customers to this order
-                num_customers_in_order = random.randint(1, 5)  # Random number of customers per order
+                # Assign a number of customers to this order using the num_customers_in_order
                 customers_for_order = random.sample(customers, num_customers_in_order)
                 order.customer_id.set(customers_for_order)
 
