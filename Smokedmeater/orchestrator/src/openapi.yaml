@@ -18,7 +18,7 @@ paths:
           required: true
           schema:
             type: integer
-          description: Time to boil the potatoes
+          description: Time (in minutes) to boil the potatoes
         - name: oilType
           in: path
           required: true
@@ -30,7 +30,7 @@ paths:
           required: true
           schema:
             type: integer
-          description: Specific temperature to keep the things warm
+          description: Specific temperature (in celsius) to keep the things warm
       responses:
         '200':
           description: Poutine cooked successfully

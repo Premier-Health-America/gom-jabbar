@@ -24,5 +24,5 @@ server.bindAsync(PORT, grpc.ServerCredentials.createInsecure(), (err, bindPort) 
     console.error('Failed to bind server:', err);
     return;
   }
-  console.log(`Nordo server running at http://${PORT}`);
+  console.log(`Oldoporto server running at http://${PORT}`);
 });

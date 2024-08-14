@@ -1,0 +1,71 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+	  {
+		"label": "npm: start - Smokedmeater/outremona",
+		"type": "npm",
+		"script": "start",
+		"path": "Smokedmeater/outremona",
+		"problemMatcher": []
+	  },
+	  {
+		"label": "npm: start - Smokedmeater/verduny",
+		"type": "npm",
+		"script": "start",
+		"path": "Smokedmeater/verduny",
+		"problemMatcher": []
+	  },
+	  {
+		"label": "npm: start - Smokedmeater/nordo",
+		"type": "npm",
+		"script": "start",
+		"path": "Smokedmeater/nordo",
+		"problemMatcher": []
+	  },
+	  {
+		"label": "npm: start - Smokedmeater/bizar",
+		"type": "npm",
+		"script": "start",
+		"path": "Smokedmeater/bizar",
+		"problemMatcher": []
+	  },
+	  {
+		"label": "npm: start - Smokedmeater/oldoporto",
+		"type": "npm",
+		"script": "start",
+		"path": "Smokedmeater/oldoporto",
+		"problemMatcher": []
+	  },
+	  {
+		"label": "npm: start - Smokedmeater/pierre",
+		"type": "npm",
+		"script": "start",
+		"path": "Smokedmeater/pierre",
+		"problemMatcher": []
+	  },
+	  {
+		"label": "npm: start - Smokedmeater/orchestrator",
+		"type": "npm",
+		"script": "start",
+		"path": "Smokedmeater/orchestrator",
+		"problemMatcher": []
+	  },
+	  {
+		"label": "start-all-servers",
+		"dependsOn": [
+		  "npm: start - Smokedmeater/outremona",
+		  "npm: start - Smokedmeater/verduny",
+		  "npm: start - Smokedmeater/nordo",
+		  "npm: start - Smokedmeater/bizar",
+		  "npm: start - Smokedmeater/oldoporto",
+		  "npm: start - Smokedmeater/pierre",
+		  "npm: start - Smokedmeater/orchestrator"
+		],
+		"group": {
+		  "kind": "build",
+		  "isDefault": true
+		}
+	  }
+	]
+  }
+  
