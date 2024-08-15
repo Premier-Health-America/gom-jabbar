@@ -1,14 +1,14 @@
 # Ma solution pour le projet SmokedMeater ("Accelerating poutine production")
 
 ## Introduction
-Tout d'abord, je voulais vous remercier pour l'opportunité et vous dire que j'ai trouvé le projet intéressant, car j'ai pu apprendre de nouveaux concepts et de nouvelles technologies. 
+Tout d'abord, je voulais vous remercier pour l'opportunité que vous m'avez donnée et vous mentionner que j'ai trouvé le projet intéressant, car j'ai pu mettre à profit mes connaissances et apprendre de nouveaux concepts. 
 
 ## Explication de l'architecture
 
-Pour la solution, je me suis questionné au départ s'il était mieux de faire un seul serveur avec diférents "endpoints" REST, mais le problème demandait de faire une API REST pour chaque robot ce qui m'a fait penser directement à une architecture orientée microservices. Ainsi, chaque robot est sur un serveur à part entière avec son code et ses fonctions correspondantes.
+Pour la solution, je me suis questionné au départ s'il était mieux de faire un seul serveur avec différents "endpoints" REST, mais le problème demandait de faire une API REST pour chaque robot ce qui m'a fait penser directement à une architecture orientée microservices. Ainsi, chaque robot est sur un serveur à part entière avec son code et ses fonctions correspondantes.
 
 Cette architecture orientée microservices permet de rendre le code plus lisible et de mieux séparer les responsabilités. Les robots et leurs codes seront aussi plus découplés ce qui peut être plus facile à maintenir et à mettre à l'échelle lorsque le système devient plus complexe.
-Pour implémenter cette architecture, j'ai donc fait en sorte de faire plusieurs dossiers (un dossier par robot) et d'ajouter un dossier qui porte le nom d'orchestrateur. Cet orchestrateur est en fait un serveur central qui permettra de recevoir des requetes REST du client et qui pourra ensuite diriger la préparation de la poutine en communiquant avec les différents robots comme le montre ce schéma: 
+Pour implémenter cette architecture, j'ai donc fait en sorte de faire plusieurs dossiers (un dossier par robot) et d'ajouter un dossier qui porte le nom d'orchestrateur. Cet orchestrateur est en fait un serveur central qui permettra de recevoir des requêtes REST du client et qui pourra ensuite diriger la préparation de la poutine en communiquant avec les différents robots comme le montre ce schéma: 
 
 ![Schéma de l'architecture](./images/archi_grpc.png)
 
@@ -18,6 +18,15 @@ J'ai aussi créer un diagramme de séquences qui permet de montrer le processus 
 
 ![Diagramme de séquence représentant la création de poutine](./images/sequence_cook-poutine.png)
 
+Les paramètres considérées par le système pour la création de la poutine sont: 
+- la taille des cubes de pommes de terre
+- le temps pour mettre les pommes de terre à bouillir
+- l'huile utilisée pour la friture
+- la température à laquelle on veut chauffer la sauce spéciale. 
+
+On peut donc modifier un ou plusieurs de ces 4 paramètres et avoir tout de même une poutine qui se prépare sans problème.
+
+Pour ce qui en est de la détection des gens qui ont faim, il faut mettre un paramètre (qui est un booléen) pour indiquer si une personne a été détectée ou non.
 
 ## Technologies utilisées
 
@@ -27,7 +36,7 @@ Le serveur de l'orchestrateur a une Rest API qui suit le format OpenAPI (voir le
 
 Pour ce qui en est de la création des services gRPC, les fichiers proto sont rassemblés dans le dossier protos.
 
-J'ai utilisé ChatGPT pour certaines questions que j'avais durant le projet et pour m'aider à faire la suite de tests plus rapidement.
+J'ai utilisé ChatGPT pour m'aider à faire la suite de tests plus rapidement, car plusieurs services dans l'orchestrateur se ressemblaient.
 
 ## Choses à améliorer
 
@@ -35,8 +44,8 @@ J'ai malheureusement manqué de temps pour accomplir les tests dans chaque serve
 - des tests unitaires dans chaque serveur afin de s'assurer que les fonctions des différents robots agissent comme prévu.
 - des tests d'intégrations qui permettraient de voir si la communication entre différents microservices (robots) fonctionne comme il se doit. 
 
-Pour le code en général, j'aurai peut-être pu améliorer mon système en faisant en sorte d'avoir des méthodes gRPC qui permettent la communication bi-directionnelle ou le temps réel, mais c'était la première fois que j'implémentais ce type de communication dans un projet ce qui fait que je suis assez satisfait de mon travail. 
-
+Pour le code en général, j'aurai peut-être pu améliorer mon système en faisant en sorte d'avoir des méthodes gRPC qui permettent la communication bi-directionnelle ou en temps réel, mais c'était la première fois que j'implémentais ce type de communication dans un projet ce qui m'a permis d'enrichir mes connaissances.
+Aussi, certaines tâches dans le processus de création de la poutine auraient pu s'exécuter parallèlement comme les tâches impliquant le fromage et les pommes de terre. Je pense que j'aurai pu faire en sorte de faire un appel non séquentiel pour les robots qui s'occupaient de ces tâches là afin de rendre plus efficace la préparation.
 
 ## Instructions pour lancer le projet
 
