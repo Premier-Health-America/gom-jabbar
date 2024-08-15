@@ -29,12 +29,21 @@ Pour ce qui en est de la création des services gRPC, les fichiers proto sont ra
 
 J'ai utilisé ChatGPT pour certaines questions que j'avais durant le projet et pour m'aider à faire la suite de tests plus rapidement.
 
+## Choses à améliorer
+
+J'ai malheureusement manqué de temps pour accomplir les tests dans chaque serveur. J'ai priorisé les tests dans l'orchestrateur, car la majorité du code se trouve là et que le processus de création de poutine se trouve implémenté dans celui-ci. Préférablement, il faudrait :
+- des tests unitaires dans chaque serveur afin de s'assurer que les fonctions des différents robots agissent comme prévu.
+- des tests d'intégrations qui permettraient de voir si la communication entre différents microservices (robots) fonctionnent comme il se doit. 
+
+Pour le code en général, j'aurai peut-être pu améliorer mon système en faisant en sorte d'avoir des méthodes gRPC qui permettent la communication bi-directionnelle ou le temps réel, mais c'était la première fois que j'implémentais ce type de communication dans un projet ce qui fait que je suis assez satisfait de mon travail. 
+
+
 ## Instructions pour lancer le projet
 
 1. **Aller dans le dossier SmokedMeater et lancer le script setup.sh (donner les permissions avant)**
    ```bash   
    chmod +x ./setup.sh  
-   ./setup.sh``
+   ./setup.sh
 Ce script va permettre d'installer automatiquement les node_modules dans chacun des microservices (Robot). 
    
 2. **Si vous utilisez Visual Studio Code, vous pouvez ensuite lancer une tâche (Run task) et choisir l'option "start-all-servers" dans le menu de sélection qui sera affiché**
@@ -53,8 +62,11 @@ Cela va permettre de lancer la commande npm start dans chacun des microservices.
 3. **Si vous n'utilisez pas Visual Studio Code ou que vous ne pouvez pas lancer de tâches (Run Task), il faudra exécuter la commande "npm start" dans chacun des dossiers (orchestrator et les robots)**
 
 4. **Avec les différents serveurs lancés, vous pouvez maintenant faire des requêtes HTTP à l'orchestrator (localhost:3000) et sa documentation openAPI se trouve à l'adresse localhost:3000/api-docs**
-   
 
+
+## Instructions pour lancer les tests
+
+Simplement lancer la commande "npm test" dans le dossier orchestrator
 
 
 
