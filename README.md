@@ -33,7 +33,7 @@ J'ai utilisé ChatGPT pour certaines questions que j'avais durant le projet et p
 
 J'ai malheureusement manqué de temps pour accomplir les tests dans chaque serveur. J'ai priorisé les tests dans l'orchestrateur, car la majorité du code se trouve là et que le processus de création de poutine se trouve implémenté dans celui-ci. Préférablement, il faudrait :
 - des tests unitaires dans chaque serveur afin de s'assurer que les fonctions des différents robots agissent comme prévu.
-- des tests d'intégrations qui permettraient de voir si la communication entre différents microservices (robots) fonctionnent comme il se doit. 
+- des tests d'intégrations qui permettraient de voir si la communication entre différents microservices (robots) fonctionne comme il se doit. 
 
 Pour le code en général, j'aurai peut-être pu améliorer mon système en faisant en sorte d'avoir des méthodes gRPC qui permettent la communication bi-directionnelle ou le temps réel, mais c'était la première fois que j'implémentais ce type de communication dans un projet ce qui fait que je suis assez satisfait de mon travail. 
 
