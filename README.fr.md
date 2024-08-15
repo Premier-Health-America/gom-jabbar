@@ -1,44 +1,60 @@
-## [ENGLISH VERSION](README.md)
+# Ma solution pour le projet SmokedMeater ("Accelerating poutine production")
 
-# Bienvenue, Future Étoile de la Tech !
+## Introduction
+Tout d'abord, je voulais vous remercier pour l'opportunité et vous dire que j'ai trouvé le projet intéressant, car j'ai pu apprendre de nouveaux concepts et de nouvelles technologies. 
 
-Bonjour, candidat(e) !
+## Explication de l'architecture
 
-Nous sommes ravis que tu aies été choisi pour relever notre défi technique et que tu sois enthousiaste à l'idée de te lancer !
+Pour la solution, je me suis questionné au départ s'il était mieux de faire un seul serveur avec diférents "endpoints" REST, mais le problème demandait de faire une API REST pour chaque robot ce qui m'a fait penser directement à une architecture orientée microservices. Ainsi, chaque robot est sur un serveur à part entière avec son code et ses fonctions correspondantes.
 
-## Le Principe
-Ce défi est ta chance de briller et de montrer tes talents uniques.
+Cette architecture orientée microservices permet de rendre le code plus lisible et de mieux séparer les responsabilités. Les robots et leurs codes seront aussi plus découplés ce qui peut être plus facile à maintenir et à mettre à l'échelle lorsque le système devient plus complexe.
+Pour implémenter cette architecture, j'ai donc fait en sorte de faire plusieurs dossiers (un dossier par robot) et d'ajouter un dossier qui porte le nom d'orchestrateur. Cet orchestrateur est en fait un serveur central qui permettra de recevoir des requetes REST du client et qui pourra ensuite diriger la préparation de la poutine en communiquant avec les différents robots comme le montre ce schéma: 
 
-Tu ne dois ***PAS*** :
+![Schéma de l'architecture](./images/archi_grpc.png)
 
-- **Tout compléter** : À moins que tu ne te sentes invincible et que tu aies le temps, ***un*** projet suffit amplement pour que nous ayons une conversation fascinante sur ton approche et ton code 💡.
-- **Finir entièrement le projet** : Tu décides ce qui est suffisant pour démontrer tes compétences—code, documentation, tests, configuration, etc. 🏋️‍♀️.
-- **Utiliser notre pile exacte** : Que tu connaisses Node, Rust ou React/Svelte, c'est super ! Mais si tu es un as de Python ou Haskell et que tu peux nous impressionner avec cela, vas-y 💪.
-- **Choisir ce que tu penses nous impressionnera** : Il s'agit de passion. Choisis le projet qui t'excite le plus. Nous recherchons du talent et de l'enthousiasme ❤️.
+Comme on peut le voir dans le schéma de l'architecture, j'ai décidé d'utiliser gRPC pour la communication entre l'orchestrateur, car cela permet l'envoi de messages plus rapidement et plus efficacement. Aussi, selon les besoins du système, il y a moyen d'avoir une communication bidirectionnelle en temps réel. Dans le futur, si on veut que les robots communiquent entre eux ou avec l'orchestrateur en temps réel, on pourra simplement modifier les fichiers proto et ajouter les différentes méthodes nécessaires.
 
-## Exigences de Base
+J'ai aussi créer un diagramme de séquences qui permet de montrer le processus de création de poutine impémenté présentement : 
 
-Pour nous faciliter la vie lors de l'examen de ton défi, ce serait incroyable si tu pouvais :
-
-- **T'assurer que nous pouvons le construire** : Même si ce n'est pas terminé, nous devons toujours commettre du code fonctionnel. Assure-toi qu'il affiche des journaux ou des espaces vides sans planter ou redémarrer notre distributeur intelligent de nourriture pour chat (🐈😻). Liste tout ce qui est nécessaire pour construire ton projet.
-- **Utiliser les meilleurs outils** : Tu as utilisé ChatGPT ou CoPilot? Correc'. On est 2024. 💪🏻 Dis nous comment et montres nous ce que tu as changé et pourquoi...
-- **Montrer ton meilleur travail** : Les actions parlent plus fort que les mots ! Nous voulons voir ce que tu **fais** au quotidien. Assure-toi que ta soumission respecte tes normes habituelles 😉.
-- **Soumettre ton résultat en tant que PR** : Oui, sur GitHub, idéalement avec des messages de commit spirituels. Place ta réponse dans son propre répertoire et évite de supprimer les autres dossiers de défi ! Nous <u>rejetterons</u> ta PR éventuellement, mais ne panique pas ! Cela signifie que nous avons pris une décision et que nous voulons garder notre dépôt propre pour les prochains candidats. Ta soumission sera toujours dans nos cœurs, surtout si elle est bonne.
-- **Partager ton parcours** : Nous voulons voir comment tu as divisé ton travail et segmenté pour faciliter la collaboration et la révision. Veuillez ne pas compresser ta branche lors de l'envoi de la PR. Nous voulons tout voir, même si tu n'en es pas très fier ! Réorganise tes commits si c'est ton style.
-- **Tester ta soumission** : Mets-toi à notre place. Vérifie tout. Clone le dépôt sous un autre nom localement et assure-toi qu'il se construit parfaitement. Nous passerons exactement 5 minutes à essayer de le faire fonctionner s'il ne fonctionne pas. Fais le meilleur usage de ces 5 minutes 👸🏻.
-- ***<u>Amuse-toi !</u>*** : C'est la partie la plus importante !
-
-Nous avons hâte de voir ce que tu vas créer !
-
-Cordialement,
-
-L'équipe Tech de Premier Health of America 🚀
+![Diagramme de séquence représentant la création de poutine](./images/sequence_cook-poutine.png)
 
 
-## Les challenges
+## Technologies utilisées
 
-- [Sauver les infirmières!](Nurseomator/Nurseomator.fr.md)
-- [Le smoke meat at scale](Smokedmeater/Smokedmeater.fr.md)
-- [Rose management](schitts/RoseApothecary.fr.md)
-- [Caternet](caternet/CatWeb.fr.md)
-- [Botney-trap](botney-trap/Botney-trap.fr.md)
+J'ai utilisé TypeScript, Node.js, express, gRPC et Jest pour les tests dans l'orchestrateur.
+
+Le serveur de l'orchestrateur a une Rest API qui suit le format OpenAPI (voir le fichier openapi.yaml dans le dossier de l'orchestrateur).
+
+Pour ce qui en est de la création des services gRPC, les fichiers proto sont rassemblés dans le dossier protos.
+
+J'ai utilisé ChatGPT pour certaines questions que j'avais durant le projet et pour m'aider à faire la suite de tests plus rapidement.
+
+## Instructions pour lancer le projet
+
+1. **Aller dans le dossier SmokedMeater et lancer le script setup.sh (donner les permissions avant)**
+   ```bash   
+   chmod +x ./setup.sh  
+   ./setup.sh``
+Ce script va permettre d'installer automatiquement les node_modules dans chacun des microservices (Robot). 
+   
+2. **Si vous utilisez Visual Studio Code, vous pouvez ensuite lancer une tâche (Run task) et choisir l'option "start-all-servers" dans le menu de sélection qui sera affiché**
+
+Cela va permettre de lancer la commande npm start dans chacun des microservices. Les serveurs seront lancés sur les adresses suivantes:
+|Serveurs|  Adresses|
+|--|--|
+| Orchestrator |localhost:3000  |
+ Outremona |localhost:50051  |
+  Verduny |localhost:50052 |
+  Nordo |localhost:50053  |
+  Bizar |localhost:50054  |
+ Oldoporto |localhost:50055  |
+ Pierre | localhost:50056
+
+3. **Si vous n'utilisez pas Visual Studio Code ou que vous ne pouvez pas lancer de tâches (Run Task), il faudra exécuter la commande "npm start" dans chacun des dossiers (orchestrator et les robots)**
+
+4. **Avec les différents serveurs lancés, vous pouvez maintenant faire des requêtes HTTP à l'orchestrator (localhost:3000) et sa documentation openAPI se trouve à l'adresse localhost:3000/api-docs**
+   
+
+
+
+
