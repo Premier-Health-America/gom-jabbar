@@ -36,7 +36,7 @@ router.post('/squeeze', (req, res) => {
 // get data.squeezedCheese
 router.get('/squeezedCheese', (req, res) => {
     res.json({
-        squeezedCheese:data.squeezedCheese
+        message: "Cheese squeezed!"
     })
 });
 
