@@ -154,15 +154,15 @@ export default function Home() {
   const detectDrunk = () => {
     // detect drunk
     axios.get(link("/detect-drunk")).then((res) => {
-      const now = DateTime.now().setZone('America/Toronto');
-      /*
+      //const now = DateTime.now().setZone('America/Toronto');
+      
       const now = DateTime.now().setZone('America/Toronto').set({
       hour: 2,
       minute: 30,
       second: 0,
       millisecond: 0
       });
-      */
+      
       const startTime = now.set({ hour: 2, minute: 0, second: 0 });
       const endTime = now.set({ hour: 5, minute: 0, second: 0 });
 

@@ -29,17 +29,6 @@ git clone https://github.com/Premier-Health-America/gom-jabbar/
    npm run dev
    ```
 
-4. Switch to the UI folder
-
-   ```
-   cd frontend
-   ```
-
-5. Start the client
-   ```
-   npm run dev
-   ```
-
 ## APIs
 
 - Outremona: take cheese from a box an squeeze it
@@ -54,25 +43,22 @@ git clone https://github.com/Premier-Health-America/gom-jabbar/
 
 ### API Endpoints
 
-| Method | Endpoint                | Description                                                     | Request Body                  | Response                                                       |
-| ------ | ----------------------- | --------------------------------------------------------------- | ----------------------------- | -------------------------------------------------------------- |
-| POST   | `/squeeze`              | Squeezes cheese and adds the amount to `squeezedCheese`.        | `{ "cheeseAmount": number }`  | `{ "status": "success", "data": { "squeezedCheese": number }}` |
-| GET    | `/squeezedCheese`       | Retrieves a message about the cheese squeezed.                  | None                          | `{ "message": "Cheese squeezed!" }`                            |
-| POST   | `/setSqueezedCheese`    | Resets the `squeezedCheese` amount.                             | `{ "cheeseAmount": number }`  | `{ "squeezedCheese": number }`                                 |
-| GET    | `/lyrics`               | Retrieves Leonard Cohen lyrics.                                 | None                          | `{ "lyrics": "I'm Your Man" }`                                 |
-| GET    | `/detect-drunk`         | Randomly detects if a person is drunk and increments the count. | None                          | `{ "isDrunk": boolean }`                                       |
-| GET    | `/get-drunks`           | Retrieves the total number of drunk people detected.            | None                          | `{ "drunks": number }`                                         |
-| POST   | `/cut`                  | Cuts potatoes based on the given size.                          | `{ "size": string }`          | `{ "message": "Potatoes cut!" }`                               |
-| POST   | `/dip`                  | Dips potatoes in syrup for a specified time.                    | `{ "time": string }`          | `{ "message": "Potatoes dipped!" }`                            |
-| POST   | `/boil`                 | Boils potatoes for a specified duration.                        | `{ "duration": string }`      | `{ "message": "Potatoes boiled!" }`                            |
-| GET    | `/softness`             | Retrieves the softness level of the potatoes.                   | None                          | `{ "message": "soft-ish" }`                                    |
-| POST   | `/fry`                  | Fries potatoes using the specified oil type.                    | `{ "oilType": string }`       | `{ "message": "Potatoes fried!" }`                             |
-| POST   | `/maintain-temperature` | Maintains the temperature at the specified level.               | `{ "temperature": string }`   | `{ "message": "Temperature maintained!" }`                     |
-| POST   | `/mix`                  | Mixes ingredients together.                                     | `{ "ingredients": string[] }` | `{ "message": "Ingredients mixed!" }`                          |
-| POST   | `/send`                 | Sends a box to the specified address.                           | `{ "address": string }`       | `{ "message": "Box sent!" }`                                   |
-
-Poutine is taking the world over, but our production is constrained by the amount of cook we have
-available.
+| **Method** | **Endpoint**            | **Description**                                                 |
+| ---------- | ----------------------- | --------------------------------------------------------------- |
+| POST       | `/squeeze`              | Squeezes cheese and adds the amount to `squeezedCheese`.        |
+| GET        | `/squeezedCheese`       | Retrieves a message about the cheese squeezed.                  |
+| POST       | `/setSqueezedCheese`    | Resets the `squeezedCheese` amount.                             |
+| GET        | `/lyrics`               | Retrieves Leonard Cohen lyrics.                                 |
+| GET        | `/detect-drunk`         | Randomly detects if a person is drunk and increments the count. |
+| GET        | `/get-drunks`           | Retrieves the total number of drunk people detected.            |
+| POST       | `/cut`                  | Cuts potatoes based on the given size.                          |
+| POST       | `/dip`                  | Dips potatoes in syrup for a specified time.                    |
+| POST       | `/boil`                 | Boils potatoes for a specified duration.                        |
+| GET        | `/softness`             | Retrieves the softness level of the potatoes.                   |
+| POST       | `/fry`                  | Fries potatoes using the specified oil type.                    |
+| POST       | `/maintain-temperature` | Maintains the temperature at the specified level.               |
+| POST       | `/mix`                  | Mixes ingredients together.                                     |
+| POST       | `/send`                 | Sends a box to the specified address.                           |
 
 ## Poutine Process
 
@@ -96,13 +82,3 @@ The final stage in creating the poutine is for people to get drunk and the hour 
 ## Customizing Oil Type
 
 Oil Type is customizable in the UI. The user is prompted to choose oil type upon running the program.
-
-### Bonus/optional
-
-- Differentiate the business critical part against the purely technical ones
-- Identify the part that will be costly to maintain in your test suite, and propose solutions
-- Pick GraphQL/gRPC or other non-RESTful API format to streamline part of the process and explain your choices
-
-```
-
-```
