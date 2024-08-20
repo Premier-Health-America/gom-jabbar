@@ -10,7 +10,7 @@ This file contains the models to create the tables and fields for the relevant d
 class Products(models.Model):
     product_id = models.AutoField(db_column='product_id',primary_key=True)
     product_name = models.CharField(max_length=256, unique=True)
-    price = models.FloatField()
+    price = models.DecimalField(max_digits=8, decimal_places=2)
 
     class ProductType(models.TextChoices):
         # to enforce unique choice for a category
@@ -53,7 +53,7 @@ class CustomerInfo(models.Model):
 
     customer_type = models.CharField(max_length=2, choices=CustomerType.choices, db_index=True)
     product_preference = models.ManyToManyField(Products, db_index=True)
-    favourite_scent = models.TextField(max_length=100)
+    favourite_scent = models.TextField(max_length=100) # need to change
 
     def __str__(self):
         # return self.name
