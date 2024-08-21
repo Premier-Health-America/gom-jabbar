@@ -26,11 +26,6 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
 
@@ -47,9 +42,11 @@ This is a web based database to keep up with the ever growing nature of Rose Apo
 
 ### Built With
 
-* [![Django][djangoproject.com/]][Django-url]
-* [![Bootstrap][Bootstrap.com]][Bootstrap-url]
-* [![JQuery][JQuery.com]][JQuery-url]
+[Django](djangoproject.com/)
+
+[Bootstrap5](Bootstrap.com)
+
+[JQuery](JQuery.com)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -58,49 +55,55 @@ This is a web based database to keep up with the ever growing nature of Rose Apo
 <!-- GETTING STARTED -->
 ## Getting Started
 
-To get started on this project you first create a setup.
+To get started on this project you first create your setup.
 
 ### Prequisites
 
-You must be running this on Python 3.12+.
+You must be running this on Python 3.10+.
 
 ### Setup
 
-* First clone the directory:
-  ```sh
- $ git clone https://github.com/gocardless/sample-django-app.git
- $ cd schitt-creek-apoth
+ 1. First clone the directory:
+
   ```
-* Create a virtual environment in python and activate it
-```sh
-$ python -m venv venv
+      $ git clone https://github.com/deneille/gom-jabbar.git
+
+      $ cd schitt-creek-apoth
+ ```
+
+2. Create a virtual environment in python and activate it
+
+```$ python -m venv venv
 $ source venv/bin/activate 
 ```
-NOTE: If you're using an editor like VScode or PyCharm you will have to use the Command Palette or Settings respectively to invoke the interpreter.
+**NOTE: If you're using an editor like VScode or PyCharm you will have to use the Command Palette or Settings respectively to invoke the interpreter before moving on to the next step.**
+
 
 ### Installation
 
 To install dependencies:
-```sh
+
+```
 (venv)$ pip install -r requirements.txt
 ```
 ### Running File
 
 Once you are finished with your installation,
-```sh
-(env)$ cd roseapothecary
-(env)$ python manage.py makemigrations
-(env)$ python manage.py migrate
+```
+(venv)$ cd roseapothecary
+(venv)$ python manage.py makemigrations
+(venv)$ python manage.py migrate
 ```
 Before running the server, you have to have fake data. Run these two commands
-```sh
-(env)$ python manage.py seed_products
-(env)$ python manage.py seed_data_customers
+```
+(venv)$ python manage.py seed_products --file ./api/data/products.csv 
+
+(venv)$ python manage.py seed_data_customers
 ```
 
 Finally we can run our server using the following:
-```sh
-(env) $ python manage.py runserver
+```
+(venv) $ python manage.py runserver
 ```
 
 
@@ -114,5 +117,7 @@ Finally we can run our server using the following:
 You can look more at the Django API here:
 
 [Django API](http://localhost:8000/api/)
+
+**NOTE: You replace all commands `python` commands with `python3` and all the `pip` commands with `pip3` if you have both Python 2 and Python 3 installed.**
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

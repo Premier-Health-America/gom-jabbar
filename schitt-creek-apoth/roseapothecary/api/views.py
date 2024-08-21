@@ -76,26 +76,6 @@ class CustomerOrdersViewSet(viewsets.ModelViewSet):
         # this deletes all the contents of the Customer Orders Table
         CustomerOrders.objects.all().delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
-class MultiTablesView(MultiTableMixin, TemplateView):
-    filterset_class = CustomerInfoFilter
-    table_pagination = {
-        "per_page": 100,
-        "order_by_field": "sort"
-    }
-    # fliterset_classes = [CustomerOrdersFilter, CustomerInfoFilter, ProductsFilter]
-    # template_name = 'index.html'
-    def get_tables(self):
-         qs = CustomerInfo.objects.all()
-         qsp = Products.objects.all()
-         qso = CustomerOrders.objects.all()
-         tables = [CustomerInfoTable(qs), CustomerOrdersTable(qso), ProductsTable(qsp)]
-         self.tables = [
-             CustomerInfoTable(qs, prefix='1-'),
-             CustomerOrdersTable(qso, prefix='2-'),
-             ProductsTable(qsp, prefix='3-'),
-             ]
-         return super().get_tables()
      
 
 def multi_tables(request):
