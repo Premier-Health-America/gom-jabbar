@@ -19,8 +19,10 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from api.urls import router
+from api.views import multi_tables
 
 
 urlpatterns = [
     path("api/", include(router.urls)),
+    path("",multi_tables, name='multiple-tables'),
 ]

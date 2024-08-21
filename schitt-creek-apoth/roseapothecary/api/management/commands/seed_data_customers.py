@@ -13,7 +13,9 @@ class Command(BaseCommand):
         fake = Faker()
         now = timezone.now()
         two_years_ago = now - timedelta(days=730)  # Roughly 2 years ago
-
+        
+        # Fetch all products to use in orders
+        products = list(Products.objects.all())
         # Generate customers
         customers = []
         for _ in range(10000):
@@ -22,12 +24,11 @@ class Command(BaseCommand):
                 customer_type=random.choice([CustomerInfo.CustomerType.OUT_OF_TOWN,
                                              CustomerInfo.CustomerType.IN_TOWN,
                                              CustomerInfo.CustomerType.ROSE_FAMILY]),
-                favourite_scent=fake.word()
+                favourite_scent=random.choice(products)
             )
             customers.append(customer)
 
-        # Fetch all products to use in orders
-        products = list(Products.objects.all())
+
 
         # Generate orders
         order_count = 0  # Counter for total orders created
@@ -42,7 +43,7 @@ class Command(BaseCommand):
                 # Create the order
                 order = CustomerOrders.objects.create(
                     order_time=order_time,
-                    customer_mood=fake.sentence(),
+                    customer_mood=random.choice(['happy', 'sad', 'angry', 'excited', 'bored', 'anxious', 'Moira']),
                     number_customers=num_customers_in_order,  # Number of customers in the order
                     bill_split=random.choice([CustomerOrders.TypeOfBillSplit.PER_GROUP,
                                               CustomerOrders.TypeOfBillSplit.PER_PERSON,

@@ -1,10 +1,8 @@
-import django_filters
-from django.db import models as django_models
 from django_filters import rest_framework as filters
-from rest_framework import viewsets
-from .models import CustomerInfo
+from .models import CustomerInfo, CustomerOrders, Products
 
 class CustomerInfoFilter(filters.FilterSet):
+    # this adds filters to the api
     class Meta:
         model = CustomerInfo
         fields = {
@@ -12,9 +10,23 @@ class CustomerInfoFilter(filters.FilterSet):
             "product_preference", 
             "favourite_scent"
         }
-
-    # filter_overrides = {
-    #     django_models.DateTimeField: {
-    #         'filter_class': django_filters.IsoDateTimeFilter
-    #     },
-    # }
+        
+class CustomerOrdersFilter(filters.FilterSet):
+    class Meta:
+        model = CustomerOrders
+        fields = {
+            "order_time", 
+            "bill_split", 
+            "product_ordered"
+        }
+        
+class ProductsFilter(filters.FilterSet):
+    class Meta:
+        model = Products
+        fields = {
+            "price", 
+            "category", 
+            "artisanal_flair",
+            "date_last_stocked",
+            "shelf_life"
+        }

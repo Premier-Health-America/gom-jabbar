@@ -14,8 +14,9 @@ from pathlib import Path
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent
 
+DATABASE_DIR = BASE_DIR.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -41,8 +42,10 @@ INSTALLED_APPS = [
     "api",
     "rest_framework",
     "django_seed",
-    "corsheaders",
     'django_filters',
+    "django_tables2",
+
+
 ]
 
 MIDDLEWARE = [
@@ -61,7 +64,7 @@ ROOT_URLCONF = "roseapothecary.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, 'roseapothecary-frontend/build')],
+        "DIRS": [os.path.join(BASE_DIR, 'templates')],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -83,7 +86,7 @@ WSGI_APPLICATION = "roseapothecary.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": DATABASE_DIR / "db.sqlite3",
     }
 }
 
@@ -135,9 +138,11 @@ REST_FRAMEWORK = {
     # "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"]
 }
 
+DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap5.html"
 # CORS_ORIGIN_ALLOW_ALL = True
 
 # this white lists the localhost:3000 port
-CORS_ORIGIN_WHITELIST = (
-    "http://localhost:3000",
-    )
+# CORS_ORIGIN_WHITELIST = (
+#     "http://localhost:3000",
+#     )
+# CORS_ORIGIN_ALLOW_ALL = True
