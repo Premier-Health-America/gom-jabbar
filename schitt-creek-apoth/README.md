@@ -114,9 +114,11 @@ Finally we can run our server using the following:
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-You can look more at the Django API here:
+You can look more at the Django API link below to find all the API endpoints
 
 [Django API](http://localhost:8000/api/)
+
+[More Endpoints](http://localhost:8000/api/no)
 
 **NOTE: You replace all commands `python` commands with `python3` and all the `pip` commands with `pip3` if you have both Python 2 and Python 3 installed.**
 
