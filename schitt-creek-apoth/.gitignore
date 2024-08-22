@@ -1,0 +1,4 @@
+roseapothecary/db.sqlite3
+roseapothecary/api/migrations
+roseapothecary/api/tmp_csv_convert.py
+*/__pycache__/
