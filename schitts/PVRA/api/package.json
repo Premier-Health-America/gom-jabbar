@@ -1,0 +1,22 @@
+{
+  "name": "api-pvra",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Premier-Health-America/gom-jabbar"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "private": true,
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}
