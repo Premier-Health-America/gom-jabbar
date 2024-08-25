@@ -1,6 +1,7 @@
 import express from 'express'
 import clientsApi from './clients/clientsApi.js'
 import commandesApi from './commandes/commandesApi.js'
+import database from './database/database.js'
 import produitsApi from './produits/produitsApi.js'
 import retoursApi from './retours/retoursApi.js'
 
@@ -9,9 +10,11 @@ const port = 8080
 
 app.use(express.json());
 
+const db = database
+
 clientsApi(app)
 commandesApi(app)
-produitsApi(app)
+produitsApi(app, db)
 retoursApi(app)
 
 app.listen(port, () => {
