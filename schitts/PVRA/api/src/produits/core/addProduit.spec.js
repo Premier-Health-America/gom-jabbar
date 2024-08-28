@@ -11,4 +11,13 @@ describe('Adds a produit', () => {
 
     expect(returnedProduit.id).toEqual(produit.id)
   })
+
+  it('does not add a produit when flair is not within requisite values', () => {
+    const repo = produitsRepoForTest()
+    const produit = produitForTest()
+    produit.flair = 15
+
+    expect.assertions(1)
+    return addProduit(repo)(produit).catch(error => expect(error.message).toMatch('Flair must be within range: 1-10'))
+  })
 })

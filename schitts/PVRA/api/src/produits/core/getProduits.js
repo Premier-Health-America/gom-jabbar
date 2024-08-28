@@ -1,3 +1,3 @@
-const getProduits = produits => () => produits.getProduits()
+const getProduits = produitsRepo => () => produitsRepo.getProduits()
 
 export default getProduits

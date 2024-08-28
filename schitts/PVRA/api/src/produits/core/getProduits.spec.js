@@ -1,6 +1,7 @@
 import produitForTest from '../testkit/produitForTest.js'
 import produitsRepoForTest from '../testkit/produitsRepoForTest.js'
 import addProduit from './addProduit.js'
+import getProduits from './getProduits.js'
 
 describe('Gets all produits', () => {
   it('gets all produits', () => {
@@ -9,6 +10,6 @@ describe('Gets all produits', () => {
 
     addProduit(repo)(produit)
 
-    expect(repo.getProduits()[0].id).toEqual(produit.id)
+    expect(getProduits(repo)()[0].id).toEqual(produit.id)
   })
 })
