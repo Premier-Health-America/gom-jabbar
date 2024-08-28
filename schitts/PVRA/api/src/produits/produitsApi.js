@@ -7,6 +7,7 @@ const produitsApi = (app, db) => {
 
   app.get('/produits', async (req, res) => {
     const produitRepo = produitsRepo(db)
+
     return getProduits(produitRepo)()
       .then(produits => res.status(200).json(produits))
       .catch(err => {

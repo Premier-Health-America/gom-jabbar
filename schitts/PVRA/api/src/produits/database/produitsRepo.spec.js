@@ -1,7 +1,4 @@
 import { db } from '../../testDatabase/testDatabase.js'
-import addProduit from '../core/addProduit.js'
-import getProduits from '../core/getProduits.js'
-import updateProduit from '../core/updateProduit.js'
 import produitForTest from '../testkit/produitForTest.js'
 import produitsRepo from './produitsRepo.js'
 
@@ -16,22 +13,22 @@ describe('The produits database', () => {
   })
 
   it('adds a product', async () => {
-    await addProduit(repo)(testProduit)
+    await repo.addProduit(testProduit)
 
-    const returnedProduit = (await getProduits(repo)())[0]
+    const returnedProduit = (await repo.getProduits())[0]
     delete returnedProduit.id
 
     expect(returnedProduit).toMatchObject(testProduit)
   })
 
   it('adds and modifies a product', async () => {
-    await addProduit(repo)(testProduit)
+    await repo.addProduit(testProduit)
 
-    const returnedProduit = (await getProduits(repo)())[0]
+    const returnedProduit = (await repo.getProduits())[0]
     const updatedProduit = {...returnedProduit, prix: returnedProduit.prix + 2}
 
-    await updateProduit(repo)(updatedProduit)
-    const updatedProduits = await getProduits(repo)()
+    await repo.updateProduit(updatedProduit)
+    const updatedProduits = await repo.getProduits()
 
     expect(updatedProduits[0]).toMatchObject(updatedProduit)
   })

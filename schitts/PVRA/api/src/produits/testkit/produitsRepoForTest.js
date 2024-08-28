@@ -3,7 +3,6 @@ const produitsRepoForTest = () => {
 
   const addProduit = (p) => {
     produits.push(p)
-    return p
   }
 
   const getProduits = () => {

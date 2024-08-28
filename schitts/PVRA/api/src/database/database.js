@@ -10,7 +10,7 @@ const client = new pg.Client({
 
 client.connect(function (err) {
   if (err) throw err
-  console.log('Connected!')
+  console.log('Connected to database')
 })
 
 export default client

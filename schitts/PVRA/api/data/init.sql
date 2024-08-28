@@ -1,11 +1,11 @@
 CREATE TABLE "parfums"(
-                          "id" BIGINT NOT NULL,
+                          "id" BIGSERIAL NOT NULL,
                           "nom" VARCHAR(255) NOT NULL
 );
 ALTER TABLE
     "parfums" ADD PRIMARY KEY("id");
 CREATE TABLE "retours"(
-                          "id" BIGINT NOT NULL,
+                          "id" BIGSERIAL NOT NULL,
                           "commentaire" TEXT NOT NULL,
                           "client_id" BIGINT NOT NULL,
                           "produit_id" BIGINT NOT NULL
@@ -23,15 +23,16 @@ CREATE TABLE "produits"(
 ALTER TABLE
     "produits" ADD PRIMARY KEY("id");
 CREATE TABLE "clients"(
-                          "id" BIGINT NOT NULL,
-                          "type_client" VARCHAR(255) NOT NULL,
+                          "id" BIGSERIAL NOT NULL,
+                          "nom" VARCHAR(255) NOT NULL,
+                          "type" INT NOT NULL,
                           "parfum_prefere_id" INTEGER NULL,
                           "produit_prefere_id" BIGINT NULL
 );
 ALTER TABLE
     "clients" ADD PRIMARY KEY("id");
 CREATE TABLE "commandes"(
-                            "id" BIGINT NOT NULL,
+                            "id" BIGSERIAL NOT NULL,
                             "date" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
                             "produit_id" BIGINT NOT NULL,
                             "humeur" VARCHAR(255) NOT NULL,

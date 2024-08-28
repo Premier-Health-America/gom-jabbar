@@ -3,13 +3,13 @@ import produitsRepoForTest from '../testkit/produitsRepoForTest.js'
 import addProduit from './addProduit.js'
 
 describe('Adds a produit', () => {
-  it('adds a produit and returns it with id', () => {
+  it('adds a produit', () => {
     const repo = produitsRepoForTest()
     const produit = produitForTest()
 
-    const returnedProduit = addProduit(repo)(produit)
+    addProduit(repo)(produit)
 
-    expect(returnedProduit.id).toEqual(produit.id)
+    expect(repo.getProduits()[0].id).toEqual(produit.id)
   })
 
   it('does not add a produit when flair is not within requisite values', () => {
