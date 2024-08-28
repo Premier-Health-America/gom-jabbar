@@ -34,8 +34,8 @@ ALTER TABLE
 CREATE TABLE "commandes"(
                             "id" BIGSERIAL NOT NULL,
                             "date" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
-                            "produit_id" BIGINT NOT NULL,
-                            "humeur" VARCHAR(255) NOT NULL,
+                            "produit_id" INT NOT NULL,
+                            "humeur" INT NOT NULL,
                             "nombre_clients" INTEGER NOT NULL,
                             "repartition_addition" INTEGER NOT NULL
 );

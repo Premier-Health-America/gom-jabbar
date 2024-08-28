@@ -13,7 +13,7 @@ app.use(express.json());
 const db = database
 
 clientsApi(app, db)
-commandesApi(app)
+commandesApi(app, db)
 produitsApi(app, db)
 retoursApi(app)
 
