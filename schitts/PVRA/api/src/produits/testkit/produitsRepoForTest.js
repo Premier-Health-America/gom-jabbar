@@ -10,7 +10,14 @@ const produitsRepoForTest = () => {
     return produits
   }
 
-  return { addProduit, getProduits }
+  const updateProduit = (p) => {
+    const i = produits.findIndex(prod => prod.id = p.id)
+    if (i !== -1){
+      produits[i] = p
+    }
+  }
+
+  return { addProduit, getProduits, updateProduit }
 }
 
 export default produitsRepoForTest
