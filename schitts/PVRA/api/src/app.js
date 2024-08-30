@@ -10,7 +10,7 @@ const port = 8080
 
 app.use(express.json());
 
-const db = database
+const db = database(process.env.DB_HOST)
 
 clientsApi(app, db)
 commandesApi(app, db)

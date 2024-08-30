@@ -1,16 +1,13 @@
 import pg from 'pg'
 
-const client = new pg.Client({
-  user: 'test',
-  host: 'localhost',
-  database: 'rose',
-  password: 'test',
-  port: 5432
-})
+const database = (host) => {
+  return new pg.Pool({
+    user: 'test',
+    host: host,
+    database: 'rose',
+    password: 'test',
+    port: 5432
+  })
+}
 
-client.connect(function (err) {
-  if (err) throw err
-  console.log('Connected to database')
-})
-
-export default client
+export default database
