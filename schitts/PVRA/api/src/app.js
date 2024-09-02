@@ -5,10 +5,12 @@ import database from './database/database.js'
 import parfumsApi from './parfums/parfumsApi.js'
 import produitsApi from './produits/produitsApi.js'
 import retoursApi from './retours/retoursApi.js'
+import cors from 'cors'
 
 const app = express()
 const port = 8080
 
+app.use(cors())
 app.use(express.json());
 
 const db = database(process.env.DB_HOST)
