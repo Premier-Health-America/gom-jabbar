@@ -15,7 +15,7 @@ const db = database(process.env.DB_HOST)
 clientsApi(app, db)
 commandesApi(app, db)
 produitsApi(app, db)
-retoursApi(app)
+retoursApi(app, db)
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`)
