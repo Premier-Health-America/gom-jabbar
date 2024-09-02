@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "start": "nodemon src/app.js"
+    "start": "nodemon src/app.js",
+    "seed:big": "node src/objectifs/seed/seed-big.js"
   },
   "repository": {
     "type": "git",
