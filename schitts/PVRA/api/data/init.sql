@@ -35,6 +35,7 @@ CREATE TABLE "commandes"(
                             "id" BIGSERIAL NOT NULL,
                             "date" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
                             "produit_id" INT NOT NULL,
+                            "client_id" INT NOT NULL,
                             "humeur" INT NOT NULL,
                             "nombre_clients" INTEGER NOT NULL,
                             "repartition_addition" INTEGER NOT NULL
@@ -43,6 +44,8 @@ ALTER TABLE
     "commandes" ADD PRIMARY KEY("id");
 ALTER TABLE
     "commandes" ADD CONSTRAINT "commandes_produit_id_foreign" FOREIGN KEY("produit_id") REFERENCES "produits"("id");
+ALTER TABLE
+    "commandes" ADD CONSTRAINT "commandes_client_id_foreign" FOREIGN KEY("client_id") REFERENCES "clients"("id");
 ALTER TABLE
     "clients" ADD CONSTRAINT "clients_produit_prefere_id_foreign" FOREIGN KEY("produit_prefere_id") REFERENCES "produits"("id");
 ALTER TABLE

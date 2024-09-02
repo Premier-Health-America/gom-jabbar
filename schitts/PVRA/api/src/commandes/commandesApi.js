@@ -7,7 +7,7 @@ const commandesApi = (app, db) => {
     const commandeRepo = commandesRepo(db)
 
     return getCommandes(commandeRepo)()
-      .then(produits => res.status(200).json(produits))
+      .then(commandes => res.status(200).json(commandes))
       .catch(err => {
         res.status(500).json({ error: err })
         console.log(err)
