@@ -7,13 +7,8 @@ import commandeForTest from '../testkit/commandeForTest.js'
 import commandesRepo from './commandesRepo.js'
 
 describe('The commandes database', () => {
-
   const testCommande = commandeForTest()
   delete testCommande.id
-
-  const testProduit = produitForTest()
-
-  const testClient = clientForTest()
 
   let repo
   let produitRepo
@@ -24,20 +19,41 @@ describe('The commandes database', () => {
     clientRepo = clientsRepo(db)
   })
 
-  it('adds and gets a commande', async () => {
+  it('adds and gets a commande with client and produit as text', async () => {
+    // Pas mal de code dupliqué
+    const produitRepo = produitsRepo(db)
+    const clientRepo = clientsRepo(db)
+
+    const testProduit = produitForTest()
+    delete testProduit.id
+
+    const testClient = clientForTest()
+    delete testClient.id
+
     await produitRepo.addProduit(testProduit)
-    const produits = await produitRepo.getProduits()
-
     await clientRepo.addClient(testClient)
-    const clients = await clientRepo.getClients()
 
-    testCommande.produit_id = parseInt(produits[0].id)
-    testCommande.client_id = parseInt(clients[0].id)
+
+    const returnedProduits = await produitRepo.getProduits()
+    const returnedClients = await clientRepo.getClients()
+
+    const testCommande = commandeForTest({produit_id: returnedProduits[0].id, client_id: returnedClients[0].id})
+    delete testCommande.id
+
     await repo.addCommande(testCommande)
 
     const returnedCommande = (await repo.getCommandes())[0]
-    delete returnedCommande.id
 
-    expect(returnedCommande).toMatchObject(testCommande)
+    const expectedCommande = testCommande
+    expectedCommande.nom_produit = testProduit.nom
+    expectedCommande.nom_client = testClient.nom
+    delete expectedCommande.produit_id
+    delete expectedCommande.client_id
+
+    // Douteux
+    expect(returnedCommande.id).toBeTruthy()
+    expectedCommande.id = returnedCommande.id
+
+    expect(returnedCommande).toEqual(expectedCommande)
   })
 })

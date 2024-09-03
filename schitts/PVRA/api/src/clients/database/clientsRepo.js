@@ -6,11 +6,14 @@ const clientsRepo = (db) => {
   }
 
   const getClients = () => {
-    return db.query(`SELECT *
-                     FROM clients`)
+    return db.query(`SELECT clients.id, clients.nom, clients.type, parfums.nom AS parfum_prefere, produits.nom AS produit_prefere
+                     FROM clients
+                              LEFT JOIN parfums
+                                   ON clients.parfum_prefere_id = parfums.id
+                              LEFT JOIN produits
+                                   ON clients.produit_prefere_id = produits.id;`)
       .then(res => res.rows)
   }
-
 
   return {
     addClient,

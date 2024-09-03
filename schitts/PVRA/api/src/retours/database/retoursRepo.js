@@ -6,8 +6,13 @@ const retoursRepo = (db) => {
   }
 
   const getRetours = () => {
-    return db.query(`SELECT *
-                     FROM retours`)
+    return db.query(`SELECT retours.id,
+       retours.commentaire,
+       clients.nom AS nom_client,
+       produits.nom AS nom_produit
+                     FROM retours
+                     LEFT JOIN  clients ON retours.client_id = clients.id
+                     LEFT JOIN  produits ON retours.produit_id = produits.id`)
       .then(res => res.rows)
   }
 

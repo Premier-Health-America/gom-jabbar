@@ -16,21 +16,40 @@ describe('The retours database', () => {
     produitRepo = produitsRepo(db)
   })
 
-  it('adds and gets retours', async () => {
-    await produitRepo.addProduit(produitForTest())
-    await clientRepo.addClient(clientForTest())
+  it('adds and gets a retour with client and produit as text', async () => {
+    // Pas mal de code dupliqué
+    const produitRepo = produitsRepo(db)
+    const clientRepo = clientsRepo(db)
 
-    const testClientsInDB = await clientRepo.getClients()
-    const testProduitsInDB = await produitRepo.getProduits()
+    const testProduit = produitForTest()
+    delete testProduit.id
 
-    const testRetour = retourForTest({ client_id: testClientsInDB[0].id, produit_id: testProduitsInDB[0].id })
+    const testClient = clientForTest()
+    delete testClient.id
+
+    await produitRepo.addProduit(testProduit)
+    await clientRepo.addClient(testClient)
+
+    const returnedProduits = await produitRepo.getProduits()
+    const returnedClients = await clientRepo.getClients()
+
+    const testRetour = retourForTest({ produit_id: returnedProduits[0].id, client_id: returnedClients[0].id })
     delete testRetour.id
 
     await repo.addRetour(testRetour)
 
     const returnedRetour = (await repo.getRetours())[0]
-    delete returnedRetour.id
 
-    expect(returnedRetour).toMatchObject(testRetour)
+    const expectedCommande = testRetour
+    expectedCommande.nom_produit = testProduit.nom
+    expectedCommande.nom_client = testClient.nom
+    delete expectedCommande.produit_id
+    delete expectedCommande.client_id
+
+    // Douteux
+    expect(returnedRetour.id).toBeTruthy()
+    expectedCommande.id = returnedRetour.id
+
+    expect(returnedRetour).toEqual(expectedCommande)
   })
 })

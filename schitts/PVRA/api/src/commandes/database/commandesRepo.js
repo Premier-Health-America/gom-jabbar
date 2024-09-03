@@ -6,8 +6,16 @@ const commandesRepo = (db) => {
   }
 
   const getCommandes = () => {
-    return db.query(`SELECT *
-                     FROM commandes`)
+    return db.query(`SELECT commandes.id,
+                            commandes.date,
+                            commandes.humeur,
+                            commandes.nombre_clients,
+                            commandes.repartition_addition,
+                            produits.nom AS nom_produit,
+                            clients.nom  AS nom_client
+                     FROM commandes
+                              LEFT JOIN produits ON commandes.produit_id = produits.id
+                              LEFT JOIN clients ON commandes.client_id = clients.id`)
       .then(res => res.rows)
   }
 
