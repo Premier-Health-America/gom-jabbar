@@ -1,0 +1,29 @@
+{
+  "name": "api-pvra",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "start": "nodemon src/app.js",
+    "seed:big": "node src/objectifs/seed/seed-big.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Premier-Health-America/gom-jabbar"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "pg": "^8.12.0"
+  },
+  "private": true,
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.4"
+  },
+  "jest": {
+    "transform": {}
+  }
+}
