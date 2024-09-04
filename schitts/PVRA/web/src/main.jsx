@@ -6,6 +6,9 @@ import './index.css'
 import AjouterClient from './pages/clients/AjouterClient.jsx'
 import Clients from './pages/clients/Clients.jsx'
 import NotFound from './pages/NotFound.jsx'
+import AjouterProduit from './pages/produits/AjouterProduits.jsx'
+import ModifierProduit from './pages/produits/ModifierProduit.jsx'
+import Produits from './pages/produits/Produits.jsx'
 
 const router = createBrowserRouter([
   {
@@ -18,11 +21,33 @@ const router = createBrowserRouter([
   },
   {
     path: 'ajouter-client',
-    element: <AjouterClient/>
+    element: <AjouterClient />
+  },
+  {
+    path: 'ajouter-produit',
+    element: <AjouterProduit />
+  },
+  {
+    path: 'produits',
+    element: <Produits />
+  },
+  {
+    path: 'produits',
+    children: [
+      {
+        path: 'modifier',
+        children: [
+          {
+            path: ':id',
+            element: <ModifierProduit />
+          }
+        ]
+      }
+    ]
   },
   {
     path: '*',
-    element: <NotFound/>
+    element: <NotFound />
   }
 ])
 

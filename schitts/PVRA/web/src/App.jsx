@@ -21,7 +21,6 @@ function App () {
         <Grid2 container direction={'column'} rowSpacing={6}>
           <MainButton onClick={() => navigate('/ajouter-produit')}>Ajouter un produit</MainButton>
           <MainButton onClick={() => navigate('/produits')}>Voir les produits</MainButton>
-          <MainButton onClick={() => navigate('/modifier-produit')}>Modifier un produit</MainButton>
         </Grid2>
       </Grid2>
     </>

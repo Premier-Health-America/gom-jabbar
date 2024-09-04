@@ -2,7 +2,7 @@ import { Box, Button, Grid2, IconButton } from '@mui/material'
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import ClientBox from './ClientBox.jsx'
+import ClientBox from './components/ClientBox.jsx'
 import AddIcon from '@mui/icons-material/Add'
 
 function Clients () {
