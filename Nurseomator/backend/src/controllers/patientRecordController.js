@@ -1,11 +1,10 @@
 const PatientRecord = require('../models/PatientRecord');
 
 const createPatientRecord = async (req, res) => {
-    const nurseId = req.nurse.nurseId;
     const { patient_name, record } = req.body;
 
     try {
-        const newRecord = await PatientRecord.create(nurseId, patient_name, record);
+        const newRecord = await PatientRecord.create(patient_name, record);
         res.status(201).json(newRecord);
     } catch (error) {
         res.status(400).json({ message: error.message });

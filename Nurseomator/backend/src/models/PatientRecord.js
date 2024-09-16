@@ -2,13 +2,13 @@ const pool = require('../config/db');
 const { encrypt, decrypt } = require('../config/encryption');
 
 class PatientRecord {
-    static async create(nurse_id, patient_name, record) {
+    static async create(patient_name, record) {
         try {
             const encryptedRecord = encrypt(record);
 
             const result = await pool.query(
-                `INSERT INTO patient_records (nurse_id, patient_name, record) VALUES ($1, $2, $3) RETURNING *`,
-                [nurse_id, patient_name, encryptedRecord]
+                `INSERT INTO patient_records (patient_name, record) VALUES ($1, $2) RETURNING *`,
+                [patient_name, encryptedRecord]
             );
             return result.rows[0];
         } catch (error) {

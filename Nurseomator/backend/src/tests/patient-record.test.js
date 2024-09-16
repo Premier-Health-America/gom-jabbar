@@ -36,7 +36,6 @@ describe('Patient Record', () => {
         expect(res.statusCode).toEqual(201);
         expect(res.body).toHaveProperty('id');
         expect(res.body.patient_name).toBe('Frosty McSnowflake');
-        expect(res.body.nurse_id).toBe(nurseId);
 
         patientReportId = res.body.id;
     });
@@ -51,6 +50,5 @@ describe('Patient Record', () => {
         expect(res.statusCode).toEqual(200);
         expect(res.body).toHaveProperty('id');
         expect(res.body.patient_name).toBe('Frosty McSnowflake');
-        expect(res.body.nurse_id).toBe(nurseId);
     });
 });
