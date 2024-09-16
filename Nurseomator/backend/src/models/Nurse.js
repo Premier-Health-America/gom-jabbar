@@ -25,6 +25,20 @@ class Nurse {
             throw new Error(`Could not find nurse: ${error.message}`);
         }
     }
+
+    static async delete(id) {
+        try {
+            const result = await pool.query(`DELETE FROM nurses WHERE id = $1 RETURNING *`, [id]);
+
+            if (result.rows.length === 0) {
+                return null;
+            }
+
+            return result.rows[0];
+        } catch (error) {
+            throw new Error(`Could not delete nurse: ${error.message}`);
+        }
+    }
 }
 
 module.exports = Nurse;

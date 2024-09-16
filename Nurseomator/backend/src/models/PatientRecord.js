@@ -36,14 +36,31 @@ class PatientRecord {
         }
     }
 
-    static async update(id, patient_name, record) {
+    static async update(id, fields) {
         try {
-            // Encrypt updated record if provided
-            const encryptedRecord = record ? encrypt(record) : undefined;
+            const updates = [];
+            const values = [];
+
+            // Add fields to updates if provided
+            if (fields.patient_name) {
+                updates.push(`patient_name = $${updates.length + 1}`);
+                values.push(fields.patient_name);
+            }
+            if (fields.record) {
+                const encryptedRecord = encrypt(fields.record);
+                updates.push(`record = $${updates.length + 1}`);
+                values.push(encryptedRecord);
+            }
+            if (updates.length === 0) {
+                throw new Error('No fields to update');
+            }
+            values.push(id);
 
             const result = await pool.query(
-                `UPDATE patient_records SET patient_name = $1, record = COALESCE($2, record) WHERE id = $3 RETURNING *`,
-                [patient_name, encryptedRecord, id]
+                ` UPDATE patient_records SET ${updates.join(', ')} WHERE id = $${
+                    values.length
+                } RETURNING *`,
+                values
             );
 
             if (result.rows.length === 0) {

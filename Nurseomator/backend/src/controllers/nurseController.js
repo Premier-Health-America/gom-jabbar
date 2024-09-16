@@ -13,7 +13,13 @@ const registerNurse = async (req, res) => {
         }
 
         const newNurse = await Nurse.create(username, password);
-        res.status(201).json({ message: 'Nurse registered successfully', nurse: newNurse });
+
+        // Generate JWT token
+        const token = jwt.sign({ nurseId: newNurse.id }, process.env.JWT_SECRET, {
+            expiresIn: '1h',
+        });
+
+        res.status(201).json({ message: 'Nurse registered successfully', nurse: newNurse, token });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -44,7 +50,24 @@ const loginNurse = async (req, res) => {
     }
 };
 
+const deleteNurse = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const deletedNurse = await Nurse.delete(id);
+
+        if (!deletedNurse) {
+            return res.status(404).json({ message: 'Nurse not found' });
+        }
+
+        res.status(200).json({ message: 'Nurse deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     registerNurse,
     loginNurse,
+    deleteNurse,
 };

@@ -33,7 +33,7 @@ const updatePatientRecord = async (req, res) => {
     const { patient_name, record } = req.body;
 
     try {
-        const updatedRecord = await PatientRecord.update(id, patient_name, record);
+        const updatedRecord = await PatientRecord.update(id, { patient_name, record });
 
         if (!updatedRecord) {
             return res.status(404).json({ message: 'Patient record not found' });
