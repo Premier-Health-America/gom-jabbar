@@ -44,7 +44,23 @@ const loginNurse = async (req, res) => {
         // Generate JWT token
         const token = jwt.sign({ nurseId: nurse.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        res.status(200).json({ message: 'Login successful', token });
+        res.status(200).json({ message: 'Login successful', nurse, token });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const getNurse = async (req, res) => {
+    const { nurseId } = req.nurse;
+
+    try {
+        // Check if nurse exists
+        const nurse = await Nurse.findNurseById(nurseId);
+        if (!nurse) {
+            return res.status(404).json({ message: 'Nurse not found' });
+        }
+
+        res.status(200).json({ message: 'Nurse retrieved successfully', nurse });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -69,5 +85,6 @@ const deleteNurse = async (req, res) => {
 module.exports = {
     registerNurse,
     loginNurse,
+    getNurse,
     deleteNurse,
 };

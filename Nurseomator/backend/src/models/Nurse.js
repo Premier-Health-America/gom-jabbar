@@ -26,6 +26,15 @@ class Nurse {
         }
     }
 
+    static async findNurseById(nurseId) {
+        try {
+            const result = await pool.query('SELECT * FROM nurses WHERE id = $1', [nurseId]);
+            return result.rows[0];
+        } catch (error) {
+            throw new Error(`Could not find nurse: ${error.message}`);
+        }
+    }
+
     static async delete(id) {
         try {
             const result = await pool.query(`DELETE FROM nurses WHERE id = $1 RETURNING *`, [id]);

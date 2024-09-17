@@ -20,3 +20,7 @@ Pour la carte:
 
 -   **React Native Maps**
 -   API Google Maps
+
+Pour les requêtes:
+
+-   **Axios**

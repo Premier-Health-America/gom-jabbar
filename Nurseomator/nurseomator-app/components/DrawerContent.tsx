@@ -3,22 +3,16 @@ import React from 'react';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { DrawerActions } from '@react-navigation/native';
 import { useAuth } from '@/context/auth';
 
 export function DrawerContent(props: any) {
     const { bottom } = useSafeAreaInsets();
     const router = useRouter();
-    const { logout } = useAuth();
+    const { nurse, logout } = useAuth();
 
-    const closeDrawer = async () => {
+    const logoutPressed = async () => {
         console.log('close');
-        const { error } = await logout();
-        if (error) {
-            console.log(error);
-        } else {
-            router.replace('/login');
-        }
+        await logout();
     };
     return (
         <View style={{ flex: 1 }}>
@@ -30,10 +24,15 @@ export function DrawerContent(props: any) {
                         source={require('../assets/images/logo.png')}
                     />
                 </View>
+                {nurse && (
+                    <View style={{ padding: 20 }}>
+                        <Text>Hello {nurse.username}!</Text>
+                    </View>
+                )}
                 <DrawerItemList {...props} />
             </DrawerContentScrollView>
 
-            <Pressable onPress={closeDrawer} style={{ padding: 20, paddingBottom: bottom + 10 }}>
+            <Pressable onPress={logoutPressed} style={{ padding: 20, paddingBottom: bottom + 10 }}>
                 <Text>Logout</Text>
             </Pressable>
         </View>

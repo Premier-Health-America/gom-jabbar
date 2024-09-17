@@ -1,9 +1,8 @@
-import { useRouter, useSegments, useFocusEffect } from 'expo-router';
+import { useRouter, useSegments } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react';
 import { saveToken, getSavedToken, clearToken } from '@/utils/tokenService';
 import { useIsNavReady } from '@/hooks/useIsNavReady';
-import * as NurseApi from '@/lib/nurseApi';
-
+import NurseApi from '@/lib/nurseApi';
 interface LoginResponse {
     data: {} | undefined;
     error: Error | undefined;
@@ -11,14 +10,13 @@ interface LoginResponse {
 
 interface LogoutResponse {
     error: any | undefined;
-    data: {} | undefined;
 }
 
 interface AuthContextValue {
     login: (username: string, password: string) => Promise<LoginResponse>;
     logout: () => Promise<LogoutResponse>;
     register: (username: string, password: string) => Promise<LoginResponse>;
-    nurse: {} | null;
+    nurse: { username: string } | null;
     authInitialized: boolean;
 }
 
@@ -29,7 +27,7 @@ interface ProviderProps {
 const AuthContext = React.createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: ProviderProps) {
-    const [nurse, setNurse] = useState<{} | null>(null);
+    const [nurse, setNurse] = useState<{ username: string } | null>(null);
     const [authInitialized, setAuthInitialized] = useState<boolean>(false);
     const isNavigationReady = useIsNavReady();
 
@@ -37,44 +35,45 @@ export function AuthProvider({ children }: ProviderProps) {
     const segments = useSegments();
 
     useEffect(() => {
-        if (!isNavigationReady) return;
+        if (!isNavigationReady || !authInitialized) return;
 
-        const inAuthGroup = segments[0] === '(auth)';
-
-        if (!authInitialized) return;
-
-        if (!nurse && !inAuthGroup) {
-            router.push('/login');
-        } else if (nurse && inAuthGroup) {
+        const isInAuthScreen = segments[0] === '(auth)';
+        if (nurse && isInAuthScreen) {
             router.push('/map');
+        } else if (!nurse && !isInAuthScreen) {
+            router.push('/login');
         }
     }, [nurse, segments, authInitialized, isNavigationReady, router]);
 
     useEffect(() => {
         (async () => {
-            try {
-                // If authToken is saved, retrive Nurse
-                const savedToken = await getSavedToken();
-                if (savedToken) {
-                    const response = await NurseApi.getNurse(savedToken);
-                    setNurse(response.nurse);
+            if (!nurse) {
+                try {
+                    // If authToken is saved, retrieve Nurse
+                    const savedToken = await getSavedToken();
+                    if (savedToken) {
+                        const response = await NurseApi.getNurse({ token: savedToken });
+                        console.log('GET NURSE response', response);
+                        setNurse(response.nurse);
+                    }
+                } catch (error) {
+                    console.error('Error initializing auth', error);
+                    setNurse(null);
                 }
-            } catch (error) {
-                console.error('Error initializing auth', error);
-                setNurse(null);
+                setAuthInitialized(true);
             }
-
-            setAuthInitialized(true);
         })();
     }, []);
 
     const login = async (username: string, password: string): Promise<LoginResponse> => {
         try {
-            const response = await NurseApi.login(username, password);
+            const response = await NurseApi.login({ username, password });
+            console.log('LOGIN response', response);
             setNurse(response.nurse);
             await saveToken(response.token);
             return { data: response.nurse, error: undefined };
         } catch (error) {
+            console.log('error', error);
             setNurse(null);
             return { error: error as Error, data: undefined };
         }
@@ -83,17 +82,18 @@ export function AuthProvider({ children }: ProviderProps) {
     const logout = async (): Promise<LogoutResponse> => {
         try {
             // Clear token and nurse info
-            setNurse(null);
             await clearToken();
-            return { error: undefined, data: undefined };
+            setNurse(null);
+            console.log('here');
+            return { error: undefined };
         } catch (error) {
-            return { error, data: undefined };
+            return { error };
         }
     };
 
     const register = async (username: string, password: string): Promise<LoginResponse> => {
         try {
-            const response = await NurseApi.register(username, password);
+            const response = await NurseApi.register({ username, password });
             setNurse(response.nurse);
             await saveToken(response.token);
             return { data: response.nurse, error: undefined };

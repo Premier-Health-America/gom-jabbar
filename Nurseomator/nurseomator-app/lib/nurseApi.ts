@@ -1,32 +1,43 @@
-export const login = async (username: string, password: string) => {
-    // return '/nurse/login';
-    return {
-        message: 'Login successful',
-        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJudXJzZUlkIjoyLCJpYXQiOjE3MjY1NzIzMjcsImV4cCI6MTcyNjU3NTkyN30.HzXbdVw6f2sQO5kbVlznEfBg26q6a7jmFodz7BBHmRk',
-        nurse: {
-            username: 'juju',
-        },
-    };
-};
+import axios from 'axios';
+class NurseApi {
+    public nurseApi;
 
-export const getNurse = async (token: string) => {
-    // return '/nurse';
-    return {
-        message: 'Login successful',
-        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJudXJzZUlkIjoyLCJpYXQiOjE3MjY1NzIzMjcsImV4cCI6MTcyNjU3NTkyN30.HzXbdVw6f2sQO5kbVlznEfBg26q6a7jmFodz7BBHmRk',
-        nurse: {
-            username: 'juju',
-        },
-    };
-};
+    constructor() {
+        this.nurseApi = axios.create({ baseURL: process.env.EXPO_PUBLIC_API_URL });
+    }
 
-export const register = async (username: string, password: string) => {
-    // return '/nurse/register';
-    return {
-        message: 'Nurse registered successfully',
-        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJudXJzZUlkIjoyLCJpYXQiOjE3MjY1NzIzMjcsImV4cCI6MTcyNjU3NTkyN30.HzXbdVw6f2sQO5kbVlznEfBg26q6a7jmFodz7BBHmRk',
-        nurse: {
-            username: 'juju',
-        },
+    login = async (body: any) => {
+        try {
+            await new Promise((resolve) => setTimeout(resolve, 5000));
+            const { data } = await this.nurseApi.post('/nurse/login', body);
+            console.log('data', data);
+            return data;
+        } catch (error: any) {
+            throw new Error(error.response.data.message);
+        }
     };
-};
+
+    register = async (body: any) => {
+        try {
+            const { data } = await this.nurseApi.post('/nurse/register', body);
+            console.log('data', data);
+            return data;
+        } catch (error: any) {
+            throw new Error(error.response.data.message);
+        }
+    };
+
+    getNurse = async ({ token }: any) => {
+        try {
+            const { data } = await this.nurseApi.get('/nurse', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            console.log('data', data);
+            return data;
+        } catch (error: any) {
+            throw new Error(error.response.data.message);
+        }
+    };
+}
+
+export default new NurseApi();
