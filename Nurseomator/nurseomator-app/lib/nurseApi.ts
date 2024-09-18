@@ -8,9 +8,7 @@ class NurseApi {
 
     login = async (body: any) => {
         try {
-            await new Promise((resolve) => setTimeout(resolve, 2000));
             const { data } = await this.nurseApi.post('/nurse/login', body);
-            console.log('data', data);
             return data;
         } catch (error: any) {
             throw new Error(error.response?.data?.message || 'An error occured');
@@ -20,7 +18,6 @@ class NurseApi {
     register = async (body: any) => {
         try {
             const { data } = await this.nurseApi.post('/nurse/register', body);
-            console.log('data', data);
             return data;
         } catch (error: any) {
             throw new Error(error.response?.data?.message || 'An error occured');
@@ -32,7 +29,6 @@ class NurseApi {
             const { data } = await this.nurseApi.get('/nurse', {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            console.log('data', data);
             return data;
         } catch (error: any) {
             throw new Error(error.response?.data?.message || 'An error occured');

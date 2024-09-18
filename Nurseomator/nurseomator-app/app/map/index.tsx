@@ -1,25 +1,31 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { OpenDrawerBtn } from '@/components/navigation/OpenDrawerBtn';
+import { MapComponent } from '@/components/map/MapComponent';
+import { Colors } from '@/constants/Colors';
 
 export default function Map() {
     return (
-        <>
-            <View>
-                <View style={styles.openDrawerBtnContainer}>
-                    <OpenDrawerBtn />
-                </View>
-                <Text>This is Map Page</Text>
+        <View style={styles.fullView}>
+            <View style={styles.openDrawerBtnContainer}>
+                <OpenDrawerBtn />
             </View>
-        </>
+            <MapComponent />
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
+    fullView: {
+        ...StyleSheet.absoluteFillObject,
+    },
     openDrawerBtnContainer: {
         position: 'absolute',
-        top: 0,
-        left: 0,
+        top: 50,
+        left: 20,
         zIndex: 10,
+        backgroundColor: Colors.white,
+        borderRadius: 30,
+        padding: 10,
     },
 });

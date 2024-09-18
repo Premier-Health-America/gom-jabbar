@@ -53,7 +53,6 @@ export function AuthProvider({ children }: ProviderProps) {
                     const savedToken = await getSavedToken();
                     if (savedToken) {
                         const response = await NurseApi.getNurse({ token: savedToken });
-                        console.log('GET NURSE response', response);
                         setNurse(response.nurse);
                     }
                 } catch (error) {
@@ -68,7 +67,6 @@ export function AuthProvider({ children }: ProviderProps) {
     const login = async (username: string, password: string): Promise<LoginResponse> => {
         try {
             const response = await NurseApi.login({ username, password });
-            console.log('LOGIN response', response);
             setNurse(response.nurse);
             await saveToken(response.token);
             return { data: response.nurse, error: undefined };
