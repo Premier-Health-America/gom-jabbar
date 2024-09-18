@@ -1,15 +1,21 @@
-import { z, ZodError, ZodIssue } from "zod";
+import { ZodIssue } from "zod";
 
-type AppErrorIssue = {
+type ValidationIssue = {
   key: string;
   message: string;
+};
+export const ValidationIssue = (key: string, message: string) => {
+  return {
+    key,
+    message,
+  } satisfies ValidationIssue;
 };
 
 export class AppError extends Error {
   status: number;
   traceId: string;
   message: string;
-  issues: AppErrorIssue[];
+  issues: ValidationIssue[];
 
   constructor(message: string, name: string, cause: string, status: number) {
     super(message, { cause });
@@ -18,10 +24,6 @@ export class AppError extends Error {
     this.name = name;
     this.status = status;
     this.traceId = crypto.randomUUID();
-  }
-
-  [Symbol.toString()]() {
-    return this.toString();
   }
 
   toString() {
@@ -46,40 +48,39 @@ export class AppError extends Error {
 }
 
 export class ValidationError extends AppError {
-  issues: AppErrorIssue[];
-  constructor(error: ZodError, message: string = "Validation error") {
+  constructor(error: any, message: string = "Validation error") {
     super(message, "ValidationError", "Validation error", 400);
-    this.issues = this.formatIssues(error.issues);
+    // this.issues = this.formatIssues(error.issues);
   }
 
   private formatIssues = (issues: ZodIssue[]) => {
     return issues.map((i) => ({
       key: i.path[0].toString(),
       message: i.message,
-    })) satisfies AppErrorIssue[];
+    })) satisfies ValidationIssue[];
   };
 
-  static openApi = {
-    description: "Validation error",
-    content: {
-      "application/json": {
-        schema: z.object({
-          message: z.string().openapi({ example: "Validation error" }),
-          status: z.number().openapi({ example: 400 }),
-          traceId: z
-            .string()
-            .openapi({ example: "e5ab1ef5-4f8a-4e31-8683-730fcf82072a" }),
-          issues: z
-            .array(z.object({ key: z.string(), message: z.string() }))
-            .openapi({
-              example: [
-                { key: "name", message: "must be at least 3 characters long" },
-              ],
-            }),
-        }),
-      },
-    },
-  };
+  // static openApi = {
+  //   description: "Validation error",
+  //   content: {
+  //     "application/json": {
+  //       schema: z.object({
+  //         message: z.string().openapi({ example: "Validation error" }),
+  //         status: z.number().openapi({ example: 400 }),
+  //         traceId: z
+  //           .string()
+  //           .openapi({ example: "e5ab1ef5-4f8a-4e31-8683-730fcf82072a" }),
+  //         issues: z
+  //           .array(z.object({ key: z.string(), message: z.string() }))
+  //           .openapi({
+  //             example: [
+  //               { key: "name", message: "must be at least 3 characters long" },
+  //             ],
+  //           }),
+  //       }),
+  //     },
+  //   },
+  // };
 }
 
 export class UnauthorizedError extends AppError {
@@ -87,25 +88,25 @@ export class UnauthorizedError extends AppError {
     super("Unauthorized", "UnauthorizedError", cause, 401);
   }
 
-  static openApi = {
-    description: "Unauthorized",
-    content: {
-      "application/json": {
-        schema: z.object({
-          message: z.string().openapi({ example: "Unauthorized" }),
-          status: z.number().openapi({ example: 401 }),
-          traceId: z
-            .string()
-            .openapi({ example: "e5ab1ef5-4f8a-4e31-8683-730fcf82072a" }),
-          issues: z
-            .array(z.object({ key: z.string(), message: z.string() }))
-            .openapi({
-              example: [],
-            }),
-        }),
-      },
-    },
-  };
+  // static openApi = {
+  //   description: "Unauthorized",
+  //   content: {
+  //     "application/json": {
+  //       schema: z.object({
+  //         message: z.string().openapi({ example: "Unauthorized" }),
+  //         status: z.number().openapi({ example: 401 }),
+  //         traceId: z
+  //           .string()
+  //           .openapi({ example: "e5ab1ef5-4f8a-4e31-8683-730fcf82072a" }),
+  //         issues: z
+  //           .array(z.object({ key: z.string(), message: z.string() }))
+  //           .openapi({
+  //             example: [],
+  //           }),
+  //       }),
+  //     },
+  //   },
+  // };
 }
 
 export class NotFoundError extends AppError {
@@ -113,25 +114,25 @@ export class NotFoundError extends AppError {
     super(message, "NotFoundError", cause, 404);
   }
 
-  static openApi = {
-    description: "Not found",
-    content: {
-      "application/json": {
-        schema: z.object({
-          message: z.string().openapi({ example: "Ressource Not found" }),
-          status: z.number().openapi({ example: 404 }),
-          traceId: z
-            .string()
-            .openapi({ example: "e5ab1ef5-4f8a-4e31-8683-730fcf82072a" }),
-          issues: z
-            .array(z.object({ key: z.string(), message: z.string() }))
-            .openapi({
-              example: [],
-            }),
-        }),
-      },
-    },
-  };
+  // static openApi = {
+  //   description: "Not found",
+  //   content: {
+  //     "application/json": {
+  //       schema: z.object({
+  //         message: z.string().openapi({ example: "Ressource Not found" }),
+  //         status: z.number().openapi({ example: 404 }),
+  //         traceId: z
+  //           .string()
+  //           .openapi({ example: "e5ab1ef5-4f8a-4e31-8683-730fcf82072a" }),
+  //         issues: z
+  //           .array(z.object({ key: z.string(), message: z.string() }))
+  //           .openapi({
+  //             example: [],
+  //           }),
+  //       }),
+  //     },
+  //   },
+  // };
 }
 
 export class ForbiddenError extends AppError {
@@ -139,25 +140,25 @@ export class ForbiddenError extends AppError {
     super(message, "ForbiddenError", cause, 403);
   }
 
-  static openApi = {
-    description: "Forbidden",
-    content: {
-      "application/json": {
-        schema: z.object({
-          message: z.string().openapi({ example: "Forbidden" }),
-          status: z.number().openapi({ example: 403 }),
-          traceId: z
-            .string()
-            .openapi({ example: "e5ab1ef5-4f8a-4e31-8683-730fcf82072a" }),
-          issues: z
-            .array(z.object({ key: z.string(), message: z.string() }))
-            .openapi({
-              example: [],
-            }),
-        }),
-      },
-    },
-  };
+  // static openApi = {
+  //   description: "Forbidden",
+  //   content: {
+  //     "application/json": {
+  //       schema: z.object({
+  //         message: z.string().openapi({ example: "Forbidden" }),
+  //         status: z.number().openapi({ example: 403 }),
+  //         traceId: z
+  //           .string()
+  //           .openapi({ example: "e5ab1ef5-4f8a-4e31-8683-730fcf82072a" }),
+  //         issues: z
+  //           .array(z.object({ key: z.string(), message: z.string() }))
+  //           .openapi({
+  //             example: [],
+  //           }),
+  //       }),
+  //     },
+  //   },
+  // };
 }
 
 export class BadRequestError extends AppError {
@@ -165,25 +166,25 @@ export class BadRequestError extends AppError {
     super(message, "BadRequestError", cause, 400);
   }
 
-  static openApi = {
-    description: "Bad request",
-    content: {
-      "application/json": {
-        schema: z.object({
-          message: z.string().openapi({ example: "Bad request" }),
-          status: z.number().openapi({ example: 400 }),
-          traceId: z
-            .string()
-            .openapi({ example: "e5ab1ef5-4f8a-4e31-8683-730fcf82072a" }),
-          issues: z
-            .array(z.object({ key: z.string(), message: z.string() }))
-            .openapi({
-              example: [],
-            }),
-        }),
-      },
-    },
-  };
+  // static openApi = {
+  //   description: "Bad request",
+  //   content: {
+  //     "application/json": {
+  //       schema: z.object({
+  //         message: z.string().openapi({ example: "Bad request" }),
+  //         status: z.number().openapi({ example: 400 }),
+  //         traceId: z
+  //           .string()
+  //           .openapi({ example: "e5ab1ef5-4f8a-4e31-8683-730fcf82072a" }),
+  //         issues: z
+  //           .array(z.object({ key: z.string(), message: z.string() }))
+  //           .openapi({
+  //             example: [],
+  //           }),
+  //       }),
+  //     },
+  //   },
+  // };
 }
 
 export class InternalServerError extends AppError {
@@ -191,23 +192,23 @@ export class InternalServerError extends AppError {
     super(message, "InternalServerError", cause, 500);
   }
 
-  static openApi = {
-    description: "Internal server error",
-    content: {
-      "application/json": {
-        schema: z.object({
-          message: z.string().openapi({ example: "Internal server error" }),
-          status: z.number().openapi({ example: 500 }),
-          traceId: z
-            .string()
-            .openapi({ example: "e5ab1ef5-4f8a-4e31-8683-730fcf82072a" }),
-          issues: z
-            .array(z.object({ key: z.string(), message: z.string() }))
-            .openapi({
-              example: [],
-            }),
-        }),
-      },
-    },
-  };
+  // static openApi = {
+  //   description: "Internal server error",
+  //   content: {
+  //     "application/json": {
+  //       schema: z.object({
+  //         message: z.string().openapi({ example: "Internal server error" }),
+  //         status: z.number().openapi({ example: 500 }),
+  //         traceId: z
+  //           .string()
+  //           .openapi({ example: "e5ab1ef5-4f8a-4e31-8683-730fcf82072a" }),
+  //         issues: z
+  //           .array(z.object({ key: z.string(), message: z.string() }))
+  //           .openapi({
+  //             example: [],
+  //           }),
+  //       }),
+  //     },
+  //   },
+  // };
 }

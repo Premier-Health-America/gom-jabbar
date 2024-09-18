@@ -3,12 +3,12 @@ import { ThemedSafeAreaView, ThemedView } from "@/components/ThemedView";
 import { Fragment } from "react";
 import { StyleSheet } from "react-native";
 
-export default function SupplyScreen() {
+export default function PatientsScreen() {
   return (
     <Fragment>
       <ThemedSafeAreaView>
         <ThemedView style={styles.container}>
-          <ThemedText>Supply</ThemedText>
+          <ThemedText>Patients</ThemedText>
         </ThemedView>
       </ThemedSafeAreaView>
     </Fragment>
