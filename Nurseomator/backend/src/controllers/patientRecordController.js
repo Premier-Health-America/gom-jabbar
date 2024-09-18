@@ -1,10 +1,10 @@
 const PatientRecord = require('../models/PatientRecord');
 
 const createPatientRecord = async (req, res) => {
-    const { patient_name, record } = req.body;
+    const { patient_name, record, facility_id } = req.body;
 
     try {
-        const newRecord = await PatientRecord.create(patient_name, record);
+        const newRecord = await PatientRecord.create(patient_name, record, facility_id);
         res.status(201).json(newRecord);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -27,12 +27,23 @@ const getPatientRecordById = async (req, res) => {
     }
 };
 
-const updatePatientRecord = async (req, res) => {
-    const { id } = req.params;
-    const { patient_name, record } = req.body;
+const getPatientRecordsByFacilityId = async (req, res) => {
+    const { facility_id } = req.params;
 
     try {
-        const updatedRecord = await PatientRecord.update(id, { patient_name, record });
+        const records = await PatientRecord.getByFacility(facility_id);
+        res.status(200).json(records);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const updatePatientRecord = async (req, res) => {
+    const { id } = req.params;
+    const { patient_name, record, facility_id } = req.body;
+
+    try {
+        const updatedRecord = await PatientRecord.update(id, { patient_name, record, facility_id });
 
         if (!updatedRecord) {
             return res.status(404).json({ message: 'Patient record not found' });
@@ -63,6 +74,7 @@ const deletePatientRecord = async (req, res) => {
 module.exports = {
     createPatientRecord,
     getPatientRecordById,
+    getPatientRecordsByFacilityId,
     updatePatientRecord,
     deletePatientRecord,
 };

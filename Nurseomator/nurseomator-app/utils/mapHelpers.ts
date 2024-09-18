@@ -9,6 +9,13 @@ export const INIT_LOCATION = {
 const latitudeDelta = 0.0922;
 const longitudeDelta = 0.0421;
 
+export interface Facility {
+    id: number;
+    name: string;
+    latitude: number;
+    longitude: number;
+}
+
 export interface LocationCoords {
     latitude: number;
     longitude: number;

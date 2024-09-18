@@ -2,11 +2,13 @@ import { Platform, Dimensions, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import MapView from 'react-native-maps';
 import Toast from 'react-native-root-toast';
+import { useRouter } from 'expo-router';
 import { CustomMarker } from '@/components/map/CustomMarker';
 import {
     INIT_LOCATION,
     LocationCoords,
     Region,
+    Facility,
     convertLocationToRegion,
     getMyLocation,
     moveToLocation,
@@ -14,6 +16,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import LocationApi from '@/lib/locationApi';
+import FacilityApi from '@/lib/facilityApi';
 import { Colors } from '@/constants/Colors';
 import { FloatingBtn } from '@/components/navigation/FloatingBtn';
 import { useAuth } from '@/context/auth';
@@ -27,8 +30,10 @@ export function MapComponent() {
     const [myLocation, setMyLocation] = useState<LocationCoords>(INIT_LOCATION);
     const [region, setRegion] = useState<Region>(convertLocationToRegion(INIT_LOCATION));
     const [reportLocationActions, setReportLocationActions] = useState([]);
+    const [facilitiesList, setFacilitiesList] = useState<Facility[]>([]);
     const mapRef = useRef<MapView>(null);
     const { nurse } = useAuth();
+    const router = useRouter();
 
     useEffect(() => {
         (async () => {
@@ -58,6 +63,24 @@ export function MapComponent() {
             }
         })();
     }, [mapRef]);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const list = await FacilityApi.getList();
+                // Convert coordinates to numbers
+                const updatedList = list.map((facility: any) => ({
+                    ...facility,
+                    latitude: Number(facility.latitude),
+                    longitude: Number(facility.longitude),
+                }));
+                setFacilitiesList(updatedList);
+            } catch (error) {
+                console.error('Error initializing facilities', error);
+                setFacilitiesList([]);
+            }
+        })();
+    }, []);
 
     const focusOnLocation = () => {
         if (myLocation.latitude && myLocation.longitude) {
@@ -98,6 +121,20 @@ export function MapComponent() {
                         image={require('@/assets/images/nurse.png')}
                     />
                 )}
+
+                {facilitiesList.map((facility) => (
+                    <CustomMarker
+                        key={facility.id}
+                        coordinate={{ latitude: facility.latitude, longitude: facility.longitude }}
+                        title={facility.name}
+                        image={require('@/assets/images/igloo.png')}
+                        onPress={() =>
+                            router.push(
+                                `/facility?facilityId=${facility.id}&facilityName=${facility.name}`
+                            )
+                        }
+                    />
+                ))}
             </MapView>
 
             <View style={styles.locateBtn}>

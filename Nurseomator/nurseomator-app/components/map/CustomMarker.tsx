@@ -1,6 +1,6 @@
 import { StyleSheet, View, Image, ImageSourcePropType } from 'react-native';
 import React from 'react';
-import { Marker } from 'react-native-maps';
+import { Marker, MarkerPressEvent } from 'react-native-maps';
 
 interface CustomMarkerProps {
     coordinate: {
@@ -9,10 +9,12 @@ interface CustomMarkerProps {
     };
     title: string | undefined;
     image: ImageSourcePropType;
+    onPress?: (event: MarkerPressEvent) => void;
 }
-export function CustomMarker({ coordinate, title, image }: CustomMarkerProps) {
+
+export function CustomMarker({ coordinate, title, image, onPress }: CustomMarkerProps) {
     return (
-        <Marker coordinate={coordinate} title={title}>
+        <Marker coordinate={coordinate} title={title} onPress={onPress}>
             <View style={styles.markerContainer}>
                 <Image source={image} style={styles.markerImage} />
             </View>
