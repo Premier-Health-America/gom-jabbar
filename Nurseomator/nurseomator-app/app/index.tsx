@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'expo-router';
+import { Text } from 'react-native';
 import { useIsNavReady } from '@/hooks/useIsNavReady';
 
 export default function Home() {
@@ -10,5 +11,5 @@ export default function Home() {
         if (isNavigationReady) router.push('/map');
     }, [isNavigationReady]);
 
-    return <p>Loading...</p>;
+    return <Text>Loading...</Text>;
 }

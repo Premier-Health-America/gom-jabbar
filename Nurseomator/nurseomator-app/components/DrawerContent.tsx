@@ -2,18 +2,16 @@ import { View, Text, Pressable, Image } from 'react-native';
 import React from 'react';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
 import { useAuth } from '@/context/auth';
 
 export function DrawerContent(props: any) {
     const { bottom } = useSafeAreaInsets();
-    const router = useRouter();
     const { nurse, logout } = useAuth();
 
     const logoutPressed = async () => {
-        console.log('close');
         await logout();
     };
+
     return (
         <View style={{ flex: 1 }}>
             <DrawerContentScrollView {...props} scrollEnabled={false}>

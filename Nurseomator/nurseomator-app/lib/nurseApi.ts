@@ -8,12 +8,12 @@ class NurseApi {
 
     login = async (body: any) => {
         try {
-            await new Promise((resolve) => setTimeout(resolve, 5000));
+            await new Promise((resolve) => setTimeout(resolve, 2000));
             const { data } = await this.nurseApi.post('/nurse/login', body);
             console.log('data', data);
             return data;
         } catch (error: any) {
-            throw new Error(error.response.data.message);
+            throw new Error(error.response?.data?.message || 'An error occured');
         }
     };
 
@@ -23,7 +23,7 @@ class NurseApi {
             console.log('data', data);
             return data;
         } catch (error: any) {
-            throw new Error(error.response.data.message);
+            throw new Error(error.response?.data?.message || 'An error occured');
         }
     };
 
@@ -35,7 +35,7 @@ class NurseApi {
             console.log('data', data);
             return data;
         } catch (error: any) {
-            throw new Error(error.response.data.message);
+            throw new Error(error.response?.data?.message || 'An error occured');
         }
     };
 }

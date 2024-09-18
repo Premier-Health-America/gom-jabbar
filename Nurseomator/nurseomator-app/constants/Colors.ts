@@ -1,16 +1,17 @@
-const tintColorLight = '#0a7ea4';
+const tintColor = '#1D1C1E';
 
 export const Colors = {
     primary: '#5636D2',
     secondary: '#6C63FF',
-    text: '#888',
+    text: '#1D1C1E',
     background: '#fff',
-    tint: tintColorLight,
+    tint: tintColor,
     icon: '#687076',
     tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
+    tabIconSelected: tintColor,
     success: 'green',
     error: 'red',
     buttonText: 'white',
-    grey: '#ccc',
+    white: '#fff',
+    grey: '#8E8E8E',
 };

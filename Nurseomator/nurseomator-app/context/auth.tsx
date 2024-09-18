@@ -43,7 +43,7 @@ export function AuthProvider({ children }: ProviderProps) {
         } else if (!nurse && !isInAuthScreen) {
             router.push('/login');
         }
-    }, [nurse, segments, authInitialized, isNavigationReady, router]);
+    }, [nurse, authInitialized, isNavigationReady, router]);
 
     useEffect(() => {
         (async () => {

@@ -51,20 +51,20 @@ export function AuthFormLayout({
                             placeholder="Username"
                             value={values.username}
                             handleChange={handleChange('username')}
-                            handleBlur={handleBlur} // Correctly type the handleBlur function
+                            handleBlur={() => handleBlur}
                         />
 
                         <FormInput
                             placeholder="Password"
                             value={values.password}
                             handleChange={handleChange('password')}
-                            handleBlur={handleBlur} // Correctly type the handleBlur function
+                            handleBlur={() => handleBlur}
                             secureTextEntry={!passwordVisible}
                             showIcon={true}
                             onToggleVisibility={() => setPasswordVisible(!passwordVisible)}
                         />
 
-                        {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
+                        {!!errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
 
                         <TouchableOpacity
                             onPress={() => handleSubmit()} // Wrap handleSubmit in an anonymous function

@@ -6,7 +6,7 @@ interface FormInputProps {
     placeholder: string;
     value: string;
     handleChange: (text: string) => void;
-    handleBlur: (e?: any) => void; // Update the type to accept an optional argument
+    handleBlur: () => void;
     secureTextEntry?: boolean;
     showIcon?: boolean;
     onToggleVisibility?: () => void;
@@ -28,7 +28,7 @@ export function FormInput({
                 autoCapitalize="none"
                 value={value}
                 onChangeText={handleChange}
-                onBlur={handleBlur} // Correctly type the handleBlur prop
+                onBlur={handleBlur}
                 secureTextEntry={secureTextEntry}
                 style={styles.textInput}
             />
