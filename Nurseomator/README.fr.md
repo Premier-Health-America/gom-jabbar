@@ -27,12 +27,9 @@ Pour les requêtes:
 
 # SetUp local du projet
 
-## Git
-
 git clone repo
 
-## env variables
-
+In your IDE, add you env variable:
 In backend folder:
 
 - Dupplicate the .env.sample file and rename it .env
@@ -43,26 +40,22 @@ In nurseomator-app folder:
 - Dupplicate the .env.sample file and rename it .env
 - Modify thoses values: EXPO_PUBLIC_API_URL
 
-## Database
+In docker folder:
 
-In your terminal, go to config folder: cd gom-jabbar/Nursomator/config
+- Dupplicate the .env.sample file and rename it .env
+- Modify thoses values: PROJECT_PATH, MY_IP_URL
+- Based on your OS, modify the volumes path in docker-compose.yml
 
-Run psql -U julietteguilbaud -d nurseomator -f init-db.sql
+In your terminal, go to docker folder: cd gom-jabbar/Nursomator/docker
+Start containers: run docker compose up -d
+Import db:
 
-## Start
+- Go to Nurseomator/backend/src/config
+- Run: docker cp nursomator-db.sql your_container_name:/data.sql
 
-Start the backend:
+docker-compose exec frontend npm start -- --host lan
 
-Got to cd gom-jabbar/Nursomator/backend
+Start the backend: docker-compose exec backend npm run dev
+Start the frontend: docker-compose exec frontend npm start
 
-Run npm install
-
-Run npm run dev
-
-Start the frontend:
-
-Got to cd gom-jabbar/Nursomator/nurseomator-app
-
-Run npm install
-
-Run npm start
+To stop containers: docker compose down
