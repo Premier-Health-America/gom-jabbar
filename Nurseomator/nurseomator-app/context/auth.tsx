@@ -37,9 +37,9 @@ export function AuthProvider({ children }: ProviderProps) {
     useEffect(() => {
         if (!isNavigationReady || !authInitialized) return;
 
-        const isInAuthScreen = segments[0] === '(auth)';
+        const isInAuthScreen = segments[0] === 'login' || segments[0] === 'register';
         if (nurse && isInAuthScreen) {
-            router.push('/map');
+            router.push('/');
         } else if (!nurse && !isInAuthScreen) {
             router.push('/login');
         }
@@ -82,7 +82,6 @@ export function AuthProvider({ children }: ProviderProps) {
             // Clear token and nurse info
             await clearToken();
             setNurse(null);
-            console.log('here');
             return { error: undefined };
         } catch (error) {
             return { error };

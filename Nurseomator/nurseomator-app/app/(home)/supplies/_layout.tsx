@@ -22,9 +22,9 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
-                name="requests"
+                name="history"
                 options={{
-                    title: 'My Requests',
+                    title: 'My History',
                     tabBarIcon: ({ color, focused }) => (
                         <TabBarIcon
                             name={focused ? 'document' : 'document-outline'}

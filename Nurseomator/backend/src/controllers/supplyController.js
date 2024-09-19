@@ -1,13 +1,24 @@
 const NurseSupply = require('../models/NurseSupply');
 const SupplyHistory = require('../models/SupplyHistory');
 
+const getMySupplies = async (req, res) => {
+    const nurseId = req.nurse.nurseId;
+
+    try {
+        const supplies = await NurseSupply.getNurseSupplies(nurseId);
+        res.status(200).json(supplies);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 const supplyRestock = async (req, res) => {
     const nurseId = req.nurse.nurseId;
     const { supply_id, quantity } = req.body;
 
     try {
         // Check if a nurse_supply entry exists
-        const nurseSupply = await NurseSupply.getNurseSupply(nurseId, supply_id);
+        const nurseSupply = await NurseSupply.getNurseSupplyQty(nurseId, supply_id);
 
         let delivery_date;
         let nurse_supply_id;
@@ -82,8 +93,21 @@ const getSupplyRequestOptions = async (req, res) => {
     res.status(200).json(SupplyHistory.type_options);
 };
 
+const getMyHistory = async (req, res) => {
+    const nurseId = req.nurse.nurseId;
+
+    try {
+        const history = await NurseSupply.getNurseHistory(nurseId);
+        res.status(200).json(history);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
+    getMySupplies,
     supplyRestock,
     supplyConsumption,
     getSupplyRequestOptions,
+    getMyHistory,
 };

@@ -20,6 +20,21 @@ class PatientRecordApi {
             throw new Error(error.response?.data?.message || 'An error occured');
         }
     };
+
+    updatePatientRecord = async ({ patientRecordId, body, token }: any) => {
+        try {
+            const { data } = await this.patientRecordApi.put(
+                `/patient-record/${patientRecordId}`,
+                body,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+            return data;
+        } catch (error: any) {
+            throw new Error(error.response?.data?.message || 'An error occured');
+        }
+    };
 }
 
 export default new PatientRecordApi();

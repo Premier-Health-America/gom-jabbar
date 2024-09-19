@@ -130,7 +130,7 @@ export function MapComponent() {
                         image={require('@/assets/images/igloo.png')}
                         onPress={() =>
                             router.push(
-                                `/facility?facilityId=${facility.id}&facilityName=${facility.name}`
+                                `/map/facility?facilityId=${facility.id}&facilityName=${facility.name}`
                             )
                         }
                     />

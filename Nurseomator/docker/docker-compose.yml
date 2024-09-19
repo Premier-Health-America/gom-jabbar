@@ -1,0 +1,40 @@
+services:
+    frontend:
+        container_name: frontend
+        build:
+            context: ${PROJECT_PATH}/nurseomator-app
+            dockerfile: Dockerfile
+        ports:
+            - '8000:8000'
+        volumes:
+            - ${PROJECT_PATH}/usr/src/app
+        environment:
+            - NODE_ENV=development
+
+    backend:
+        container_name: backend
+        build:
+            context: ${PROJECT_PATH}/backend
+            dockerfile: Dockerfile
+        ports:
+            - '3000:3000'
+        volumes:
+            - ${PROJECT_PATH}/usr/src/app
+        environment:
+            - NODE_ENV=development
+            - DATABASE_URL=postgres://user:password@postgres:5432/mydatabase
+
+    postgres:
+        container_name: postgres
+        image: postgres:13
+        environment:
+            POSTGRES_USER: julietteguilbaud
+            POSTGRES_PASSWORD: Mur2Berlin
+            POSTGRES_DB: nurseomator
+        ports:
+            - '5432:5432'
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+
+volumes:
+    postgres-data:
