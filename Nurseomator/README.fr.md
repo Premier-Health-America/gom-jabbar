@@ -1,61 +1,65 @@
-# Processus de pensée
+# Nurseomator - Juliette Guilbaud
 
-## Choix de la pile technique
+I chose this project because...
 
-### API
+# My tech stack
 
-- **Node.js** avec **Express**
-- DB: **PostgreSQL**
+### Backend
 
-Pour hasher les mots de passe: **bcrypt**
+-   **Node.js** with **Express**
+-   Database: **PostgreSQL**
 
-Pour crypter et décrypter le dossier des patients: **crypto**
+#### Docker
 
-### Application Mobile
+I've chosen to use docker for the backend and database to avoid any problems associated with multiple development environments. With Docker, I'm sure that the application will behave in the same way on all machines.
 
-- **React Native** pour une application mobile cross-platform (iOS et Android). Développement + rapide.
-- **Expo** : + rapide, sans avoir à se préoccuper des configurations de bases.
+#### Postman
 
-Pour la carte:
+I used postman during development, so you'll find the postman collection in the project.
 
-- **React Native Maps**
-- API Google Maps
+---
 
-Pour les requêtes:
+### Frontend : Mobile App
 
-- **Axios**
+-   **React Native** for a cross-platform mobile application
+-   **Expo** : I used the expo framework to simplify the development. I didn't have to worry about basic configurations and the devleopmnt was much faster. Expo also offers the ability to preview apps on devices in real-time without needing native code configurations.
 
-# SetUp local du projet
+-   For the map: **React Native Maps**
 
-git clone repo
+-   For http requests: **Axios**
 
-In your IDE, add you env variable:
-In backend folder:
+# Local setup
 
-- Dupplicate the .env.sample file and rename it .env
-- Modify thoses values: DATABASE_URL, JWT_SECRET, ENCRYPTION_KEY
+## Git
 
-In nurseomator-app folder:
+Clone git repo : https://github.com/JulietteGuilbaud/gom-jabbar
 
-- Dupplicate the .env.sample file and rename it .env
-- Modify thoses values: EXPO_PUBLIC_API_URL
+## Environment variables
 
-In docker folder:
+> Please note! In a professional and security context my .env files will not be pre-filled. To speed up your inital installation I've left all access to the database & my tokens.
 
-- Dupplicate the .env.sample file and rename it .env
-- Modify thoses values: PROJECT_PATH, MY_IP_URL
-- Based on your OS, modify the volumes path in docker-compose.yml
+The only thing missing is your local IP address so that the mobile app on your phone can communicate with your local backend:
 
-In your terminal, go to docker folder: cd gom-jabbar/Nursomator/docker
-Start containers: run docker compose up -d
-Import db:
+-   In the nurseomator-app .env file : `gom-jabbar/Nursomator/nurseomator-app/.env`, modify the `EXPO_PUBLIC_API_URL` to match your local IP address. Leave the port 5001 at the end.
 
-- Go to Nurseomator/backend/src/config
-- Run: docker cp nursomator-db.sql your_container_name:/data.sql
+## Backend & DB
 
-docker-compose exec frontend npm start -- --host lan
+-   Make sure docker is open on your computer.
 
-Start the backend: docker-compose exec backend npm run dev
-Start the frontend: docker-compose exec frontend npm start
+-   In your terminal, go to the docker folder:`cd gom-jabbar/Nursomator/backend/src/docker`
 
-To stop containers: docker compose down
+-   Start containers: `docker compose up -d` (if later you want to stop the containers run: `docker compose down`)
+
+This will install the dependencies and will also creates and fills the database with values.
+
+## Frontend
+
+-   In your terminal, go to the nurseomator-app folder: `cd gom-jabbar/Nursomator/nurseomator-app`
+-   Install dependencies: run `npm install`
+-   Start the projet: run `npm start`
+
+In each `/backend` and `/nurseomator-app` folder there's a README.md with more details on implementation and functionality.
+
+# Tests
+
+I've created some tests for backend routes. You can run the test suites in the backend docker container with : `npm run test`

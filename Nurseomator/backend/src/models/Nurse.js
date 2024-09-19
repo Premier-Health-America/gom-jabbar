@@ -1,11 +1,11 @@
 const pool = require('../config/db');
-const bcrypt = require('bcrypt');
+const bcryptjs = require('bcryptjs');
 
 class Nurse {
     static async create(username, password) {
         try {
             // Hash password before storing
-            const hashedPassword = await bcrypt.hash(password, 10);
+            const hashedPassword = await bcryptjs.hash(password, 10);
 
             const result = await pool.query(
                 `INSERT INTO nurses (username, password) VALUES ($1, $2) RETURNING *`,

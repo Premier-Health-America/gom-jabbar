@@ -1,5 +1,5 @@
 const Nurse = require('../models/Nurse');
-const bcrypt = require('bcrypt');
+const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const registerNurse = async (req, res) => {
@@ -19,7 +19,11 @@ const registerNurse = async (req, res) => {
             expiresIn: '1h',
         });
 
-        res.status(201).json({ message: 'Nurse registered successfully', nurse: newNurse, token });
+        res.status(201).json({
+            message: 'Nurse registered successfully',
+            nurse: newNurse,
+            token,
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -36,13 +40,15 @@ const loginNurse = async (req, res) => {
         }
 
         // Compare password
-        const isMatch = await bcrypt.compare(password, nurse.password);
+        const isMatch = await bcryptjs.compare(password, nurse.password);
         if (!isMatch) {
             return res.status(400).json({ message: 'Invalid username or password' });
         }
 
         // Generate JWT token
-        const token = jwt.sign({ nurseId: nurse.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ nurseId: nurse.id }, process.env.JWT_SECRET, {
+            expiresIn: '1h',
+        });
 
         res.status(200).json({ message: 'Login successful', nurse, token });
     } catch (error) {

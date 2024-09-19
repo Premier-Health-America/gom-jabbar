@@ -1,6 +1,3 @@
-# Environment files
-.env
-
 # Node.js
 node_modules/
 npm-debug.*
@@ -31,6 +28,8 @@ expo-env.d.ts
 # IDEs and Editors
 .idea/
 .vscode/
+
+.DS_Store
 
 # Logs
 yarn-debug.log

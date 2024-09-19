@@ -1,4 +1,3 @@
-// Encrypt and securely store key-value pairs locally on the device (only for android & ios)
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
