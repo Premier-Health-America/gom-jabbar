@@ -15,32 +15,16 @@ function ThemedTextInput({
 }: ThemedTextInputProps) {
   const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
 
-  return (
-    // <Text
-    //   style={[
-    //     { color },
-    //     type === 'default' ? styles.default : undefined,
-    //     type === 'title' ? styles.title : undefined,
-    //     type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
-    //     type === 'subtitle' ? styles.subtitle : undefined,
-    //     type === 'link' ? styles.link : undefined,
-    //     style,
-    //   ]}
-    //   {...rest}
-    // />
-    <TextInput style={[{ color }, styles.default]} {...rest} />
-  );
+  return <TextInput style={[{ color }, styles.default, style]} {...rest} />;
 }
 
 const styles = StyleSheet.create({
   default: {
-    // fontSize: 16,
-    // lineHeight: 24,
-    height: 40,
     borderColor: "gray",
     borderWidth: 1,
-    marginBottom: 10,
-    paddingHorizontal: 10,
+    padding: 10,
+    borderRadius: 10,
+    width: "100%",
   },
 });
 

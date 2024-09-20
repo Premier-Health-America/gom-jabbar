@@ -1,79 +1,158 @@
 import { useApiClient } from "@/hooks/useApiClient";
-import * as AuthSession from "expo-auth-session";
-import * as Linking from "expo-linking";
-import * as SecureStore from "expo-secure-store";
-import * as WebBrowser from "expo-web-browser";
+import { SecureStorage } from "@/utils/secureStorage";
+import { router } from "expo-router";
+import type { User } from "lucia";
+import {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { Alert } from "react-native";
 
-const SESSION_ID_STORE_KEY = "sessionId" as const;
+const AuthContext = createContext<{
+  signUp: (info: {
+    name: string;
+    email: string;
+    password: string;
+  }) => Promise<void>;
+  signIn: (info: { email: string; password: string }) => Promise<void>;
+  signOut: () => void;
+  user: User | null;
+  sessionId?: string | null;
+  isLoading: boolean;
+}>({
+  signUp: (info: { name: string; email: string; password: string }) =>
+    new Promise(() => null),
+  signIn: (info: { email: string; password: string }) =>
+    new Promise(() => null),
+  signOut: () => null,
+  user: null,
+  sessionId: null,
+  isLoading: false,
+});
 
-export const fetchUser = async () => {
-  try {
-    const sessionId = await SecureStore.getItemAsync(SESSION_ID_STORE_KEY);
-    const client = useApiClient(sessionId);
-    const response = await client.user.$get();
-    if (!response.ok) {
-      console.log("Bad response:", response.status, await response.text());
-      return;
+export function useAuth() {
+  const value = useContext(AuthContext);
+  if (process.env.NODE_ENV !== "production") {
+    if (!value) {
+      throw new Error("useSession must be wrapped in a <SessionProvider />");
     }
-
-    const data = await response.json();
-    console.log("API response:", data);
-    return data;
-  } catch (error) {
-    console.log("Error while fetching:", error);
   }
-};
 
-export const logout = async () => {
-  try {
-    const sessionId = await SecureStore.getItemAsync(SESSION_ID_STORE_KEY);
-    const client = useApiClient(sessionId);
-    const res = await client.api.auth.logout.$post();
-    if (!res.ok) {
-      console.log("Logout error:", res.status, await res.text());
-      return;
+  return value;
+}
+
+export function SessionProvider({ children }: PropsWithChildren) {
+  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    setIsLoading(true);
+    const sessionId = await SecureStorage.getSessionId();
+    setSessionId(sessionId);
+    if (sessionId) {
+      const userAccount = await fetchUserAccount(sessionId);
+      if (userAccount) {
+        setUser(userAccount);
+      } else {
+        await signOut();
+      }
     }
+    setIsLoading(false);
+  };
 
-    await SecureStore.deleteItemAsync(SESSION_ID_STORE_KEY);
-    console.log("Logout success:", res.status);
-  } catch (error) {
-    console.log("Logout error:", error);
-  }
-};
+  const fetchUserAccount = async (sessionId: string) => {
+    try {
+      const { data, error } = await useApiClient(sessionId).nurse.index.get();
+      if (error) {
+        console.error("Error while fetching user account:", error);
+        return null;
+      }
 
-export const login = async () => {
-  const redirectUri = AuthSession.makeRedirectUri();
-  try {
-    const loginUrl = useApiClient().api.auth.login.google.$url();
-    loginUrl.searchParams.set("redirectUri", redirectUri);
-    const result = await WebBrowser.openAuthSessionAsync(
-      loginUrl.toString(),
-      redirectUri,
-      { showInRecents: true }
-    );
-    console.log("Login Result:\n", result);
-    if (result.type !== "success") return;
+      console.log("Fetched user account:", data);
+      return data;
+    } catch (error) {
+      console.error("Error while fetching user account:", error);
+      return null;
+    }
+  };
 
-    const url = Linking.parse(result.url);
-    const sessionId = url.queryParams?.["session_token"]?.toString() ?? null;
-    if (!sessionId) return;
-    console.log("Saving session ID:", sessionId);
-    await SecureStore.setItemAsync(SESSION_ID_STORE_KEY, sessionId);
-  } catch (error) {
-    console.log("Login error:\n", error);
-  }
-  //   console.log("Redirect URI:", AuthSession.makeRedirectUri());
-  //   console.log("URL:", Linking.createURL(""));
-  //   const [request, response, promptAsync] = AuthSession.useAuthRequest(
-  //     {
-  //       clientId: "YOUR_CLIENT_ID",
-  //       redirectUri: AuthSession.makeRedirectUri(),
-  //     },
-  //     {
-  //       authorizationEndpoint: `${env.EXPO_PUBLIC_API_URL}/api/auth/login/google`,
-  //     }
-  //   );
-  //   console.log("Request:", request);
-  //   console.log("Response:", response);
-  //   return { request, response, promptAsync };
-};
+  const signOut = async () => {
+    console.log("Signing out");
+    await SecureStorage.removeSessionId();
+    setSessionId(null);
+    setUser(null);
+    setIsLoading(false);
+    router.replace("/");
+    console.log("Signed out");
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        signUp: async (info: {
+          name: string;
+          email: string;
+          password: string;
+        }) => {
+          const { name, email, password } = info;
+          const { data, error } = await useApiClient().auth.signup.post({
+            name,
+            email,
+            password,
+          });
+          if (error) {
+            console.error("Error while signing up:", error);
+            await SecureStorage.removeSessionId();
+            Alert.alert("Error while signing up");
+            return;
+          }
+
+          console.log("Signed in:", data);
+          setSessionId(data.token);
+          await SecureStorage.setSessionId(data.token);
+          const userAccount = await fetchUserAccount(data.token);
+          if (userAccount) {
+            setUser(userAccount);
+          }
+          router.replace("/(app)/(tabs)/");
+        },
+        signIn: async (info: { email: string; password: string }) => {
+          const { email, password } = info;
+          const { data, error } = await useApiClient().auth.signin.post({
+            email,
+            password,
+          });
+          if (error) {
+            console.error("Error while signing in:", error);
+            await SecureStorage.removeSessionId();
+            Alert.alert("Error while signing in");
+            return;
+          }
+
+          console.log("Signed in:", data);
+          setSessionId(data.token);
+          await SecureStorage.setSessionId(data.token);
+          const userAccount = await fetchUserAccount(data.token);
+          if (userAccount) {
+            setUser(userAccount);
+          }
+          router.replace("/(app)/(tabs)/");
+        },
+        signOut,
+        user,
+        sessionId,
+        isLoading,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}

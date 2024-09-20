@@ -28,7 +28,7 @@ export default function TabLayout() {
           title: "Supply",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? "medical" : "medical-outline"}
+              name={focused ? "bag-add" : "bag-add-outline"}
               color={color}
             />
           ),
@@ -38,6 +38,18 @@ export default function TabLayout() {
         name="patients"
         options={{
           title: "Patients",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "medical" : "medical-outline"}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="account"
+        options={{
+          title: "Account",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "person" : "person-outline"}
