@@ -46,6 +46,20 @@ class PatientRecordApi {
             throw new Error(error.response?.data?.message || 'An error occured');
         }
     };
+
+    deletePatientRecord = async ({ patientRecordId, token }: any) => {
+        try {
+            const { data } = await this.patientRecordApi.delete(
+                `/patient-record/${patientRecordId}`,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+            return data;
+        } catch (error: any) {
+            throw new Error(error.response?.data?.message || 'An error occured');
+        }
+    };
 }
 
 export default new PatientRecordApi();

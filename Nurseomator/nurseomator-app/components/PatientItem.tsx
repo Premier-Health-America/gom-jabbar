@@ -4,11 +4,11 @@ import { Avatar, Button, Card, Text, TextInput } from 'react-native-paper';
 import Toast from 'react-native-root-toast';
 import { getSavedToken } from '@/utils/tokenService';
 import { Colors } from '@/constants/Colors';
-import patientRecordApi from '@/lib/patientRecordApi';
+import PatientRecordApi from '@/lib/patientRecordApi';
 
 const LeftContent = () => <Avatar.Icon icon="account" size={50} style={styles.avatar} />;
 
-export function PatientItem({ patient }: any) {
+export function PatientItem({ patient, reloadPage }: any) {
     const [isUpdating, setIsUpdating] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [newPatientRecord, setNewPatientRecord] = useState(patient.record);
@@ -19,7 +19,7 @@ export function PatientItem({ patient }: any) {
             try {
                 const token = await getSavedToken();
                 const body = { record: newPatientRecord };
-                await patientRecordApi.updatePatientRecord({
+                await PatientRecordApi.updatePatientRecord({
                     patientRecordId: patient.id,
                     body,
                     token,
@@ -31,6 +31,20 @@ export function PatientItem({ patient }: any) {
         }
         setIsUpdating(!isUpdating);
         setIsLoading(false);
+    };
+
+    const deletePressed = async () => {
+        try {
+            const token = await getSavedToken();
+            await PatientRecordApi.deletePatientRecord({
+                patientRecordId: patient.id,
+                token,
+            });
+            reloadPage();
+        } catch (error) {
+            console.error('Error updating patient records', error);
+            Toast.show('Error');
+        }
     };
 
     return (
@@ -51,7 +65,9 @@ export function PatientItem({ patient }: any) {
                 )}
             </Card.Content>
             <Card.Actions>
-                <Button style={styles.deleteBtn}>Delete</Button>
+                <Button style={styles.deleteBtn} onPress={deletePressed}>
+                    Delete
+                </Button>
                 <Button style={styles.updateBtn} onPress={updatePressed} disabled={isLoading}>
                     {isLoading ? 'Updating...' : 'Update'}
                 </Button>

@@ -67,7 +67,7 @@ export function AuthFormLayout({
                         {!!errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
 
                         <TouchableOpacity
-                            onPress={() => handleSubmit()} // Wrap handleSubmit in an anonymous function
+                            onPress={() => handleSubmit()}
                             disabled={isSubmitting || !values.username || !values.password}
                             style={[
                                 styles.button,

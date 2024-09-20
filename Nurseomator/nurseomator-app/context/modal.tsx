@@ -6,6 +6,7 @@ import { View, StyleSheet } from 'react-native';
 interface ModalContextType {
     showModal: (content: ReactNode) => void;
     hideModal: () => void;
+    visible: boolean;
 }
 
 // Create context
@@ -37,7 +38,7 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     };
 
     return (
-        <ModalContext.Provider value={{ showModal, hideModal }}>
+        <ModalContext.Provider value={{ showModal, hideModal, visible }}>
             {children}
             <Portal>
                 <Modal
