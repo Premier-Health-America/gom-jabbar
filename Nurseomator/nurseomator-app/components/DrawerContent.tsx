@@ -15,15 +15,8 @@ export function DrawerContent(props: any) {
     return (
         <View style={{ flex: 1 }}>
             <DrawerContentScrollView {...props} scrollEnabled={false}>
-                <View style={{ padding: 20 }}>
-                    <Image
-                        style={{ height: 35 }}
-                        resizeMode="contain"
-                        source={require('../assets/images/logo.png')}
-                    />
-                </View>
                 {nurse && (
-                    <View style={{ padding: 20 }}>
+                    <View style={{ padding: 40 }}>
                         <Text>Hello {nurse.username}!</Text>
                     </View>
                 )}
