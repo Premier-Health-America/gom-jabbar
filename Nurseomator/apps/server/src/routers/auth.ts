@@ -1,11 +1,75 @@
+import bearer from "@elysiajs/bearer";
 import { nursesTable } from "@repo/schemas/db";
 import Elysia, { t } from "elysia";
 import { generateIdFromEntropySize } from "lucia";
 import { db } from "../db";
 import { lucia } from "../lib/auth";
-import { InternalServerError } from "../lib/error";
+import { AppErrorModels } from "../lib/error";
+
+export const authService = new Elysia({ name: "auth/service" })
+  .use(bearer())
+  .use(AppErrorModels)
+  .macro(({ onBeforeHandle }) => ({
+    isSignIn(enabled: true) {
+      if (!enabled) return;
+
+      onBeforeHandle(({ error, bearer, set }) => {
+        if (!bearer) {
+          set.headers[
+            "WWW-Authenticate"
+          ] = `Bearer realm='sign', error="invalid_request"`;
+          return error(401, "Unauthorized");
+        }
+      });
+    },
+  }));
+
+export const authenticatedPlugin = new Elysia()
+  .use(authService)
+  .guard({
+    isSignIn: true,
+  })
+  .resolve(async ({ bearer, error }) => {
+    const { session, user } = await lucia.validateSession(`${bearer}`);
+    if (!session || !user) {
+      return error(401, "Unauthorized");
+    }
+
+    return { session, user };
+  })
+  .as("plugin");
 
 const router = new Elysia({ prefix: "/auth" })
+  .use(authService)
+  .model({
+    signUp: t.Object({
+      name: t.String({ minLength: 1, maxLength: 50, examples: ["Sylvie"] }),
+      email: t.String({
+        format: "email",
+        minLength: 1,
+        maxLength: 100,
+        examples: ["sylvie@nurseomator.com"],
+      }),
+      password: t.String({
+        minLength: 8,
+        maxLength: 255,
+        examples: ["strongpassword"],
+      }),
+    }),
+    signIn: t.Object({
+      email: t.String({
+        format: "email",
+        minLength: 1,
+        maxLength: 100,
+        examples: ["sylvie@nurseomator.com"],
+      }),
+      password: t.String({
+        minLength: 8,
+        maxLength: 255,
+        examples: ["strongpassword"],
+      }),
+    }),
+  })
   .post(
     "/signup",
     async ({ body, error, set }) => {
@@ -16,10 +80,10 @@ const router = new Elysia({ prefix: "/auth" })
           },
         });
         if (existingUser) {
-          set.status = 400;
-          return {
-            error: "An account with this email already exists. Sign in instead",
-          };
+          return error(
+            400,
+            "An account with this email already exists. Sign in instead"
+          );
         }
 
         const passwordHash = await Bun.password.hash(body.password);
@@ -38,33 +102,35 @@ const router = new Elysia({ prefix: "/auth" })
         });
 
         const session = await lucia.createSession(userId, {});
-        set.status = 201;
         return {
-          message: "Account created successfully",
           token: session.id,
         };
       } catch (err) {
         console.log("CATCHED SIGNUP ERROR:\n", err);
-        return error(
-          500,
-          new InternalServerError(
-            "Something went wrong",
-            `Catched error during signup: ${err}`
-          )
-        );
+        return error(500, "Something went wrong");
       }
     },
     {
-      body: t.Object({
-        name: t.String({ minLength: 1, maxLength: 50 }),
-        email: t.String({ format: "email", minLength: 1, maxLength: 100 }),
-        password: t.String({ minLength: 8, maxLength: 255 }),
-      }),
+      body: "signUp",
+      response: {
+        200: t.Object({
+          token: t.String(),
+        }),
+        400: t.Literal(
+          "An account with this email already exists. Sign in instead",
+          {
+            examples: [
+              "An account with this email already exists. Sign in instead",
+            ],
+          }
+        ),
+        500: "InternalServerError",
+      },
     }
   )
   .post(
     "/signin",
-    async ({ body, error, set }) => {
+    async ({ body, error }) => {
       try {
         const existingUser = await db.query.nursesTable.findFirst({
           where(fields, operators) {
@@ -72,10 +138,7 @@ const router = new Elysia({ prefix: "/auth" })
           },
         });
         if (!existingUser) {
-          set.status = 400;
-          return {
-            error: "Invalid email or password",
-          };
+          return error(400, "Invalid email or password.");
         }
 
         const validPassword = await Bun.password.verify(
@@ -83,37 +146,44 @@ const router = new Elysia({ prefix: "/auth" })
           existingUser.password
         );
         if (!validPassword) {
-          set.status = 400;
-          return {
-            error: "Invalid email or password",
-          };
+          return error(400, "Invalid email or password.");
         }
 
         const session = await lucia.createSession(existingUser.id, {});
-        set.status = 201;
         return {
-          message: "Logged in successfully",
           token: session.id,
         };
 
         // Implement TOTP redirection here
       } catch (err) {
         console.log("CATCHED LOGIN ERROR:\n", err);
-        return error(
-          500,
-          new InternalServerError(
-            "Something went wrong",
-            `Catched error during login: ${err}`
-          )
-        );
+        return error(500, "Something went wrong");
       }
     },
     {
       body: t.Object({
-        name: t.String({ minLength: 1, maxLength: 50 }),
         email: t.String({ format: "email", minLength: 1, maxLength: 100 }),
         password: t.String({ minLength: 8, maxLength: 255 }),
       }),
+      response: {
+        200: t.Object({
+          token: t.String(),
+        }),
+        400: t.Literal("Invalid email or password."),
+        500: "InternalServerError",
+      },
+    }
+  )
+  .post(
+    "/signout",
+    async ({ bearer, set }) => {
+      await lucia.invalidateSession(`${bearer}`);
+      set.status = 204;
+    },
+    {
+      response: {
+        204: t.Void(),
+      },
     }
   );
 
