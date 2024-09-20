@@ -9,8 +9,8 @@ services:
         ports:
             - '$POSTGRESDB_DOCKER_PORT:$POSTGRESDB_DOCKER_PORT'
         volumes:
-            - ./docker_postgres_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
             - postgres-data:/var/lib/postgresql/data
+            - ./nurseomatordb.sql:/docker-entrypoint-initdb.d/nurseomatordb.sql
 
     backend:
         image: jujuguilbaud31/nurseomator:latest

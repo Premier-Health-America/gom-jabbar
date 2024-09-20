@@ -21,6 +21,17 @@ class PatientRecordApi {
         }
     };
 
+    createPatientRecord = async ({ body, token }: any) => {
+        try {
+            const { data } = await this.patientRecordApi.post(`/patient-record`, body, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            return data;
+        } catch (error: any) {
+            throw new Error(error.response?.data?.message || 'An error occured');
+        }
+    };
+
     updatePatientRecord = async ({ patientRecordId, body, token }: any) => {
         try {
             const { data } = await this.patientRecordApi.put(

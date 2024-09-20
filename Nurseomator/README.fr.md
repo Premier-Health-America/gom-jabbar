@@ -40,13 +40,15 @@ The only thing missing is your local IP address so that the mobile app on your p
 
 ## Backend & DB
 
+> Please note! In a professional and security context I would not expose the database like this.
+
 -   Make sure docker is open on your computer.
 
 -   In your terminal, go to the docker folder:`cd gom-jabbar/Nursomator/backend/src/docker`
 
--   Run this command to fetch my docker image to have all the dependencies & database set up: `docker pull jujuguilbaud31/nurseomator:latest`
-
 -   Start containers: `docker compose up -d` (if later you want to stop the containers run: `docker compose down`)
+
+This will fetch my backend docker image and the postgres docker image with my database populated.
 
 ## Frontend
 
@@ -62,4 +64,8 @@ You can login as username:`test` & password:`test` to test all features.
 
 # Jest tests
 
-I've created some tests for backend routes. You can run the test suites in the backend docker container with : `npm run test`
+I've created some tests for backend routes. You can run the test suites in the backend docker container:
+
+-   Run: `docker ps` to get the backend container name
+-   Run: `docker exec -it <container_name> /bin/bash`
+-   Run: `npm run test`

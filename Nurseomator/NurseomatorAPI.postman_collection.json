@@ -214,14 +214,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/patient-record/list-for-facility/3",
+							"raw": "{{base_url}}/patient-record/list-for-facility/1",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"patient-record",
 								"list-for-facility",
-								"3"
+								"1"
 							]
 						}
 					},
@@ -430,7 +430,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"supply_id\": 1,\n    \"quantity\": 10\n}",
+							"raw": "{\n    \"supply_id\": 3,\n    \"quantity\": 8\n}",
 							"options": {
 								"raw": {
 									"language": "json"
