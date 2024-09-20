@@ -1,10 +1,25 @@
-import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Avatar, Button, Card, Text, TextInput } from 'react-native-paper';
+import { StyleSheet } from 'react-native';
+import { Button, Card, Text } from 'react-native-paper';
 import { Colors } from '@/constants/Colors';
+import { useModal } from '@/context/modal';
+import { useRouter } from 'expo-router';
+import NurseSupplyForm from './forms/NurseSupplyForm';
 
 export function NurseSupplyItem({ nurseSupply }: any) {
     const restocking = nurseSupply.restocking_in_progress;
+    const { showModal, hideModal } = useModal();
+    const router = useRouter();
+
+    const afterAction = () => {
+        hideModal();
+        router.push(`/supplies?refresh=true`);
+    };
+
+    const openModal = (type: string) => {
+        showModal(
+            <NurseSupplyForm type={type} supplyId={nurseSupply.id} afterAction={afterAction} />
+        );
+    };
 
     return (
         <Card style={styles.card}>
@@ -14,8 +29,14 @@ export function NurseSupplyItem({ nurseSupply }: any) {
             </Card.Content>
 
             <Card.Actions>
-                <Button style={styles.requestBtn}>-</Button>
-                <Button style={styles.requestBtn} disabled={restocking}>
+                <Button style={styles.requestBtn} onPress={() => openModal('consumption')}>
+                    -
+                </Button>
+                <Button
+                    style={styles.requestBtn}
+                    disabled={restocking}
+                    onPress={() => openModal('restock')}
+                >
                     {restocking ? 'Restocking in progress...' : '+'}
                 </Button>
             </Card.Actions>

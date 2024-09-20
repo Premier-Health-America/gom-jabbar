@@ -16,25 +16,26 @@ const supplyRestock = async (req, res) => {
     const nurseId = req.nurse.nurseId;
     const { supply_id, quantity } = req.body;
 
+    /**
+     * For now this is just a random date but as part of future enhancements we could imagine calling
+     * another API to estimate the delivery date based on the nurse's supply and location.
+     */
+    const randomDays = Math.floor(Math.random() * (10 - 3 + 1)) + 3;
+    const today = new Date();
+    let delivery_date = new Date(today);
+    delivery_date.setDate(today.getDate() + randomDays);
+
     try {
         // Check if a nurse_supply entry exists
         const nurseSupply = await NurseSupply.getNurseSupplyQty(nurseId, supply_id);
-
-        let delivery_date;
         let nurse_supply_id;
         if (nurseSupply) {
             // Nurse_supply entry exists
             nurse_supply_id = nurseSupply.id;
-        } else {
-            /**
-             * For now this is just a random date but as part of future enhancements we could imagine calling
-             * another API to estimate the delivery date based on the nurse's supply and location.
-             */
-            const randomDays = Math.floor(Math.random() * (10 - 3 + 1)) + 3;
-            const today = new Date();
-            delivery_date = new Date(today);
-            delivery_date.setDate(today.getDate() + randomDays);
 
+            // Update current nurse_supply
+            await NurseSupply.updateRestocking(nurseSupply.id, true);
+        } else {
             // Create a new nurse_supply entry
             const newNurseSupply = await NurseSupply.create(nurseId, supply_id, quantity, true);
             nurse_supply_id = newNurseSupply.id;

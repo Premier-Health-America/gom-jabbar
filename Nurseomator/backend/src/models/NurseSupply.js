@@ -69,6 +69,22 @@ class NurseSupply {
         }
     }
 
+    static async updateRestocking(nurse_supply_id, restocking_in_progress) {
+        try {
+            const result = await pool.query(
+                `UPDATE nurse_supplies
+                 SET restocking_in_progress = $1
+                 WHERE id = $2`,
+                [restocking_in_progress, nurse_supply_id]
+            );
+            return result.rows[0];
+        } catch (error) {
+            throw new Error(
+                `Could not update nurse supply restocking_in_progress: ${error.message}`
+            );
+        }
+    }
+
     static async getNurseHistory(nurse_id) {
         try {
             const result = await pool.query(

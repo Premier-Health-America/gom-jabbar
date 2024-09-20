@@ -4,7 +4,7 @@ import React from 'react';
 export default function Settings() {
     return (
         <View>
-            <Text>This is Settings Page</Text>
+            <Text>Settings Page to implement</Text>
         </View>
     );
 }
