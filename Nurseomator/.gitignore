@@ -1,0 +1,34 @@
+# Node.js
+node_modules/
+npm-debug.*
+*.pem
+*.key
+*.crt
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Certificates and Provisioning
+*.jks
+*.p8
+*.p12
+*.mobileprovision
+
+# Backup and Temp Files
+*.orig.*
+.DS_Store
+
+*.pgsql
+
+# IDEs and Editors
+.idea/
+.vscode/
+
+.DS_Store
+
+# Logs
+yarn-debug.log
+yarn-error.log

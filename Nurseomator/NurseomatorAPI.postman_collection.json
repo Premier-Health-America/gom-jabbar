@@ -1,0 +1,560 @@
+{
+	"info": {
+		"_postman_id": "9884d4be-b5c4-49dd-8f65-9423cc2a87be",
+		"name": "Nurseomator API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38376005"
+	},
+	"item": [
+		{
+			"name": "nurse",
+			"item": [
+				{
+					"name": "Register Nurse",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"test\",\n    \"password\": \"test\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/nurse/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"nurse",
+								"register"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				},
+				{
+					"name": "Login Nurse",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"test\",\n    \"password\": \"test\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/nurse/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"nurse",
+								"login"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Nurse with token",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/nurse",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"nurse"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Nurse by Id",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/nurse/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"nurse",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "patient-record",
+			"item": [
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"facility_id\": 10,\n    \"patient_name\": \"Snowstorm Howl\",\n    \"record\": \"Patient suffered cold-induced muscle cramps, given heat therapy and hydration\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/patient-record",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"patient-record"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by Id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/patient-record/8",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"patient-record",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get List by Facility",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/patient-record/list-for-facility/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"patient-record",
+								"list-for-facility",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"patient_name\": \"North Wind\",\n    \"record\": \"Treated for windburn on face with moisturizing cream and gentle cleansers\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/patient-record/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"patient-record",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete by Id",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/patient-record/3",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"patient-record",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "location",
+			"item": [
+				{
+					"name": "get Request Options",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/location/status-options",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"location",
+								"status-options"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Report Location",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"latitude\": 45.5409664,\n    \"longitude\": -73.5427492,\n    \"status\": \"In motion\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/location/report",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"location",
+								"report"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "supply",
+			"item": [
+				{
+					"name": "Get List by NurseId",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"supply_id\": 3,\n    \"quantity\": 100 \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/supply/my-supplies",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"supply",
+								"my-supplies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get History by NurseId",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"supply_id\": 3,\n    \"quantity\": 100 \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/supply/my-history",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"supply",
+								"my-history"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Restock",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"supply_id\": 3,\n    \"quantity\": 8\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/supply/restock",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"supply",
+								"restock"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Consumption",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"supply_id\": 3,\n    \"quantity\": 20.5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/supply/consumption",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"supply",
+								"consumption"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Status Options",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/supply/request-options",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"supply",
+								"request-options"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "facility",
+			"item": [
+				{
+					"name": "Get List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/facility/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"facility",
+								"list"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "id",
+			"value": "1"
+		},
+		{
+			"key": "base_url",
+			"value": "https://postman-rest-api-learner.glitch.me/"
+		}
+	]
+}
