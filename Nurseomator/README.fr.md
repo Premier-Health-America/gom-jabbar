@@ -13,10 +13,6 @@ I chose this project because...
 
 I've chosen to use docker for the backend and database to avoid any problems associated with multiple development environments. With Docker, I'm sure that the application will behave in the same way on all machines.
 
-#### Postman
-
-I used postman during development, so you'll find the postman collection in the project.
-
 ---
 
 ### Frontend : Mobile App
@@ -52,6 +48,11 @@ The only thing missing is your local IP address so that the mobile app on your p
 
 This will install the dependencies and will also creates and fills the database with values.
 
+-   You can populate the database with a nurse & patient_records
+    -   Got to the backend container: `docker exec -it nurseomator-backend-1 /bin/sh`
+    -   Run: `npm run populatedb`
+    -   Or quicker : `docker exec -it nurseomator-backend-1 node src/config/populatedb.js`
+
 ## Frontend
 
 -   In your terminal, go to the nurseomator-app folder: `cd gom-jabbar/Nursomator/nurseomator-app`
@@ -60,6 +61,10 @@ This will install the dependencies and will also creates and fills the database 
 
 In each `/backend` and `/nurseomator-app` folder there's a README.md with more details on implementation and functionality.
 
-# Tests
+## Test nurse account
+
+You can login as username:`test` & password:`test` to test all features.
+
+# Jest tests
 
 I've created some tests for backend routes. You can run the test suites in the backend docker container with : `npm run test`

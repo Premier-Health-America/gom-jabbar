@@ -24,8 +24,6 @@ expo-env.d.ts
 *.orig.*
 .DS_Store
 
-# PostgreSQL
-*.sql
 *.pgsql
 
 # IDEs and Editors
