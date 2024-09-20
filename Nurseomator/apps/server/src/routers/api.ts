@@ -1,4 +1,5 @@
 import Elysia, { t } from "elysia";
+import { authRouter } from "./auth";
 import { locationRouter } from "./location";
 import { nurseRouter } from "./nurse";
 
@@ -18,6 +19,7 @@ export const api = new Elysia({ prefix: "/api/v1" })
     },
     response: t.String(),
   })
+  .use(authRouter)
   .use(locationRouter)
   .use(nurseRouter)
   .compile();

@@ -1,5 +1,5 @@
 import { ThemedText } from "@/components/ThemedText";
-import { InferResponseType, useApi } from "@/hooks/useApiClient";
+import { InferResponseType, useApiClient } from "@/hooks/useApiClient";
 import * as Location from "expo-location";
 import { Link } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -31,7 +31,7 @@ const InteractiveMap = () => {
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null
   );
-  const nurseLocationsFetcher = useApi()["nurse-locations"].get;
+  const nurseLocationsFetcher = useApiClient()["nurse-locations"].get;
   const [nurses, setNurses] = useState<
     InferResponseType<typeof nurseLocationsFetcher>
   >([]);
@@ -82,7 +82,7 @@ const InteractiveMap = () => {
       const { latitude, longitude } = location.coords;
 
       console.log("Current location", latitude, longitude);
-      const { data, error } = await useApi()["nurse-locations"].post({
+      const { data, error } = await useApiClient()["nurse-locations"].post({
         id: "1",
         name: "Sylvie",
         latitude,

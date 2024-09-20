@@ -1,6 +1,7 @@
 import { Static } from "@sinclair/typebox";
 import { sql } from "drizzle-orm";
 import {
+  boolean,
   date,
   index,
   integer,
@@ -16,12 +17,27 @@ import { createSelectSchema } from "drizzle-typebox";
 export const roles = ["nurse", "privileged"] as const;
 export const pgRolesEnum = pgEnum("roles_enum", roles);
 
+export const sessionTable = pgTable("session", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => nursesTable.id),
+  expiresAt: timestamp("expires_at", {
+    withTimezone: true,
+    mode: "date",
+  }).notNull(),
+});
+export const SessionSchema = createSelectSchema(sessionTable);
+export type Session = Static<typeof SessionSchema>;
+
 export const nursesTable = pgTable("nurses", {
   id: text("id").primaryKey().notNull(),
   name: varchar("name", { length: 50 }).notNull(),
   email: varchar("email", { length: 100 }).notNull().unique(),
   password: varchar("password", { length: 255 }).notNull(),
   role: pgRolesEnum("role").notNull().default("nurse"),
+  twoFactorSetupDone: boolean("two_factor_setup_done").notNull(),
+  twoFactorSecret: text("two_factor_secret"),
   createdAt: timestamp("created_at", { mode: "string" })
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),

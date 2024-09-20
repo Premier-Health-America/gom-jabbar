@@ -188,7 +188,10 @@ export class BadRequestError extends AppError {
 }
 
 export class InternalServerError extends AppError {
-  constructor(message: string = "Something went wrong", cause: string) {
+  constructor(
+    message: "Something went wrong" | "Internal server error",
+    cause: string
+  ) {
     super(message, "InternalServerError", cause, 500);
   }
 

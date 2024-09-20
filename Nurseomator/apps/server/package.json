@@ -11,6 +11,7 @@
     "@elysiajs/bearer": "^1.1.2",
     "@elysiajs/cors": "^1.1.1",
     "@elysiajs/swagger": "^1.1.1",
+    "@lucia-auth/adapter-drizzle": "^1.1.0",
     "@repo/env": "workspace:*",
     "@repo/schemas": "workspace:*",
     "drizzle-orm": "^0.33.0",

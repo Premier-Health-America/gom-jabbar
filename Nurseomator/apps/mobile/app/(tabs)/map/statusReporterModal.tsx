@@ -2,7 +2,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedTextInput } from "@/components/ThemedTextInput";
 import { ThemedView } from "@/components/ThemedView";
 import { Colors } from "@/constants/Colors";
-import { useApi } from "@/hooks/useApiClient";
+import { useApiClient } from "@/hooks/useApiClient";
 import { Picker } from "@react-native-picker/picker";
 import * as Location from "expo-location";
 import { router } from "expo-router";
@@ -40,7 +40,7 @@ const LocationReporter = () => {
     const { latitude, longitude } = location.coords;
 
     try {
-      const { data, error } = await useApi()["nurse-locations"].post({
+      const { data, error } = await useApiClient()["nurse-locations"].post({
         id: "1",
         name: "Sylvie",
         latitude,

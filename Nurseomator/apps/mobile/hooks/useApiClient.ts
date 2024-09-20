@@ -2,14 +2,14 @@ import { useEnv } from "@/hooks/useEnv";
 import { treaty } from "@elysiajs/eden";
 import type { API } from "@repo/server/src";
 
-export const useApi = (bearerToken?: string | null) =>
+export const useApiClient = (bearerToken?: string | null) =>
   treaty<API>(useEnv().EXPO_PUBLIC_API_URL, {
     headers: {
       Authorization: `Bearer ${bearerToken ?? ""}`,
     },
   }).api.v1;
 
-const $post = useApi()["nurse-locations"].post;
+const $post = useApiClient()["nurse-locations"].post;
 
 export type InferResponseType<T extends (...args: any) => Promise<any>> =
   NonNullable<Awaited<ReturnType<T>>["data"]>;
