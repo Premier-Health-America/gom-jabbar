@@ -1,7 +1,9 @@
+import { ThemedText } from "@/components/ThemedText";
 import { InferResponseType, useApi } from "@/hooks/useApiClient";
 import * as Location from "expo-location";
+import { Link } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import MapView, { Circle, Marker } from "react-native-maps";
 
 type HealthcareFacility = {
@@ -63,11 +65,8 @@ const InteractiveMap = () => {
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
 
-      // Load initial data
-      // loadNurseLocations();
       loadHealthcareFacilities();
       loadUrgentAreas();
-      // fetchNurseLocations();
     })();
   }, []);
 
@@ -138,6 +137,19 @@ const InteractiveMap = () => {
         region={region}
         onRegionChangeComplete={setRegion}
       >
+        {location && (
+          <Marker
+            key={`${location.coords.latitude}-${
+              location.coords.longitude
+            }-${Math.random()}`}
+            coordinate={{
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
+            }}
+            title="You"
+            pinColor="blue"
+          />
+        )}
         {viewAll &&
           nurses.map((nurse) => (
             <Marker
@@ -175,6 +187,11 @@ const InteractiveMap = () => {
             />
           ))}
       </MapView>
+      <Link asChild href={"/(tabs)/map/statusReporterModal"}>
+        <TouchableOpacity style={styles.statusButton}>
+          <ThemedText>Report status</ThemedText>
+        </TouchableOpacity>
+      </Link>
     </View>
   );
 };
@@ -186,6 +203,15 @@ const styles = StyleSheet.create({
   map: {
     width: "100%",
     height: "100%",
+  },
+  statusButton: {
+    position: "absolute",
+    top: 60,
+    right: 10,
+    backgroundColor: "#ffffff45",
+    padding: 10,
+    borderRadius: 13,
+    overflow: "hidden",
   },
 });
 

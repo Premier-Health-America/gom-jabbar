@@ -1,13 +1,18 @@
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedTextInput } from "@/components/ThemedTextInput";
+import { ThemedView } from "@/components/ThemedView";
+import { Colors } from "@/constants/Colors";
 import { useApi } from "@/hooks/useApiClient";
 import { Picker } from "@react-native-picker/picker";
 import * as Location from "expo-location";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Button, StyleSheet, useColorScheme } from "react-native";
 
 const LocationReporter = () => {
   const [name, setName] = useState("Sylvie");
   const [status, setStatus] = useState("On Duty");
+  const theme = useColorScheme() ?? "light";
 
   useEffect(() => {
     (async () => {
@@ -21,7 +26,7 @@ const LocationReporter = () => {
 
   const handleSubmit = async () => {
     if (!name) {
-      Alert.alert("Please enter your name and allow location access");
+      Alert.alert("Please enter your name");
       return;
     }
 
@@ -57,26 +62,25 @@ const LocationReporter = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Report Your Location</Text>
-      <TextInput
-        style={styles.input}
+    <ThemedView style={styles.container}>
+      <ThemedText style={styles.title}>Report Your Status</ThemedText>
+      <ThemedTextInput
         placeholder="Your Name"
         value={name}
         onChangeText={setName}
       />
-      <Text style={styles.label}>Status:</Text>
+      <ThemedText>Status:</ThemedText>
       <Picker
+        itemStyle={{ color: Colors[theme].text }}
         selectedValue={status}
         onValueChange={(itemValue) => setStatus(itemValue)}
-        style={styles.picker}
       >
         <Picker.Item label="On Duty" value="On Duty" />
         <Picker.Item label="Resting" value="Resting" />
         <Picker.Item label="Away" value="Away" />
       </Picker>
-      <Button title="Report Location" onPress={handleSubmit} />
-    </View>
+      <Button title="Report Status" onPress={handleSubmit} />
+    </ThemedView>
   );
 };
 
@@ -88,23 +92,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 20,
-  },
-  input: {
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  picker: {
-    marginBottom: 10,
-  },
-  locationText: {
-    marginBottom: 10,
   },
 });
 

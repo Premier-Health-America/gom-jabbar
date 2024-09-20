@@ -12,17 +12,10 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Map",
-          // headerRight(props) {
-          //   return (
-          // <Link href="/(tabs)/map/locationReporterModal">
-          //   Report Location
-          // </Link>
-          //   );
-          // },
         }}
       />
       <Stack.Screen
-        name="locationReporterModal"
+        name="statusReporterModal"
         options={{
           title: "Location Reporter",
           presentation: "modal",

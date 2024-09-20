@@ -14,18 +14,6 @@ const $post = useApi()["nurse-locations"].post;
 export type InferResponseType<T extends (...args: any) => Promise<any>> =
   NonNullable<Awaited<ReturnType<T>>["data"]>;
 
-let res: InferResponseType<typeof $post>;
-
-const fetcher = () => async () => {
-  const res = await $post({
-    name: "Test",
-    latitude: 61,
-    longitude: -98,
-    id: "1",
-    status: "active",
-  });
-};
-
 // type Paths = keyof ReturnType<typeof treaty<API>>["api"]["v1"];
 // type Methods<P extends Paths> = keyof ReturnType<
 //   typeof treaty<API>
