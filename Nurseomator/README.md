@@ -86,7 +86,7 @@ I've created some tests for backend routes. You can run the test suites in the b
 
 I started the project by drawing the beginnings of a user interface. This allows me to define and list the functions to be implemented.
 
-![UI](nurseomator-app/assets/images/readme/ui.jpg)
+<img src="nurseomator-app/assets/images/readme/ui.jpg" alt="ui" width="200"/>
 
 ## Authentication
 
@@ -110,13 +110,13 @@ Backend table: `nurses` with
   password: VARCHAR(255)
 ```
 
-![Login screen](nurseomator-app/assets/images/readme/login.jpg)
+<img src="nurseomator-app/assets/images/readme/login.jpg" alt="Login screen" width="200"/>
 
 ## Map
 
 The main screen of the app is the map screen.
 
-![Map screen](nurseomator-app/assets/images/readme/map.jpg)
+<img src="nurseomator-app/assets/images/readme/map.jpg" alt="map screen" width="200"/>
 
 > Problem with the size of the map not taking up the whole screen, which I haven't had time to correct.
 
@@ -179,14 +179,14 @@ Backend table: `patient_records` with
 
 ```
 
-![Patient Records](nurseomator-app/assets/images/readme/patient.jpg)
+<img src="nurseomator-app/assets/images/readme/patient.jpg" alt="Patient Records" width="200"/>
 
 ## Drawer
 
 -   By pressing on the menu icon on the top left you will open the drawer menu.
 -   At the bottom of the drawer you can find the logout button to logout your nurse.
 
-![Drawer](nurseomator-app/assets/images/readme/drawer.jpg)
+<img src="nurseomator-app/assets/images/readme/drawer.jpg" alt="Drawer" width="200"/>
 
 ## My supplies & My history
 
@@ -228,5 +228,5 @@ Backend table: `supplies_history` with
     delivery_date: TIMESTAMP
 ```
 
-![My supplies](nurseomator-app/assets/images/readme/supplies.jpg)
-![My history](nurseomator-app/assets/images/readme/history.jpg)
+<img src="nurseomator-app/assets/images/readme/supplies.jpg" alt="supplies" width="200"/>
+<img src="nurseomator-app/assets/images/readme/history.jpg" alt="supplies" width="200"/>
