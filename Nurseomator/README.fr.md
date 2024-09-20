@@ -44,14 +44,9 @@ The only thing missing is your local IP address so that the mobile app on your p
 
 -   In your terminal, go to the docker folder:`cd gom-jabbar/Nursomator/backend/src/docker`
 
+-   Run this command to fetch my docker image to have all the dependencies & database set up: `docker pull jujuguilbaud31/nurseomator:latest`
+
 -   Start containers: `docker compose up -d` (if later you want to stop the containers run: `docker compose down`)
-
-This will install the dependencies and will also creates and fills the database with values.
-
--   You can populate the database with a nurse & patient_records
-    -   Got to the backend container: `docker exec -it nurseomator-backend-1 /bin/sh`
-    -   Run: `npm run populatedb`
-    -   Or quicker : `docker exec -it nurseomator-backend-1 node src/config/populatedb.js`
 
 ## Frontend
 

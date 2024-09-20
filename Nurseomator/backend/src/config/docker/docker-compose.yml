@@ -13,6 +13,7 @@ services:
             - postgres-data:/var/lib/postgresql/data
 
     backend:
+        image: jujuguilbaud31/nurseomator:latest
         depends_on:
             - postgresdb
         build: ./../../../
