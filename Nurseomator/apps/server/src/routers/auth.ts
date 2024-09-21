@@ -18,7 +18,8 @@ export const authService = new Elysia({ name: "auth/service" })
     isSignIn(enabled: true) {
       if (!enabled) return;
 
-      onBeforeHandle(({ error, bearer, set }) => {
+      onBeforeHandle(({ error, bearer, set, request: { url } }) => {
+        console.log("BEARER TOKEN:", bearer, "for URL:", url);
         if (!bearer) {
           set.headers[
             "WWW-Authenticate"
@@ -36,6 +37,23 @@ export const authenticatedPlugin = new Elysia()
   })
   .resolve(async ({ bearer, error }) => {
     const { session, user } = await lucia.validateSession(`${bearer}`);
+    if (!session || !user) {
+      return error(401, "Unauthorized");
+    }
+
+    return { session, user };
+  })
+  .as("plugin");
+
+export const wsAuthenticatedPlugin = new Elysia()
+  .guard({
+    query: t.Object({
+      token: t.String(),
+    }),
+  })
+  .resolve(async ({ query, error }) => {
+    console.log("HERE IN WS AUTH PLUGIN");
+    const { session, user } = await lucia.validateSession(`${query.token}`);
     if (!session || !user) {
       return error(401, "Unauthorized");
     }

@@ -9,6 +9,7 @@ import {
   numeric,
   pgEnum,
   pgTable,
+  real,
   text,
   timestamp,
   varchar,
@@ -57,8 +58,8 @@ export const nurseLocationsTable = pgTable(
       .notNull()
       .references(() => nursesTable.id)
       .unique(),
-    latitude: integer("latitude").notNull(),
-    longitude: integer("longitude").notNull(),
+    latitude: real("latitude").notNull(),
+    longitude: real("longitude").notNull(),
     updatedAt: timestamp("updated_at", { mode: "string" })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -186,8 +187,8 @@ export const healthcareFacilitiesTable = pgTable(
   {
     id: text("id").primaryKey().notNull().$default(createId),
     name: varchar("name", { length: 50 }).notNull(),
-    latitude: integer("latitude").notNull(),
-    longitude: integer("longitude").notNull(),
+    latitude: real("latitude").notNull(),
+    longitude: real("longitude").notNull(),
     createdAt: timestamp("created_at", { mode: "string" })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -211,8 +212,8 @@ export type HealthcareFacility = Static<typeof HealthcareFacilitySchema>;
 export const urgentAreasTable = pgTable("urgent_areas", {
   id: text("id").primaryKey().notNull().$default(createId),
   name: varchar("name", { length: 50 }),
-  latitude: integer("latitude").notNull(),
-  longitude: integer("longitude").notNull(),
+  latitude: real("latitude").notNull(),
+  longitude: real("longitude").notNull(),
   radius: numeric("radius", { precision: 10, scale: 8 }).notNull(),
   createdAt: timestamp("created_at", { mode: "string" })
     .default(sql`CURRENT_TIMESTAMP`)
@@ -231,8 +232,8 @@ export const emergencyAlertsTable = pgTable(
     nurseId: text("nurse_id")
       .notNull()
       .references(() => nursesTable.id),
-    latitude: integer("latitude").notNull(),
-    longitude: integer("longitude").notNull(),
+    latitude: real("latitude").notNull(),
+    longitude: real("longitude").notNull(),
     message: text("message").notNull(),
     createdAt: timestamp("created_at", { mode: "string" })
       .default(sql`CURRENT_TIMESTAMP`)

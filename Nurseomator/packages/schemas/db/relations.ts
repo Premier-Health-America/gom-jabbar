@@ -28,7 +28,7 @@ export const interactionsRelations = relations(
 
 export const nursesRelations = relations(nursesTable, ({ many, one }) => ({
   interactions: many(interactionsTable),
-  nurseLocation: one(nurseLocationsTable, {
+  location: one(nurseLocationsTable, {
     fields: [nursesTable.id],
     references: [nurseLocationsTable.nurseId],
   }),

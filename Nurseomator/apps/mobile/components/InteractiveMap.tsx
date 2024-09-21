@@ -1,6 +1,6 @@
 import { ThemedText } from "@/components/ThemedText";
-import { useAuth } from "@/hooks/useAuth";
-import { InferResponseType } from "@/utils/apiTypes";
+import { useRealTimeLocations } from "@/hooks/ws";
+import { NurseLocation, NurseStatus } from "@repo/schemas/db";
 import * as Location from "expo-location";
 import { Link } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -23,7 +23,6 @@ type UrgentArea = {
 };
 
 const InteractiveMap = () => {
-  const { apiClient } = useAuth();
   const [region, setRegion] = useState({
     latitude: 60,
     longitude: -95,
@@ -33,28 +32,17 @@ const InteractiveMap = () => {
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null
   );
-  const nurseLocationsFetcher = apiClient["nurse-locations"].get;
-  const [nurses, setNurses] = useState<
-    InferResponseType<typeof nurseLocationsFetcher>
+  const [nursesLocation, setNursesLocation] = useState<
+    (NurseLocation & NurseStatus & { name: string })[]
   >([]);
   const [facilities, setFacilities] = useState<HealthcareFacility[]>([]);
   const [urgentAreas, setUrgentAreas] = useState<UrgentArea[]>([]);
-  const [viewAll, setViewAll] = useState(false);
+  const [viewAll, setViewAll] = useState(true);
 
-  const fetchNurseLocations = async () => {
-    try {
-      const { data, error } = await nurseLocationsFetcher();
-      if (error) {
-        console.error("Error fetching nurse locations:", error);
-        return;
-      }
-
-      console.log("Got nurse locations", data);
-      setNurses(data);
-    } catch (error) {
-      console.error("Error fetching nurse locations:", error);
-    }
-  };
+  const realTimeLocations = useRealTimeLocations();
+  realTimeLocations.on("message", (message) => {
+    console.log("Received message:", message);
+  });
 
   useEffect(() => {
     (async () => {
@@ -72,46 +60,25 @@ const InteractiveMap = () => {
     })();
   }, []);
 
-  const reportCurrentLocation = async () => {
-    try {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        console.error("Permission to access location was denied");
-        return;
-      }
-
-      let location = await Location.getCurrentPositionAsync({});
-      const { latitude, longitude } = location.coords;
-
-      console.log("Current location", latitude, longitude);
-      const { data, error } = await apiClient["nurse-locations"].post({
-        id: "1",
-        name: "Sylvie",
-        latitude,
-        longitude,
-        status: "active",
-      });
-
-      if (error) {
-        console.error("Error reporting location:", error);
-        return;
-      }
-    } catch (error) {
-      console.error("Error reporting location:", error);
-    }
-  };
-
   useEffect(() => {
-    const interval = setInterval(() => {
-      // reportCurrentLocation();
-      fetchNurseLocations();
+    const interval = setInterval(async () => {
+      try {
+        let location = await Location.getCurrentPositionAsync({});
+        setLocation(location);
+        const { latitude, longitude } = location.coords;
+
+        realTimeLocations.send({
+          latitude,
+          longitude,
+        });
+      } catch (err) {
+        console.error("Error sending location:", err);
+      }
     }, 1000);
     return () => clearInterval(interval);
   }, []);
 
   const loadHealthcareFacilities = async () => {
-    // Fetch healthcare facilities from API
-    // This is a mock example
     setFacilities([
       { id: 1, name: "Northern Igloo Hospital", latitude: 61, longitude: -98 },
       { id: 2, name: "Polar Bear Clinic", latitude: 64, longitude: -103 },
@@ -119,8 +86,6 @@ const InteractiveMap = () => {
   };
 
   const loadUrgentAreas = async () => {
-    // Fetch urgent areas from API
-    // This is a mock example
     setUrgentAreas([
       {
         id: 1,
@@ -153,7 +118,7 @@ const InteractiveMap = () => {
           />
         )}
         {viewAll &&
-          nurses.map((nurse) => (
+          nursesLocation.map((nurse) => (
             <Marker
               key={nurse.id}
               coordinate={{
