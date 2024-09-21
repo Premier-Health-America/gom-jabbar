@@ -1,5 +1,6 @@
 import { ThemedText } from "@/components/ThemedText";
-import { InferResponseType, useApiClient } from "@/hooks/useApiClient";
+import { useAuth } from "@/hooks/useAuth";
+import { InferResponseType } from "@/utils/apiTypes";
 import * as Location from "expo-location";
 import { Link } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -22,6 +23,7 @@ type UrgentArea = {
 };
 
 const InteractiveMap = () => {
+  const { apiClient } = useAuth();
   const [region, setRegion] = useState({
     latitude: 60,
     longitude: -95,
@@ -31,7 +33,7 @@ const InteractiveMap = () => {
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null
   );
-  const nurseLocationsFetcher = useApiClient()["nurse-locations"].get;
+  const nurseLocationsFetcher = apiClient["nurse-locations"].get;
   const [nurses, setNurses] = useState<
     InferResponseType<typeof nurseLocationsFetcher>
   >([]);
@@ -82,7 +84,7 @@ const InteractiveMap = () => {
       const { latitude, longitude } = location.coords;
 
       console.log("Current location", latitude, longitude);
-      const { data, error } = await useApiClient()["nurse-locations"].post({
+      const { data, error } = await apiClient["nurse-locations"].post({
         id: "1",
         name: "Sylvie",
         latitude,

@@ -1,5 +1,7 @@
-import { useApiClient } from "@/hooks/useApiClient";
+import { useEnv } from "@/hooks/useEnv";
 import { SecureStorage } from "@/utils/secureStorage";
+import { treaty } from "@elysiajs/eden";
+import { API } from "@repo/server/src";
 import { router } from "expo-router";
 import type { User } from "lucia";
 import {
@@ -11,6 +13,16 @@ import {
 } from "react";
 import { Alert } from "react-native";
 
+const createApiClient = (sessionId?: string | null) => {
+  console.log("BEARER TOKEN:", sessionId);
+
+  return treaty<API>(useEnv().EXPO_PUBLIC_API_URL, {
+    headers: {
+      Authorization: `Bearer ${sessionId ?? ""}`,
+    },
+  }).api.v1;
+};
+
 const AuthContext = createContext<{
   signUp: (info: {
     name: string;
@@ -21,6 +33,7 @@ const AuthContext = createContext<{
   signOut: () => void;
   user: User | null;
   sessionId?: string | null;
+  apiClient: ReturnType<typeof createApiClient>;
   isLoading: boolean;
 }>({
   signUp: (info: { name: string; email: string; password: string }) =>
@@ -28,6 +41,7 @@ const AuthContext = createContext<{
   signIn: (info: { email: string; password: string }) =>
     new Promise(() => null),
   signOut: () => null,
+  apiClient: createApiClient(),
   user: null,
   sessionId: null,
   isLoading: false,
@@ -45,7 +59,7 @@ export function useAuth() {
 }
 
 export function SessionProvider({ children }: PropsWithChildren) {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
 
@@ -70,7 +84,9 @@ export function SessionProvider({ children }: PropsWithChildren) {
 
   const fetchUserAccount = async (sessionId: string) => {
     try {
-      const { data, error } = await useApiClient(sessionId).nurse.index.get();
+      const { data, error } = await createApiClient(
+        sessionId
+      ).nurse.index.get();
       if (error) {
         console.error("Error while fetching user account:", error);
         return null;
@@ -86,6 +102,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
 
   const signOut = async () => {
     console.log("Signing out");
+    await createApiClient(sessionId).auth.signout.get();
     await SecureStorage.removeSessionId();
     setSessionId(null);
     setUser(null);
@@ -103,7 +120,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
           password: string;
         }) => {
           const { name, email, password } = info;
-          const { data, error } = await useApiClient().auth.signup.post({
+          const { data, error } = await createApiClient().auth.signup.post({
             name,
             email,
             password,
@@ -126,7 +143,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
         },
         signIn: async (info: { email: string; password: string }) => {
           const { email, password } = info;
-          const { data, error } = await useApiClient().auth.signin.post({
+          const { data, error } = await createApiClient().auth.signin.post({
             email,
             password,
           });
@@ -147,6 +164,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
           router.replace("/(app)/(tabs)/");
         },
         signOut,
+        apiClient: createApiClient(sessionId),
         user,
         sessionId,
         isLoading,

@@ -1,5 +1,10 @@
 import bearer from "@elysiajs/bearer";
-import { nursesTable } from "@repo/schemas/db";
+import {
+  nurseLocationsTable,
+  nursesTable,
+  nurseStatusTable,
+} from "@repo/schemas/db";
+import { eq } from "drizzle-orm";
 import Elysia, { t } from "elysia";
 import { generateIdFromEntropySize } from "lucia";
 import { db } from "../db";
@@ -99,6 +104,15 @@ const router = new Elysia({ prefix: "/auth" })
             twoFactorSetupDone: false,
             twoFactorSecret: null,
           });
+          await tx.insert(nurseStatusTable).values({
+            nurseId: userId,
+            status: "available",
+          });
+          await tx.insert(nurseLocationsTable).values({
+            nurseId: userId,
+            latitude: 0,
+            longitude: 0,
+          });
         });
 
         const session = await lucia.createSession(userId, {});
@@ -149,6 +163,10 @@ const router = new Elysia({ prefix: "/auth" })
           return error(400, "Invalid email or password.");
         }
 
+        await db
+          .update(nurseStatusTable)
+          .set({ status: "available" })
+          .where(eq(nurseStatusTable.nurseId, existingUser.id));
         const session = await lucia.createSession(existingUser.id, {});
         return {
           token: session.id,
@@ -174,7 +192,7 @@ const router = new Elysia({ prefix: "/auth" })
       },
     }
   )
-  .post(
+  .get(
     "/signout",
     async ({ bearer, set }) => {
       await lucia.invalidateSession(`${bearer}`);

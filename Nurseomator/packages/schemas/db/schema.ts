@@ -1,3 +1,4 @@
+import { createId } from "@paralleldrive/cuid2";
 import { Static } from "@sinclair/typebox";
 import { sql } from "drizzle-orm";
 import {
@@ -51,13 +52,13 @@ export type Nurse = Static<typeof NurseSchema>;
 export const nurseLocationsTable = pgTable(
   "nurse_locations",
   {
-    id: text("id").primaryKey().notNull(),
+    id: text("id").primaryKey().notNull().$default(createId),
     nurseId: text("nurse_id")
       .notNull()
       .references(() => nursesTable.id)
       .unique(),
-    latitude: numeric("latitude", { precision: 10, scale: 8 }).notNull(),
-    longitude: numeric("longitude", { precision: 11, scale: 8 }).notNull(),
+    latitude: integer("latitude").notNull(),
+    longitude: integer("longitude").notNull(),
     updatedAt: timestamp("updated_at", { mode: "string" })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -80,7 +81,7 @@ export const pgNurseStatusesEnum = pgEnum("nurse_statuses_enum", nurseStatuses);
 export const nurseStatusTable = pgTable(
   "nurse_status",
   {
-    id: text("id").primaryKey().notNull(),
+    id: text("id").primaryKey().notNull().$default(createId),
     nurseId: text("nurse_id")
       .notNull()
       .references(() => nursesTable.id)
@@ -105,7 +106,7 @@ export type NurseStatus = Static<typeof NurseStatusSchema>;
 export const suppliesTable = pgTable(
   "supplies",
   {
-    id: text("id").primaryKey().notNull(),
+    id: text("id").primaryKey().notNull().$default(createId),
     name: varchar("name", { length: 50 }).notNull(),
     quantity: integer("quantity").notNull(),
     mesurementUnit: varchar("mesurement_unit", { length: 50 }).notNull(),
@@ -129,7 +130,7 @@ export const SupplySchema = createSelectSchema(suppliesTable);
 export type Supply = Static<typeof SupplySchema>;
 
 export const patientsTable = pgTable("patients", {
-  id: text("id").primaryKey().notNull(),
+  id: text("id").primaryKey().notNull().$default(createId),
   name: varchar("name", { length: 50 }).notNull(),
   age: integer("age").notNull(),
   sex: varchar("sex", { length: 10 }).notNull(),
@@ -149,7 +150,7 @@ export type Patient = Static<typeof PatientSchema>;
 export const patientRecordsTable = pgTable(
   "patient_records",
   {
-    id: text("id").primaryKey().notNull(),
+    id: text("id").primaryKey().notNull().$default(createId),
     patientId: text("patient_id")
       .notNull()
       .references(() => patientsTable.id),
@@ -183,10 +184,10 @@ export type PatientRecord = Static<typeof PatientRecordSchema>;
 export const healthcareFacilitiesTable = pgTable(
   "healthcare_facilities",
   {
-    id: text("id").primaryKey().notNull(),
+    id: text("id").primaryKey().notNull().$default(createId),
     name: varchar("name", { length: 50 }).notNull(),
-    latitude: numeric("latitude", { precision: 10, scale: 8 }).notNull(),
-    longitude: numeric("longitude", { precision: 11, scale: 8 }).notNull(),
+    latitude: integer("latitude").notNull(),
+    longitude: integer("longitude").notNull(),
     createdAt: timestamp("created_at", { mode: "string" })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -208,10 +209,10 @@ export const HealthcareFacilitySchema = createSelectSchema(
 export type HealthcareFacility = Static<typeof HealthcareFacilitySchema>;
 
 export const urgentAreasTable = pgTable("urgent_areas", {
-  id: text("id").primaryKey().notNull(),
+  id: text("id").primaryKey().notNull().$default(createId),
   name: varchar("name", { length: 50 }),
-  latitude: numeric("latitude", { precision: 10, scale: 8 }).notNull(),
-  longitude: numeric("longitude", { precision: 11, scale: 8 }).notNull(),
+  latitude: integer("latitude").notNull(),
+  longitude: integer("longitude").notNull(),
   radius: numeric("radius", { precision: 10, scale: 8 }).notNull(),
   createdAt: timestamp("created_at", { mode: "string" })
     .default(sql`CURRENT_TIMESTAMP`)
@@ -226,12 +227,12 @@ export type UrgentArea = Static<typeof UrgentAreaSchema>;
 export const emergencyAlertsTable = pgTable(
   "emergency_alerts",
   {
-    id: text("id").primaryKey().notNull(),
+    id: text("id").primaryKey().notNull().$default(createId),
     nurseId: text("nurse_id")
       .notNull()
       .references(() => nursesTable.id),
-    latitude: numeric("latitude", { precision: 10, scale: 8 }).notNull(),
-    longitude: numeric("longitude", { precision: 11, scale: 8 }).notNull(),
+    latitude: integer("latitude").notNull(),
+    longitude: integer("longitude").notNull(),
     message: text("message").notNull(),
     createdAt: timestamp("created_at", { mode: "string" })
       .default(sql`CURRENT_TIMESTAMP`)
@@ -255,7 +256,7 @@ export type EmergencyAlert = Static<typeof EmergencyAlertSchema>;
 export const supplyRequestsTable = pgTable(
   "supply_requests",
   {
-    id: text("id").primaryKey().notNull(),
+    id: text("id").primaryKey().notNull().$default(createId),
     nurseId: text("nurse_id")
       .notNull()
       .references(() => nursesTable.id),
@@ -285,7 +286,7 @@ export type SupplyRequest = Static<typeof SupplyRequestSchema>;
 export const interactionsTable = pgTable(
   "interactions",
   {
-    id: text("id").primaryKey().notNull(),
+    id: text("id").primaryKey().notNull().$default(createId),
     nurseId: text("nurse_id")
       .notNull()
       .references(() => nursesTable.id),
@@ -318,7 +319,7 @@ export const InteractionSchema = createSelectSchema(interactionsTable);
 export type Interaction = Static<typeof InteractionSchema>;
 
 export const securityAuditsTable = pgTable("security_audits", {
-  id: text("id").primaryKey().notNull(),
+  id: text("id").primaryKey().notNull().$default(createId),
   event: varchar("event", { length: 50 }).notNull(),
   createdAt: timestamp("created_at", { mode: "string" })
     .default(sql`CURRENT_TIMESTAMP`)
@@ -331,7 +332,7 @@ export const SecurityAuditSchema = createSelectSchema(securityAuditsTable);
 export type SecurityAudit = Static<typeof SecurityAuditSchema>;
 
 export const mentalHealthChecksTable = pgTable("mental_health_checks", {
-  id: text("id").primaryKey().notNull(),
+  id: text("id").primaryKey().notNull().$default(createId),
   nurseId: text("nurse_id")
     .notNull()
     .references(() => nursesTable.id),

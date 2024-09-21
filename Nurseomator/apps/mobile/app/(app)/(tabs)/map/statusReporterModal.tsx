@@ -1,18 +1,19 @@
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedTextInput } from "@/components/ThemedTextInput";
 import { ThemedView } from "@/components/ThemedView";
 import { Colors } from "@/constants/Colors";
-import { useApiClient } from "@/hooks/useApiClient";
+import { useAuth } from "@/hooks/useAuth";
 import { Picker } from "@react-native-picker/picker";
+import { nurseStatuses } from "@repo/schemas/db";
 import * as Location from "expo-location";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, Button, StyleSheet, useColorScheme } from "react-native";
 
 const LocationReporter = () => {
-  const [name, setName] = useState("Sylvie");
-  const [status, setStatus] = useState("On Duty");
+  const [status, setStatus] =
+    useState<(typeof nurseStatuses)[number]>("available");
   const theme = useColorScheme() ?? "light";
+  const { apiClient } = useAuth();
 
   useEffect(() => {
     (async () => {
@@ -25,30 +26,26 @@ const LocationReporter = () => {
   }, []);
 
   const handleSubmit = async () => {
-    if (!name) {
-      Alert.alert("Please enter your name");
-      return;
-    }
-
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
+    console.log("Status:", status);
+    const res = await Location.requestForegroundPermissionsAsync();
+    if (res.status !== "granted") {
       console.error("Permission to access location was denied");
       return;
     }
 
-    let location = await Location.getCurrentPositionAsync({});
+    const location = await Location.getCurrentPositionAsync();
     const { latitude, longitude } = location.coords;
+    console.log("Location:", latitude, longitude);
 
     try {
-      const { data, error } = await useApiClient()["nurse-locations"].post({
-        id: "1",
-        name: "Sylvie",
+      const { data, error } = await apiClient.nurse.status.post({
+        status,
         latitude,
         longitude,
-        status: "active",
       });
 
       if (error) {
+        console.log("Error reporting location:", error);
         Alert.alert("Failed to report location");
         return;
       }
@@ -64,20 +61,19 @@ const LocationReporter = () => {
   return (
     <ThemedView style={styles.container}>
       <ThemedText style={styles.title}>Report Your Status</ThemedText>
-      <ThemedTextInput
-        placeholder="Your Name"
-        value={name}
-        onChangeText={setName}
-      />
       <ThemedText>Status:</ThemedText>
       <Picker
         itemStyle={{ color: Colors[theme].text }}
         selectedValue={status}
         onValueChange={(itemValue) => setStatus(itemValue)}
       >
-        <Picker.Item label="On Duty" value="On Duty" />
-        <Picker.Item label="Resting" value="Resting" />
-        <Picker.Item label="Away" value="Away" />
+        {nurseStatuses.map((status) => (
+          <Picker.Item
+            key={status}
+            label={`${status[0].toUpperCase()}${status.slice(1)}`}
+            value={status}
+          />
+        ))}
       </Picker>
       <Button title="Report Status" onPress={handleSubmit} />
     </ThemedView>
