@@ -4,12 +4,11 @@ import { sql } from "drizzle-orm";
 import {
   boolean,
   date,
+  doublePrecision,
   index,
   integer,
-  numeric,
   pgEnum,
   pgTable,
-  real,
   text,
   timestamp,
   varchar,
@@ -58,8 +57,8 @@ export const nurseLocationsTable = pgTable(
       .notNull()
       .references(() => nursesTable.id)
       .unique(),
-    latitude: real("latitude").notNull(),
-    longitude: real("longitude").notNull(),
+    latitude: doublePrecision("latitude").notNull(),
+    longitude: doublePrecision("longitude").notNull(),
     updatedAt: timestamp("updated_at", { mode: "string" })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -135,8 +134,8 @@ export const patientsTable = pgTable("patients", {
   name: varchar("name", { length: 50 }).notNull(),
   age: integer("age").notNull(),
   sex: varchar("sex", { length: 10 }).notNull(),
-  height: numeric("height", { precision: 10, scale: 2 }).notNull(),
-  weight: numeric("weight", { precision: 10, scale: 2 }).notNull(),
+  height: integer("height").notNull(),
+  weight: integer("weight").notNull(),
   email: varchar("email", { length: 100 }).notNull().unique(),
   createdAt: timestamp("created_at", { mode: "string" })
     .default(sql`CURRENT_TIMESTAMP`)
@@ -187,8 +186,8 @@ export const healthcareFacilitiesTable = pgTable(
   {
     id: text("id").primaryKey().notNull().$default(createId),
     name: varchar("name", { length: 50 }).notNull(),
-    latitude: real("latitude").notNull(),
-    longitude: real("longitude").notNull(),
+    latitude: doublePrecision("latitude").notNull(),
+    longitude: doublePrecision("longitude").notNull(),
     createdAt: timestamp("created_at", { mode: "string" })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -212,9 +211,9 @@ export type HealthcareFacility = Static<typeof HealthcareFacilitySchema>;
 export const urgentAreasTable = pgTable("urgent_areas", {
   id: text("id").primaryKey().notNull().$default(createId),
   name: varchar("name", { length: 50 }),
-  latitude: real("latitude").notNull(),
-  longitude: real("longitude").notNull(),
-  radius: numeric("radius", { precision: 10, scale: 8 }).notNull(),
+  latitude: doublePrecision("latitude").notNull(),
+  longitude: doublePrecision("longitude").notNull(),
+  radius: doublePrecision("radius").notNull(),
   createdAt: timestamp("created_at", { mode: "string" })
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
@@ -232,8 +231,8 @@ export const emergencyAlertsTable = pgTable(
     nurseId: text("nurse_id")
       .notNull()
       .references(() => nursesTable.id),
-    latitude: real("latitude").notNull(),
-    longitude: real("longitude").notNull(),
+    latitude: doublePrecision("latitude").notNull(),
+    longitude: doublePrecision("longitude").notNull(),
     message: text("message").notNull(),
     createdAt: timestamp("created_at", { mode: "string" })
       .default(sql`CURRENT_TIMESTAMP`)
