@@ -1,48 +1,36 @@
 import { ThemedText } from "@/components/ThemedText";
+import { useAuth } from "@/hooks/useAuth";
 import { useRealTimeLocations } from "@/hooks/ws";
-import { NurseLocation, NurseStatus } from "@repo/schemas/db";
+import type { HealthcareFacility, UrgentArea } from "@repo/schemas/db";
+import type { NurseLocationAndStatus } from "@repo/server/src/routers/ws";
 import * as Location from "expo-location";
-import { Link } from "expo-router";
+import { Link, Redirect } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import MapView, { Circle, Marker } from "react-native-maps";
 
-type HealthcareFacility = {
-  id: number;
-  name: string;
-  latitude: number;
-  longitude: number;
-};
-
-type UrgentArea = {
-  id: number;
-  name: string;
-  latitude: number;
-  longitude: number;
-  radius: number;
-};
-
 const InteractiveMap = () => {
+  const { apiClient, user } = useAuth();
+  if (!user) {
+    return <Redirect href="/signin" />;
+  }
+
   const [region, setRegion] = useState({
-    latitude: 60,
-    longitude: -95,
-    latitudeDelta: 30,
-    longitudeDelta: 30,
+    latitude: 65.32,
+    longitude: -105,
+    latitudeDelta: 3,
+    longitudeDelta: 3,
   });
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null
   );
-  const [nursesLocation, setNursesLocation] = useState<
-    (NurseLocation & NurseStatus & { name: string })[]
-  >([]);
+  const [nursesLocation, setNursesLocation] = useState<NurseLocationAndStatus>(
+    []
+  );
   const [facilities, setFacilities] = useState<HealthcareFacility[]>([]);
   const [urgentAreas, setUrgentAreas] = useState<UrgentArea[]>([]);
   const [viewAll, setViewAll] = useState(true);
-
   const realTimeLocations = useRealTimeLocations();
-  realTimeLocations.on("message", (message) => {
-    console.log("Received message:", message);
-  });
 
   useEffect(() => {
     (async () => {
@@ -55,17 +43,30 @@ const InteractiveMap = () => {
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
 
-      loadHealthcareFacilities();
-      loadUrgentAreas();
+      await loadHealthcareFacilities();
+      await loadUrgentAreas();
     })();
+
+    const handleNewNurseLocation = (
+      message: MessageEvent<NurseLocationAndStatus>
+    ) => {
+      setNursesLocation(message.data);
+    };
+    realTimeLocations.on("message", handleNewNurseLocation);
+
+    return () => {
+      realTimeLocations.off("message", handleNewNurseLocation);
+    };
   }, []);
 
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
+        console.log("Fetching location");
         let location = await Location.getCurrentPositionAsync({});
         setLocation(location);
         const { latitude, longitude } = location.coords;
+        console.log("Sending location:", latitude, longitude);
 
         realTimeLocations.send({
           latitude,
@@ -75,26 +76,28 @@ const InteractiveMap = () => {
         console.error("Error sending location:", err);
       }
     }, 1000);
+
     return () => clearInterval(interval);
   }, []);
 
   const loadHealthcareFacilities = async () => {
-    setFacilities([
-      { id: 1, name: "Northern Igloo Hospital", latitude: 61, longitude: -98 },
-      { id: 2, name: "Polar Bear Clinic", latitude: 64, longitude: -103 },
-    ]);
+    const { data, error } = await apiClient.facilities.get();
+    if (error) {
+      console.error("Error fetching facilities:", error);
+      return;
+    }
+
+    setFacilities(data);
   };
 
   const loadUrgentAreas = async () => {
-    setUrgentAreas([
-      {
-        id: 1,
-        name: "Yeti Cave",
-        latitude: 65,
-        longitude: -105,
-        radius: 50000,
-      },
-    ]);
+    const { data, error } = await apiClient["urgent-areas"].get();
+    if (error) {
+      console.error("Error fetching urgent areas:", error);
+      return;
+    }
+
+    setUrgentAreas(data);
   };
 
   return (
@@ -114,22 +117,25 @@ const InteractiveMap = () => {
               longitude: location.coords.longitude,
             }}
             title="You"
+            description="Nurse"
             pinColor="blue"
           />
         )}
         {viewAll &&
-          nursesLocation.map((nurse) => (
-            <Marker
-              key={nurse.id}
-              coordinate={{
-                latitude: nurse.latitude,
-                longitude: nurse.longitude,
-              }}
-              title={nurse.name}
-              description={nurse.status}
-              pinColor="blue"
-            />
-          ))}
+          nursesLocation
+            .filter((n) => n.id !== user.id)
+            .map((nurse) => (
+              <Marker
+                key={nurse.id}
+                coordinate={{
+                  latitude: nurse.location.latitude,
+                  longitude: nurse.location.longitude,
+                }}
+                title={nurse.name}
+                description="Nurse"
+                pinColor="red"
+              />
+            ))}
         {viewAll &&
           facilities.map((facility) => (
             <Marker

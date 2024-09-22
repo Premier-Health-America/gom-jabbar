@@ -6,7 +6,7 @@ import { wsAuthenticatedPlugin } from "./auth";
 
 const fetchNursesLocationAndStatus = async () => {
   return await db.query.nursesTable.findMany({
-    columns: { name: true },
+    columns: { id: true, name: true },
     with: {
       location: true,
       status: true,
@@ -19,10 +19,7 @@ export type NurseLocationAndStatus = Awaited<
 
 const ws = new Elysia({ prefix: "/ws" })
   .use(wsAuthenticatedPlugin)
-  .state(
-    "locationIntervals",
-    {} as Record<string, ReturnType<typeof setInterval>>
-  )
+  .state("intervals", {} as Record<string, ReturnType<typeof setInterval>>)
   .ws("/locations", {
     body: t.Object({
       latitude: t.Number(),
@@ -30,6 +27,7 @@ const ws = new Elysia({ prefix: "/ws" })
     }),
     response: t.Array(
       t.Object({
+        id: t.String(),
         name: t.String(),
         status: t.Object({
           id: t.String(),
@@ -55,13 +53,13 @@ const ws = new Elysia({ prefix: "/ws" })
       console.log("WebSocket opened");
       const interval = setInterval(async () => {
         try {
-          const res = await fetchNursesLocationAndStatus();
-          ws.send(res);
+          const locations = await fetchNursesLocationAndStatus();
+          ws.send(locations);
         } catch (err) {
           console.error("Error sending location:", err);
         }
       }, 1000);
-      ws.data.store.locationIntervals[ws.id] = interval;
+      ws.data.store.intervals[ws.id] = interval;
     },
     async message(ws, message) {
       console.log("Received message:", message);
@@ -76,7 +74,7 @@ const ws = new Elysia({ prefix: "/ws" })
     },
     close(ws, code, message) {
       console.log("WebSocket closed", code, message);
-      clearInterval(ws.data.store.locationIntervals[ws.id]);
+      clearInterval(ws.data.store.intervals[ws.id]);
     },
     ping(ws, data) {
       console.log("Ping received", data);
