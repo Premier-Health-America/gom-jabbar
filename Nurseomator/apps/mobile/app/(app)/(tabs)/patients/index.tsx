@@ -1,11 +1,11 @@
 import PatientCard from "@/components/PatientCard";
 import { ThemedScrollView } from "@/components/ThemedScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedSafeAreaView, ThemedView } from "@/components/ThemedView";
+import { ThemedView } from "@/components/ThemedView";
 import { useAuth } from "@/hooks/useAuth";
 import { Patient } from "@repo/schemas/db";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 
 export default function PatientsScreen() {
   const { apiClient } = useAuth();
@@ -26,28 +26,30 @@ export default function PatientsScreen() {
   }, []);
 
   return (
-    <ThemedSafeAreaView>
-      <ThemedView style={styles.container}>
-        <ThemedText
-          style={{ fontSize: 20, fontWeight: "bold", marginBottom: 10 }}
-        >
-          Patients
-        </ThemedText>
-
-        <ThemedScrollView
-          style={{
-            marginBottom: 10,
-            width: "100%",
-            paddingHorizontal: 3,
-          }}
-          contentContainerStyle={{ gap: 10 }}
-        >
-          {patients.map((patient) => (
-            <PatientCard key={patient.id} patient={patient} />
-          ))}
-        </ThemedScrollView>
-      </ThemedView>
-    </ThemedSafeAreaView>
+    <ThemedView style={styles.container}>
+      <ThemedScrollView
+        style={{
+          marginVertical: 10,
+          width: "100%",
+          paddingHorizontal: 5,
+        }}
+        contentContainerStyle={{ gap: 10 }}
+      >
+        {patients.map((patient) => (
+          <TouchableOpacity
+            key={patient.id}
+            onPress={() =>
+              router.push({
+                pathname: "/(app)/(tabs)/patients/[id]",
+                params: { id: patient.id, patient: JSON.stringify(patient) },
+              })
+            }
+          >
+            <PatientCard patient={patient} />
+          </TouchableOpacity>
+        ))}
+      </ThemedScrollView>
+    </ThemedView>
   );
 }
 

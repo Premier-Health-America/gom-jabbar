@@ -1,5 +1,5 @@
 import { patientRecordsTable, patientsTable } from "@repo/schemas/db";
-import { and, eq, getTableColumns } from "drizzle-orm";
+import { and, desc, eq, getTableColumns, lt } from "drizzle-orm";
 import Elysia, { t } from "elysia";
 import { db } from "../db";
 import { authenticatedPlugin } from "./auth";
@@ -20,16 +20,20 @@ const router = new Elysia({ prefix: "/patients" })
         updatedAt: t.String(),
       })
     ),
-    records: t.Array(
-      t.Object({
-        id: t.String(),
-        nurseId: t.String(),
-        patientId: t.String(),
-        recordDescription: t.String(),
-        createdAt: t.String(),
-        updatedAt: t.String(),
-      })
-    ),
+    records: t.Object({
+      hasMore: t.Boolean(),
+      cursor: t.Optional(t.String()),
+      data: t.Array(
+        t.Object({
+          id: t.String(),
+          nurseId: t.String(),
+          patientId: t.String(),
+          recordDescription: t.String(),
+          createdAt: t.String(),
+          updatedAt: t.String(),
+        })
+      ),
+    }),
   })
   .get(
     "",
@@ -59,27 +63,43 @@ const router = new Elysia({ prefix: "/patients" })
     }
   )
   .get(
-    "/patients/:id/records",
-    async ({ params, user, error }) => {
+    "/:id/records",
+    async ({ params, user, error, query: { cursor, pageSize } }) => {
+      console.log("CURSOR:", cursor, "PAGESIZE:", pageSize);
       try {
         const records = await db
-          .select()
+          .select(getTableColumns(patientRecordsTable))
           .from(patientRecordsTable)
+          .innerJoin(
+            patientsTable,
+            eq(patientsTable.id, patientRecordsTable.patientId)
+          )
           .where(
             and(
               eq(patientsTable.id, params.id),
-              eq(patientRecordsTable.nurseId, user.id)
+              eq(patientRecordsTable.nurseId, user.id),
+              cursor ? lt(patientRecordsTable.createdAt, cursor) : undefined
             )
           )
+          .limit(pageSize)
+          .orderBy(desc(patientRecordsTable.createdAt))
           .execute();
 
-        return records;
+        return {
+          data: records,
+          hasMore: records.length === pageSize,
+          cursor: records.at(-1)?.createdAt,
+        };
       } catch (err) {
         console.log("CATCHED ERROR WHEN FETCHING PATIENT:\n", err);
         return error(500, "Something went wrong");
       }
     },
     {
+      query: t.Object({
+        pageSize: t.Number(),
+        cursor: t.String(),
+      }),
       response: {
         200: "records",
         500: "InternalServerError",

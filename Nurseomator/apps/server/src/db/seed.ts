@@ -75,10 +75,7 @@ const main = async () => {
   }
 
   const patients: Omit<Patient, "createdAt" | "updatedAt">[] = [];
-  const patientRecords: Omit<
-    PatientRecord,
-    "id" | "createdAt" | "updatedAt"
-  >[] = [];
+  const patientRecords: Omit<PatientRecord, "id" | "updatedAt">[] = [];
   for (const nurse of nurses) {
     for (let i = 0; i < 10; i++) {
       const name = faker.person.fullName();
@@ -96,11 +93,12 @@ const main = async () => {
       };
       patients.push(patient);
 
-      for (let j = 0; j < 6; j++) {
+      for (let j = 0; j < 20; j++) {
         patientRecords.push({
           nurseId: nurse.id,
           patientId: patient.id,
-          recordDescription: faker.lorem.sentence(),
+          recordDescription: faker.lorem.paragraphs(),
+          createdAt: faker.date.past({ years: 2 }).toISOString(),
         });
       }
     }

@@ -175,6 +175,9 @@ export const patientRecordsTable = pgTable(
         "btree",
         table.patientId.asc().nullsLast()
       ),
+      idxPatientRecordsCreatedAt: index("idx_patient_records_created_at").on(
+        table.createdAt.desc()
+      ),
     };
   }
 );
