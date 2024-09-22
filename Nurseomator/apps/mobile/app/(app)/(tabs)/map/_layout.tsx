@@ -21,6 +21,13 @@ export default function TabLayout() {
           presentation: "modal",
         }}
       />
+      <Stack.Screen
+        name="emergencyAlertModal"
+        options={{
+          title: "Emergency Alert",
+          presentation: "modal",
+        }}
+      />
     </Stack>
   );
 }

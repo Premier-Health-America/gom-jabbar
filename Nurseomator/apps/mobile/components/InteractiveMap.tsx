@@ -1,4 +1,5 @@
 import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
 import { useAuth } from "@/hooks/useAuth";
 import { useRealTimeLocations } from "@/hooks/ws";
 import type { HealthcareFacility, UrgentArea } from "@repo/schemas/db";
@@ -102,6 +103,29 @@ const InteractiveMap = () => {
 
   return (
     <View style={styles.container}>
+      <ThemedView
+        style={{
+          width: "100%",
+          backgroundColor: "transparent",
+          position: "absolute",
+          top: 60,
+          zIndex: 10,
+          justifyContent: "space-between",
+          flexDirection: "row",
+          paddingHorizontal: 30,
+        }}
+      >
+        <Link asChild href={"/(tabs)/map/statusReporterModal"}>
+          <TouchableOpacity style={styles.button}>
+            <ThemedText>Report status</ThemedText>
+          </TouchableOpacity>
+        </Link>
+        <Link asChild href={"/(tabs)/map/emergencyAlertModal"}>
+          <TouchableOpacity style={styles.button}>
+            <ThemedText>Send alert</ThemedText>
+          </TouchableOpacity>
+        </Link>
+      </ThemedView>
       <MapView
         style={styles.map}
         region={region}
@@ -160,11 +184,6 @@ const InteractiveMap = () => {
             />
           ))}
       </MapView>
-      <Link asChild href={"/(tabs)/map/statusReporterModal"}>
-        <TouchableOpacity style={styles.statusButton}>
-          <ThemedText>Report status</ThemedText>
-        </TouchableOpacity>
-      </Link>
     </View>
   );
 };
@@ -172,15 +191,13 @@ const InteractiveMap = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "blue",
   },
   map: {
     width: "100%",
     height: "100%",
   },
-  statusButton: {
-    position: "absolute",
-    top: 60,
-    right: 10,
+  button: {
     backgroundColor: "#ffffff45",
     padding: 10,
     borderRadius: 13,

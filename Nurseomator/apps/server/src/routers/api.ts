@@ -1,3 +1,4 @@
+import { emergencyAlertsTable } from "@repo/schemas/db";
 import Elysia, { t } from "elysia";
 import { db } from "../db";
 import { authenticatedPlugin, authRouter } from "./auth";
@@ -44,4 +45,30 @@ export const api = new Elysia({ prefix: "/api/v1" })
       return error(500, "Something went wrong");
     }
   })
+  .post(
+    "/emergency-alerts",
+    async ({ body, error, user }) => {
+      const { latitude, longitude, message } = body;
+      try {
+        await db.insert(emergencyAlertsTable).values({
+          nurseId: user.id,
+          latitude,
+          longitude,
+          message,
+        });
+
+        return { message: "Alert created" };
+      } catch (err) {
+        console.log("CATCHED ERROR WHEN CREATING EMERGENCY ALERT:\n", err);
+        return error(500, "Something went wrong");
+      }
+    },
+    {
+      body: t.Object({
+        message: t.String(),
+        latitude: t.Number(),
+        longitude: t.Number(),
+      }),
+    }
+  )
   .compile();
