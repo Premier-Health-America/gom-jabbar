@@ -26,6 +26,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Supply",
+          headerShown: true,
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "bag-add" : "bag-add-outline"}
@@ -50,6 +51,7 @@ export default function TabLayout() {
         name="account"
         options={{
           title: "Account",
+          headerShown: true,
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "person" : "person-outline"}

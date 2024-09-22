@@ -1,7 +1,8 @@
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedSafeAreaView, ThemedView } from "@/components/ThemedView";
+import { ThemedView } from "@/components/ThemedView";
 import { useAuth } from "@/hooks/useAuth";
-import { Redirect } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
+import { Fragment } from "react";
 import { Button, StyleSheet } from "react-native";
 
 export default function AccountScreen() {
@@ -12,18 +13,25 @@ export default function AccountScreen() {
   }
 
   return (
-    <ThemedSafeAreaView>
+    <Fragment>
+      <Tabs.Screen
+        options={{
+          headerRight(props) {
+            return (
+              <ThemedView style={{ marginRight: 10 }}>
+                <Button title="Sign out" onPress={signOut} {...props} />
+              </ThemedView>
+            );
+          },
+        }}
+      />
       <ThemedView style={[styles.container, { width: "100%" }]}>
-        <ThemedText style={{ fontSize: 24, fontWeight: "bold" }}>
-          Account
-        </ThemedText>
         <ThemedView style={[{ width: "100%", marginVertical: 10 }]}>
           <ThemedText>Name: {user.name}</ThemedText>
           <ThemedText>Email: {user.email}</ThemedText>
         </ThemedView>
-        <Button title="Sign out" onPress={signOut} />
       </ThemedView>
-    </ThemedSafeAreaView>
+    </Fragment>
   );
 }
 
