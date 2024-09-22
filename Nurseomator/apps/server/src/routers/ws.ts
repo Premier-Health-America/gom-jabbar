@@ -4,6 +4,12 @@ import { Elysia, t } from "elysia";
 import { db } from "../db";
 import { wsAuthenticatedPlugin } from "./auth";
 
+export const wsConnections = new Map<
+  string,
+  // @ts-expect-error
+  Parameters<Parameters<typeof ws.ws>["1"]["open"]>["0"]
+>();
+
 const fetchNursesLocationAndStatus = async () => {
   return await db.query.nursesTable.findMany({
     columns: { id: true, name: true },
@@ -81,6 +87,27 @@ const ws = new Elysia({ prefix: "/ws" })
     },
     pong(ws, data) {
       console.log("Pong received", data);
+    },
+  })
+  .ws("/notifications", {
+    response: t.Object({
+      id: t.String(),
+      nurseId: t.String(),
+      latitude: t.Number(),
+      longitude: t.Number(),
+      message: t.String(),
+      createdAt: t.String(),
+      updatedAt: t.String(),
+    }),
+    open(ws) {
+      console.log("WebSocket opened");
+      // @ts-expect-error types of response is not infered
+      wsConnections.set(ws.id, ws);
+    },
+    close(ws, code, message) {
+      console.log("WebSocket closed", code, message);
+      clearInterval(ws.data.store.intervals[ws.id]);
+      wsConnections.delete(ws.id);
     },
   });
 

@@ -3,7 +3,7 @@ import Elysia, { t } from "elysia";
 import { db } from "../db";
 import { authenticatedPlugin, authRouter } from "./auth";
 import { nurseRouter } from "./nurse";
-import { wsRouter } from "./ws";
+import { wsConnections, wsRouter } from "./ws";
 
 export const api = new Elysia({ prefix: "/api/v1" })
   .onError(({ code, error, set }) => {
@@ -50,11 +50,19 @@ export const api = new Elysia({ prefix: "/api/v1" })
     async ({ body, error, user }) => {
       const { latitude, longitude, message } = body;
       try {
-        await db.insert(emergencyAlertsTable).values({
-          nurseId: user.id,
-          latitude,
-          longitude,
-          message,
+        const alert = await db
+          .insert(emergencyAlertsTable)
+          .values({
+            nurseId: user.id,
+            latitude,
+            longitude,
+            message,
+          })
+          .returning()
+          .execute()
+          .then((alert) => alert[0]);
+        wsConnections.forEach((ws) => {
+          ws.send(alert);
         });
 
         return { message: "Alert created" };

@@ -25,7 +25,7 @@ const main = async () => {
         .split(" ")
         .map((p) => p.toLowerCase())
         .join(".")}@nurseomator.com`,
-      password: "password",
+      password: await Bun.password.hash("password"),
       role: "nurse",
       twoFactorSetupDone: false,
       twoFactorSecret: null,

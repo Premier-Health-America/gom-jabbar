@@ -163,6 +163,7 @@ const router = new Elysia({ prefix: "/auth" })
   .post(
     "/signin",
     async ({ body, error }) => {
+      console.log("Signing in with:", body);
       try {
         const existingUser = await db.query.nursesTable.findFirst({
           where(fields, operators) {
@@ -170,6 +171,7 @@ const router = new Elysia({ prefix: "/auth" })
           },
         });
         if (!existingUser) {
+          console.log("INVALID EMAIL");
           return error(400, "Invalid email or password.");
         }
 
@@ -178,6 +180,7 @@ const router = new Elysia({ prefix: "/auth" })
           existingUser.password
         );
         if (!validPassword) {
+          console.log("INVALID PASSWORD");
           return error(400, "Invalid email or password.");
         }
 

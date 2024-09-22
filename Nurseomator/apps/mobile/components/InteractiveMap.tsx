@@ -1,9 +1,14 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useAuth } from "@/hooks/useAuth";
-import { useRealTimeLocations } from "@/hooks/ws";
-import type { HealthcareFacility, UrgentArea } from "@repo/schemas/db";
+import { useRealTimeLocations, useRealTimeNotifications } from "@/hooks/ws";
+import type {
+  EmergencyAlert,
+  HealthcareFacility,
+  UrgentArea,
+} from "@repo/schemas/db";
 import type { NurseLocationAndStatus } from "@repo/server/src/routers/ws";
+import { toast } from "burnt";
 import * as Location from "expo-location";
 import { Link, Redirect } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -32,6 +37,7 @@ const InteractiveMap = () => {
   const [urgentAreas, setUrgentAreas] = useState<UrgentArea[]>([]);
   const [viewAll, setViewAll] = useState(true);
   const realTimeLocations = useRealTimeLocations();
+  const realTimeNotfications = useRealTimeNotifications();
 
   useEffect(() => {
     (async () => {
@@ -53,10 +59,27 @@ const InteractiveMap = () => {
     ) => {
       setNursesLocation(message.data);
     };
+    const handleNotification = (message: MessageEvent<EmergencyAlert>) => {
+      console.log("Got notification:", message.data);
+      toast({
+        title: "Emergency Alert",
+        message: message.data.message,
+        duration: 5,
+        haptic: "warning",
+        icon: {
+          ios: {
+            color: "red",
+            name: "exclamationmark.triangle.fill",
+          },
+        },
+      });
+    };
     realTimeLocations.on("message", handleNewNurseLocation);
+    realTimeNotfications.on("message", handleNotification);
 
     return () => {
       realTimeLocations.off("message", handleNewNurseLocation);
+      realTimeNotfications.off("message", handleNotification);
     };
   }, []);
 

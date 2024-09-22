@@ -1,3 +1,4 @@
+import { ThemedScrollView } from "@/components/ThemedScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedTextInput } from "@/components/ThemedTextInput";
 import { ThemedView } from "@/components/ThemedView";
@@ -7,7 +8,6 @@ import { useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
@@ -28,7 +28,7 @@ const SignUpScreen = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <ScrollView contentContainerStyle={styles.scrollView}>
+      <ThemedScrollView contentContainerStyle={styles.scrollView}>
         <ThemedText style={styles.title}>Sign Up</ThemedText>
         <ThemedView style={{ width: "100%", gap: 10, marginBottom: 20 }}>
           <ThemedTextInput
@@ -58,7 +58,7 @@ const SignUpScreen = () => {
             Already have an account? Sign In
           </ThemedText>
         </TouchableOpacity>
-      </ScrollView>
+      </ThemedScrollView>
     </KeyboardAvoidingView>
   );
 };
