@@ -8,6 +8,10 @@ import {
   nursesTable,
   NurseStatus,
   nurseStatusTable,
+  Patient,
+  PatientRecord,
+  patientRecordsTable,
+  patientsTable,
   UrgentArea,
   urgentAreasTable,
 } from "@repo/schemas/db";
@@ -69,12 +73,47 @@ const main = async () => {
       radius: faker.helpers.rangeToNumber({ min: 1000, max: 2000 }),
     });
   }
+
+  const patients: Omit<Patient, "createdAt" | "updatedAt">[] = [];
+  const patientRecords: Omit<
+    PatientRecord,
+    "id" | "createdAt" | "updatedAt"
+  >[] = [];
+  for (const nurse of nurses) {
+    for (let i = 0; i < 10; i++) {
+      const name = faker.person.fullName();
+      const patient: Omit<Patient, "createdAt" | "updatedAt"> = {
+        id: generateIdFromEntropySize(10),
+        name,
+        age: faker.number.int({ min: 14, max: 90 }),
+        sex: faker.person.sex(),
+        height: faker.number.int({ min: 100, max: 220 }),
+        weight: faker.number.int({ min: 50, max: 200 }),
+        email: faker.internet.email({
+          firstName: name.split(" ")[0],
+          lastName: name.split(" ")[1],
+        }),
+      };
+      patients.push(patient);
+
+      for (let j = 0; j < 6; j++) {
+        patientRecords.push({
+          nurseId: nurse.id,
+          patientId: patient.id,
+          recordDescription: faker.lorem.sentence(),
+        });
+      }
+    }
+  }
+
   await db.transaction(async (tx) => {
     await tx.insert(nursesTable).values(nurses);
     await tx.insert(nurseLocationsTable).values(nurseLocations);
     await tx.insert(nurseStatusTable).values(nurseStatuses);
     await tx.insert(healthcareFacilitiesTable).values(facilities);
     await tx.insert(urgentAreasTable).values(urgentAreas);
+    await tx.insert(patientsTable).values(patients);
+    await tx.insert(patientRecordsTable).values(patientRecords);
   });
 };
 
