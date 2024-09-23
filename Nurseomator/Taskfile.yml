@@ -1,0 +1,17 @@
+version: "3"
+
+tasks:
+  server:
+    dotenv:
+      - .env
+    dir: apps/server
+    cmd: bun run dev
+
+  ngrok:
+    cmd: ngrok http --domain=normal-jay-presently.ngrok-free.app 3000
+
+  mobile:
+    dotenv:
+      - .env
+    dir: apps/mobile
+    cmd: bun run start

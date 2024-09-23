@@ -1,0 +1,11 @@
+{
+  "name": "repo",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "dependencies": {
+    "lucia": "^3.2.0"
+  }
+}
