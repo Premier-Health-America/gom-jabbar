@@ -3,7 +3,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { useAuth } from "@/hooks/useAuth";
 import { Redirect, Tabs } from "expo-router";
 import { Fragment } from "react";
-import { Button, StyleSheet } from "react-native";
+import { Button, StyleSheet, View } from "react-native";
 
 export default function AccountScreen() {
   const { signOut, user } = useAuth();
@@ -18,9 +18,9 @@ export default function AccountScreen() {
         options={{
           headerRight(props) {
             return (
-              <ThemedView style={{ marginRight: 10 }}>
+              <View style={{ marginRight: 10 }}>
                 <Button title="Sign out" onPress={signOut} {...props} />
-              </ThemedView>
+              </View>
             );
           },
         }}
