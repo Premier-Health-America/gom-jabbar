@@ -139,7 +139,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
           if (userAccount) {
             setUser(userAccount);
           }
-          router.replace("/(app)/(tabs)/");
+          router.replace("/faceid");
         },
         signIn: async (info: { email: string; password: string }) => {
           const { email, password } = info;
@@ -161,7 +161,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
           if (userAccount) {
             setUser(userAccount);
           }
-          router.replace("/(app)/(tabs)/");
+          router.replace("/faceid");
         },
         signOut,
         apiClient: createApiClient(sessionId),
