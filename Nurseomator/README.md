@@ -66,6 +66,18 @@ To start the development server run:
 bun run dev
 ```
 
+### Docker
+
+You can build adnd run the Docker image by running:
+
+```bash
+docker build -t nurseomator:latest .
+docker run -d -p 3000:3000/tcp \
+    -e DATABASE_URL="postgres://postgres:postgres@host.docker.internal:5432/postgres" \
+    -e ENVIRONMENT="production" \
+    nurseomator:latest
+```
+
 ### API Documentation
 
 API documentation is available at http://localhost:3000/ and is generated using Swagger.
