@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker";
 import {
+  Chat,
   healthcareFacilitiesTable,
   HealthcareFacility,
   Nurse,
@@ -78,6 +79,9 @@ const main = async () => {
 
   const patients: Omit<Patient, "createdAt" | "updatedAt">[] = [];
   const patientRecords: Omit<PatientRecord, "id" | "updatedAt">[] = [];
+  const chats: Omit<Chat, "id" | "updatedAt">[] = [];
+  const senders = ["nurse", "patient"] as const;
+
   for (const nurse of nurses) {
     for (let i = 0; i < 10; i++) {
       const name = faker.person.fullName();
@@ -100,6 +104,16 @@ const main = async () => {
           nurseId: nurse.id,
           patientId: patient.id,
           recordDescription: faker.lorem.paragraphs(),
+          createdAt: faker.date.past({ years: 2 }).toISOString(),
+        });
+      }
+
+      for (let i = 0; i < 100; i++) {
+        chats.push({
+          nurseId: nurse.id,
+          patientId: patient.id,
+          sender: senders[Math.floor(Math.random() * 2)],
+          message: faker.lorem.sentence({ min: 1, max: 3 }),
           createdAt: faker.date.past({ years: 2 }).toISOString(),
         });
       }

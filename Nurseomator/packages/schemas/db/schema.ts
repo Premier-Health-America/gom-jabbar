@@ -286,6 +286,7 @@ export const supplyRequestsTable = pgTable(
 export const SupplyRequestSchema = createSelectSchema(supplyRequestsTable);
 export type SupplyRequest = Static<typeof SupplyRequestSchema>;
 
+export const pgSenderEnum = pgEnum("sender_enum", ["nurse", "patient"]);
 export const chatsTable = pgTable(
   "chats",
   {
@@ -296,7 +297,7 @@ export const chatsTable = pgTable(
     patientId: text("patient_id")
       .notNull()
       .references(() => patientsTable.id),
-    sender: text("sender").notNull(),
+    sender: pgSenderEnum("sender").notNull(),
     message: text("message").notNull(),
     createdAt: timestamp("created_at", { mode: "string" })
       .default(sql`CURRENT_TIMESTAMP`)
@@ -307,13 +308,16 @@ export const chatsTable = pgTable(
   },
   (table) => {
     return {
-      idxInteractionsNurseId: index("idx_interactions_nurse_id").using(
+      idxChatsNurseId: index("idx_chats_nurse_id").using(
         "btree",
         table.nurseId.asc().nullsLast()
       ),
-      idxInteractionsPatientId: index("idx_interactions_patient_id").using(
+      idxChatsPatientId: index("idx_chats_patient_id").using(
         "btree",
         table.patientId.asc().nullsLast()
+      ),
+      idxChatsCreatedAt: index("idx_chats_created_at").on(
+        table.createdAt.desc()
       ),
     };
   }

@@ -1,4 +1,8 @@
-import { patientRecordsTable, patientsTable } from "@repo/schemas/db";
+import {
+  chatsTable,
+  patientRecordsTable,
+  patientsTable,
+} from "@repo/schemas/db";
 import { and, desc, eq, getTableColumns, lt } from "drizzle-orm";
 import Elysia, { t } from "elysia";
 import { db } from "../db";
@@ -29,6 +33,21 @@ const router = new Elysia({ prefix: "/patients" })
           nurseId: t.String(),
           patientId: t.String(),
           recordDescription: t.String(),
+          createdAt: t.String(),
+          updatedAt: t.String(),
+        })
+      ),
+    }),
+    chats: t.Object({
+      hasMore: t.Boolean(),
+      cursor: t.Optional(t.String()),
+      data: t.Array(
+        t.Object({
+          id: t.String(),
+          nurseId: t.String(),
+          patientId: t.String(),
+          sender: t.Union([t.Literal("nurse"), t.Literal("patient")]),
+          message: t.String(),
           createdAt: t.String(),
           updatedAt: t.String(),
         })
@@ -102,6 +121,44 @@ const router = new Elysia({ prefix: "/patients" })
       }),
       response: {
         200: "records",
+        500: "InternalServerError",
+      },
+    }
+  )
+  .get(
+    "/chat",
+    async ({ query: { cursor, pageSize }, user, error }) => {
+      try {
+        const chats = await db
+          .select()
+          .from(chatsTable)
+          .where(
+            and(
+              eq(chatsTable.nurseId, user.id),
+              cursor ? lt(chatsTable.createdAt, cursor) : undefined
+            )
+          )
+          .limit(pageSize)
+          .orderBy(desc(chatsTable.createdAt))
+          .execute();
+
+        return {
+          data: chats,
+          hasMore: chats.length === pageSize,
+          cursor: chats.at(-1)?.createdAt,
+        };
+      } catch (err) {
+        console.log("CATCHED ERROR WHEN FETCHING PATIENT:\n", err);
+        return error(500, "Something went wrong");
+      }
+    },
+    {
+      query: t.Object({
+        pageSize: t.Number(),
+        cursor: t.String(),
+      }),
+      response: {
+        200: "chats",
         500: "InternalServerError",
       },
     }
