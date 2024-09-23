@@ -30,6 +30,7 @@ const InteractiveMap = () => {
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null
   );
+  const [grantedLocation, setGrantedLocation] = useState(false);
   const [nursesLocation, setNursesLocation] = useState<NurseLocationAndStatus>(
     []
   );
@@ -44,11 +45,12 @@ const InteractiveMap = () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         console.error("Permission to access location was denied");
-        return;
+        setGrantedLocation(false);
+      } else {
+        let location = await Location.getCurrentPositionAsync({});
+        setGrantedLocation(true);
+        setLocation(location);
       }
-
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
 
       await loadHealthcareFacilities();
       await loadUrgentAreas();
@@ -86,6 +88,9 @@ const InteractiveMap = () => {
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
+        if (!grantedLocation) {
+          return;
+        }
         console.log("Fetching location");
         let location = await Location.getCurrentPositionAsync({});
         setLocation(location);
