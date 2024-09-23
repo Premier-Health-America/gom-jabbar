@@ -88,7 +88,17 @@ const InteractiveMap = () => {
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        if (!grantedLocation) {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          console.error("Permission to access location was denied");
+          setGrantedLocation(false);
+        } else {
+          let location = await Location.getCurrentPositionAsync({});
+          setGrantedLocation(true);
+          setLocation(location);
+        }
+
+        if (status !== "granted") {
           return;
         }
         console.log("Fetching location");
