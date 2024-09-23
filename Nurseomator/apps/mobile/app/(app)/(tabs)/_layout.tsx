@@ -13,6 +13,7 @@ export default function TabLayout() {
         headerShown: false,
       }}
     >
+      <Tabs.Screen name="index" options={{ href: null }} />
       <Tabs.Screen
         name="map"
         options={{
@@ -23,10 +24,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="index"
+        name="supply"
         options={{
-          title: "Supply",
-          headerShown: true,
+          title: "Supplies",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "bag-add" : "bag-add-outline"}

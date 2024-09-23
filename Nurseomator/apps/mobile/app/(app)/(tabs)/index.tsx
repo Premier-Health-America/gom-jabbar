@@ -1,20 +1,5 @@
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { Fragment } from "react";
-import { StyleSheet } from "react-native";
+import { Redirect } from "expo-router";
 
-export default function SupplyScreen() {
-  return (
-    <Fragment>
-      <ThemedView style={styles.container}>
-        <ThemedText>Supply</ThemedText>
-      </ThemedView>
-    </Fragment>
-  );
+export default function Index() {
+  return <Redirect href="/(tabs)/map" />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

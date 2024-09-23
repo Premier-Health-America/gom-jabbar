@@ -4,6 +4,7 @@ import { db } from "../db";
 import { authenticatedPlugin, authRouter } from "./auth";
 import { nurseRouter } from "./nurse";
 import { patientsRouter } from "./patients";
+import { supplyRouter } from "./supply";
 import { wsConnections, wsRouter } from "./ws";
 
 export const api = new Elysia({ prefix: "/api/v1" })
@@ -28,6 +29,7 @@ export const api = new Elysia({ prefix: "/api/v1" })
   .use(wsRouter)
   .use(nurseRouter)
   .use(patientsRouter)
+  .use(supplyRouter)
   .use(authenticatedPlugin)
   .get("/urgent-areas", async ({ error }) => {
     try {

@@ -12,6 +12,8 @@ import {
   PatientRecord,
   patientRecordsTable,
   patientsTable,
+  suppliesTable,
+  Supply,
   UrgentArea,
   urgentAreasTable,
 } from "@repo/schemas/db";
@@ -104,6 +106,16 @@ const main = async () => {
     }
   }
 
+  const supplies: Omit<Supply, "id" | "createdAt" | "updatedAt">[] = [];
+  const measurementUnits = ["ml", "g", "units"];
+  for (let i = 0; i < 10; i++) {
+    supplies.push({
+      name: faker.commerce.productName(),
+      quantity: faker.number.int({ min: 1, max: 100 }),
+      measurementUnit: measurementUnits[Math.floor(Math.random() * 3)],
+    });
+  }
+
   await db.transaction(async (tx) => {
     await tx.insert(nursesTable).values(nurses);
     await tx.insert(nurseLocationsTable).values(nurseLocations);
@@ -112,6 +124,7 @@ const main = async () => {
     await tx.insert(urgentAreasTable).values(urgentAreas);
     await tx.insert(patientsTable).values(patients);
     await tx.insert(patientRecordsTable).values(patientRecords);
+    await tx.insert(suppliesTable).values(supplies);
   });
 };
 

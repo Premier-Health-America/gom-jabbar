@@ -109,7 +109,7 @@ export const suppliesTable = pgTable(
     id: text("id").primaryKey().notNull().$default(createId),
     name: varchar("name", { length: 50 }).notNull(),
     quantity: integer("quantity").notNull(),
-    mesurementUnit: varchar("mesurement_unit", { length: 50 }).notNull(),
+    measurementUnit: varchar("measurement_unit", { length: 50 }).notNull(),
     createdAt: timestamp("created_at", { mode: "string" })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
