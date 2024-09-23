@@ -106,9 +106,11 @@ export default function ChatScreen() {
     setIsLoadingEarlier(true);
 
     try {
-      const { data, error } = await apiClient.patients.chat.get({
-        query: { pageSize: 10, cursor: cursor ?? "" },
-      });
+      const { data, error } = await apiClient
+        .patients({ id: patient.id })
+        .chat.get({
+          query: { pageSize: 10, cursor: cursor ?? "" },
+        });
 
       if (error) {
         console.error("ERROR:", error);
