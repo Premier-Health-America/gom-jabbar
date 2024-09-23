@@ -14,6 +14,12 @@ export default function TabLayout() {
           title: "Patients",
         }}
       />
+      <Stack.Screen
+        name="chat"
+        options={{
+          title: "Chat",
+        }}
+      />
     </Stack>
   );
 }

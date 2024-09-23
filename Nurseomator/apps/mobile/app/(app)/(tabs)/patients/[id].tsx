@@ -9,13 +9,18 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { Patient, PatientRecord } from "@repo/schemas/db";
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import { Redirect, router, Stack, useLocalSearchParams } from "expo-router";
 import { Fragment, useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, StyleSheet } from "react-native";
+import { ActivityIndicator, Button, FlatList, StyleSheet } from "react-native";
 
 export default function PatientDetailsScreen() {
-  const { apiClient } = useAuth();
+  const { apiClient, user } = useAuth();
   const theme = useColorScheme();
+
+  if (!user) {
+    return <Redirect href="/signin" />;
+  }
+
   const { id, patient: patientStringified } = useLocalSearchParams<{
     id: string;
     patient: string;
@@ -109,6 +114,22 @@ export default function PatientDetailsScreen() {
         options={{
           title: patient.name,
           headerShown: true,
+          headerRight(props) {
+            return (
+              <Button
+                title="Open chat"
+                onPress={() =>
+                  router.navigate({
+                    pathname: "/(app)/(tabs)/patients/chat",
+                    params: {
+                      patient: JSON.stringify(patient),
+                      nurseId: user.id,
+                    },
+                  })
+                }
+              />
+            );
+          },
         }}
       />
       <ThemedView style={{ flex: 1, padding: 16 }}>

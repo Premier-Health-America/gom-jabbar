@@ -1,10 +1,16 @@
-import { nurseLocationsTable } from "@repo/schemas/db";
+import { chatsTable, nurseLocationsTable } from "@repo/schemas/db";
 import { eq } from "drizzle-orm";
 import { Elysia, t } from "elysia";
 import { db } from "../db";
 import { wsAuthenticatedPlugin } from "./auth";
 
 export const wsConnections = new Map<
+  string,
+  // @ts-expect-error
+  Parameters<Parameters<typeof ws.ws>["1"]["open"]>["0"]
+>();
+
+export const wsChatConnections = new Map<
   string,
   // @ts-expect-error
   Parameters<Parameters<typeof ws.ws>["1"]["open"]>["0"]
@@ -108,6 +114,49 @@ const ws = new Elysia({ prefix: "/ws" })
       console.log("WebSocket closed", code, message);
       clearInterval(ws.data.store.intervals[ws.id]);
       wsConnections.delete(ws.id);
+    },
+  })
+  .ws("/chats", {
+    body: t.Object({
+      message: t.String(),
+      nurseId: t.String(),
+      patientId: t.String(),
+    }),
+    response: t.Object({
+      id: t.String(),
+      nurseId: t.String(),
+      patientId: t.String(),
+      sender: t.Union([t.Literal("nurse"), t.Literal("patient")]),
+      message: t.String(),
+      createdAt: t.String(),
+      updatedAt: t.String(),
+    }),
+    open(ws) {
+      console.log("WebSocket opened");
+      // @ts-expect-error types of response is not infered
+      wsChatConnections.set(ws.data.user.id, ws);
+    },
+    async message(ws, message) {
+      console.log("Received chat message:", message);
+      const chat = await db
+        .insert(chatsTable)
+        .values({
+          message: message.message,
+          nurseId: message.nurseId,
+          patientId: message.patientId,
+          sender: ws.data.user.id === message.nurseId ? "nurse" : "patient",
+        })
+        .returning()
+        .execute()
+        .then((res) => res[0]);
+
+      const peerId =
+        ws.data.user.id === chat.nurseId ? chat.patientId : chat.nurseId;
+      wsChatConnections.get(peerId)?.send(chat);
+    },
+    close(ws, code, message) {
+      console.log("WebSocket closed", code, message);
+      wsChatConnections.delete(ws.data.user.id);
     },
   });
 

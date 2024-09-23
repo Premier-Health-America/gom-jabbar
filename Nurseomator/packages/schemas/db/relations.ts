@@ -1,7 +1,7 @@
 import { relations } from "drizzle-orm/relations";
 import {
+  chatsTable,
   emergencyAlertsTable,
-  interactionsTable,
   mentalHealthChecksTable,
   nurseLocationsTable,
   nursesTable,
@@ -12,22 +12,19 @@ import {
   supplyRequestsTable,
 } from "./schema";
 
-export const interactionsRelations = relations(
-  interactionsTable,
-  ({ one }) => ({
-    nurse: one(nursesTable, {
-      fields: [interactionsTable.nurseId],
-      references: [nursesTable.id],
-    }),
-    patient: one(patientsTable, {
-      fields: [interactionsTable.patientId],
-      references: [patientsTable.id],
-    }),
-  })
-);
+export const chatsRelations = relations(chatsTable, ({ one }) => ({
+  nurse: one(nursesTable, {
+    fields: [chatsTable.nurseId],
+    references: [nursesTable.id],
+  }),
+  patient: one(patientsTable, {
+    fields: [chatsTable.patientId],
+    references: [patientsTable.id],
+  }),
+}));
 
 export const nursesRelations = relations(nursesTable, ({ many, one }) => ({
-  interactions: many(interactionsTable),
+  chats: many(chatsTable),
   location: one(nurseLocationsTable, {
     fields: [nursesTable.id],
     references: [nurseLocationsTable.nurseId],
@@ -43,7 +40,7 @@ export const nursesRelations = relations(nursesTable, ({ many, one }) => ({
 }));
 
 export const patientsRelations = relations(patientsTable, ({ many }) => ({
-  interactions: many(interactionsTable),
+  chats: many(chatsTable),
   patientRecords: many(patientRecordsTable),
 }));
 

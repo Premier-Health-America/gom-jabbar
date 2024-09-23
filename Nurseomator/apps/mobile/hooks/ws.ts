@@ -10,6 +10,9 @@ let _realTimeNotfications: ReturnType<
     typeof treaty<API>
   >["api"]["v1"]["ws"]["notifications"]["subscribe"]
 >;
+let _realTimeChats: ReturnType<
+  ReturnType<typeof treaty<API>>["api"]["v1"]["ws"]["chats"]["subscribe"]
+>;
 
 export const useRealTimeLocations = () => {
   const { apiClient, sessionId } = useAuth();
@@ -34,4 +37,17 @@ export const useRealTimeNotifications = () => {
 
   _realTimeNotfications = realTimeNotfications;
   return realTimeNotfications;
+};
+
+export const useRealTimeChats = () => {
+  const { apiClient, sessionId } = useAuth();
+
+  if (_realTimeChats) return _realTimeChats;
+
+  const realTimeChats = apiClient.ws.chats.subscribe({
+    query: { token: sessionId },
+  });
+
+  _realTimeChats = realTimeChats;
+  return realTimeChats;
 };

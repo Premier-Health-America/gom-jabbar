@@ -1,5 +1,5 @@
 import { createId } from "@paralleldrive/cuid2";
-import { Static } from "@sinclair/typebox";
+import { Static, Type } from "@sinclair/typebox";
 import { sql } from "drizzle-orm";
 import {
   boolean,
@@ -286,8 +286,8 @@ export const supplyRequestsTable = pgTable(
 export const SupplyRequestSchema = createSelectSchema(supplyRequestsTable);
 export type SupplyRequest = Static<typeof SupplyRequestSchema>;
 
-export const interactionsTable = pgTable(
-  "interactions",
+export const chatsTable = pgTable(
+  "chats",
   {
     id: text("id").primaryKey().notNull().$default(createId),
     nurseId: text("nurse_id")
@@ -296,7 +296,7 @@ export const interactionsTable = pgTable(
     patientId: text("patient_id")
       .notNull()
       .references(() => patientsTable.id),
-    interactionType: varchar("interaction_type", { length: 20 }).notNull(),
+    sender: text("sender").notNull(),
     message: text("message").notNull(),
     createdAt: timestamp("created_at", { mode: "string" })
       .default(sql`CURRENT_TIMESTAMP`)
@@ -318,8 +318,10 @@ export const interactionsTable = pgTable(
     };
   }
 );
-export const InteractionSchema = createSelectSchema(interactionsTable);
-export type Interaction = Static<typeof InteractionSchema>;
+export const ChatSchema = createSelectSchema(chatsTable, {
+  sender: Type.Union([Type.Literal("nurse"), Type.Literal("patient")]),
+});
+export type Chat = Static<typeof ChatSchema>;
 
 export const securityAuditsTable = pgTable("security_audits", {
   id: text("id").primaryKey().notNull().$default(createId),
