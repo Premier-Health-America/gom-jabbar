@@ -119,8 +119,6 @@ const router = new Elysia({ prefix: "/auth" })
             email: body.email,
             password: passwordHash,
             role: "nurse",
-            twoFactorSetupDone: false,
-            twoFactorSecret: null,
           });
           await tx.insert(nurseStatusTable).values({
             nurseId: userId,

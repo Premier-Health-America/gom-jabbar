@@ -37,6 +37,16 @@ const router = new Elysia({ prefix: "/supplies" })
     "/:id/request",
     async ({ params, body, user, error }) => {
       try {
+        const exists = await db.query.suppliesTable.findFirst({
+          where(fields, operators) {
+            return operators.eq(fields.id, params.id);
+          },
+        });
+
+        if (!exists) {
+          return error(404, "Supply doesn't exist");
+        }
+
         await db.insert(supplyRequestsTable).values({
           nurseId: user.id,
           supplyId: params.id,
@@ -55,6 +65,7 @@ const router = new Elysia({ prefix: "/supplies" })
       }),
       response: {
         200: "supplyRequestResponse",
+        404: t.Literal("Supply doesn't exist"),
         500: "InternalServerError",
       },
     }

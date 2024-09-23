@@ -18,7 +18,6 @@ export const lucia = new Lucia(
         email: databaseUserAttributes.email,
         createdAt: databaseUserAttributes.createdAt,
         updatedAt: databaseUserAttributes.updatedAt,
-        twoFactorSetupDone: databaseUserAttributes.twoFactorSetupDone,
       };
     },
     getSessionAttributes(databaseSessionAttributes) {

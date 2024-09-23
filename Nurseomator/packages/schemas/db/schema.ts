@@ -2,7 +2,6 @@ import { createId } from "@paralleldrive/cuid2";
 import { Static, Type } from "@sinclair/typebox";
 import { sql } from "drizzle-orm";
 import {
-  boolean,
   date,
   doublePrecision,
   index,
@@ -37,8 +36,6 @@ export const nursesTable = pgTable("nurses", {
   email: varchar("email", { length: 100 }).notNull().unique(),
   password: varchar("password", { length: 255 }).notNull(),
   role: pgRolesEnum("role").notNull().default("nurse"),
-  twoFactorSetupDone: boolean("two_factor_setup_done").notNull(),
-  twoFactorSecret: text("two_factor_secret"),
   createdAt: timestamp("created_at", { mode: "string" })
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),

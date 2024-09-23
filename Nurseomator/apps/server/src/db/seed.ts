@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker";
 import {
   Chat,
+  chatsTable,
   healthcareFacilitiesTable,
   HealthcareFacility,
   Nurse,
@@ -34,8 +35,6 @@ const main = async () => {
         .join(".")}@nurseomator.com`,
       password: await Bun.password.hash("password"),
       role: "nurse",
-      twoFactorSetupDone: false,
-      twoFactorSecret: null,
     });
   }
   const nurseLocations: Omit<NurseLocation, "id" | "updatedAt">[] = [];
@@ -139,6 +138,7 @@ const main = async () => {
     await tx.insert(patientsTable).values(patients);
     await tx.insert(patientRecordsTable).values(patientRecords);
     await tx.insert(suppliesTable).values(supplies);
+    await tx.insert(chatsTable).values(chats);
   });
 };
 

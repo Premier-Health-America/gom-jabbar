@@ -86,6 +86,16 @@ const router = new Elysia({ prefix: "/patients" })
     async ({ params, user, error, query: { cursor, pageSize } }) => {
       console.log("CURSOR:", cursor, "PAGESIZE:", pageSize);
       try {
+        const patient = await db.query.patientsTable.findFirst({
+          where(fields, operators) {
+            return operators.eq(fields.id, params.id);
+          },
+        });
+
+        if (!patient) {
+          return error(404, "Patient not found");
+        }
+
         const records = await db
           .select(getTableColumns(patientRecordsTable))
           .from(patientRecordsTable)
@@ -121,19 +131,31 @@ const router = new Elysia({ prefix: "/patients" })
       }),
       response: {
         200: "records",
+        404: t.Literal("Patient not found"),
         500: "InternalServerError",
       },
     }
   )
   .get(
-    "/chat",
-    async ({ query: { cursor, pageSize }, user, error }) => {
+    "/:id/chat",
+    async ({ query: { cursor, pageSize }, params, user, error }) => {
       try {
+        const patient = await db.query.patientsTable.findFirst({
+          where(fields, operators) {
+            return operators.eq(fields.id, params.id);
+          },
+        });
+
+        if (!patient) {
+          return error(404, "Patient not found");
+        }
+
         const chats = await db
           .select()
           .from(chatsTable)
           .where(
             and(
+              eq(chatsTable.patientId, params.id),
               eq(chatsTable.nurseId, user.id),
               cursor ? lt(chatsTable.createdAt, cursor) : undefined
             )
@@ -159,6 +181,7 @@ const router = new Elysia({ prefix: "/patients" })
       }),
       response: {
         200: "chats",
+        404: t.Literal("Patient not found"),
         500: "InternalServerError",
       },
     }
